@@ -8,10 +8,10 @@ class LayoutView {
       <html>
         <head>
           <meta charset="utf-8">
-          <title>Login Example test</title>
+          <title>Login Example</title>
         </head>
         <body>
-          <h1>Assignment 2</h1>
+          <h1>Assignment 2 testing change</h1>
           ' . $this->renderIsLoggedIn($isLoggedIn) . '
           
           <div class="container">
