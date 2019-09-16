@@ -11,7 +11,7 @@ class LayoutView {
           <title>Login Example</title>
         </head>
         <body>
-          <h1>Assignment 2 testing</h1>
+          <h1>Assignment 2 testing 2</h1>
           ' . $this->renderIsLoggedIn($isLoggedIn) . '
           
           <div class="container">
