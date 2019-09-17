@@ -20,7 +20,7 @@ class LoginView {
 	 */
 	public function response() {
 
-		$message = $this->isLoggedIn ? 'Welcome' : 'Please log in';
+		$message = $this->isLoggedIn ? 'Welcome' : '';
 
 		$response = $this->isLoggedIn ? $this->generateLogoutButtonHTML($message) : $this->generateLoginFormHTML($message);
 		return $response;
