@@ -11,8 +11,6 @@ class LoginView {
 	private static $messageId = 'LoginView::Message';
 	private $isLoggedIn = false;
 
-	
-
 	/**
 	 * Create HTTP response
 	 *
@@ -21,10 +19,10 @@ class LoginView {
 	 * @return  void BUT writes to standard output and cookies!
 	 */
 	public function response() {
-		$message = 'HEJ! ' . $this->getRequestUserName();
 
-		$response = $this->generateLoginFormHTML($message);
-		//$response .= $this->generateLogoutButtonHTML($message);
+		$message = $this->isLoggedIn ? 'Welcome' : 'Please log in';
+
+		$response = $this->isLoggedIn ? $this->generateLogoutButtonHTML($message) : $this->generateLoginFormHTML($message);
 		return $response;
 	}
 
@@ -69,12 +67,24 @@ class LoginView {
 		';
 	}
 	
-	public function getRequestUserName() {
+	private function getRequestUserName() : string {
 		return $_POST[self::$name] ?? '';
 	}
 
-	public function getRequestPassword() {
+	private function getRequestPassword() : string {
 		return $_POST[self::$password] ?? '';
+	}
+
+	public function login () : void {
+		if ($this->getRequestUserName() === 'Admin' && $this->getRequestPassword() === 'Password') {
+            $this->isLoggedIn = true;
+        } else {
+            $this->isLoggedIn = false;
+        }
+	}
+
+	public function getIsLoggedIn() : bool {
+		return $this->isLoggedIn;
 	}
 	
 }
