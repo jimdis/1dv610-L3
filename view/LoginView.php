@@ -20,8 +20,6 @@ class LoginView {
 	 */
 	public function response() {
 
-		var_dump($this->userAttemptLogin());
-
 		$message = '';
 
 		if ($this->isLoggedIn) {
