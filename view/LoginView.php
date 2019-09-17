@@ -20,6 +20,8 @@ class LoginView {
 	 */
 	public function response() {
 
+		var_dump($this->userAttemptLogin());
+
 		$message = '';
 
 		if ($this->isLoggedIn) {
@@ -27,9 +29,9 @@ class LoginView {
 		} 
 		
 		if ($this->userAttemptLogin()) {
-			if (!$this->getRequestUserName() === '') {
+			if ($this->getRequestUserName() === '') {
 				$message = 'Username is missing';
-			} else if (!$this->getRequestPassword() === '') {
+			} else if ($this->getRequestPassword() === '') {
 				$message = 'Password is missing';
 			}
 		}
