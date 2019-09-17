@@ -24,14 +24,15 @@ class LoginView {
 
 		if ($this->isLoggedIn) {
 			$message = 'Welcome';
+		} 
+		
+		if ($this->userAttemptLogin()) {
+			if (!$this->getRequestUserName() === '') {
+				$message = 'Username is missing';
+			} else if (!$this->getRequestPassword() === '') {
+				$message = 'Password is missing';
+			}
 		}
-		if ($this->getRequestUserName() === '') {
-			$message = 'Username is missing';
-		}
-		if ($this->getRequestPassword() === '') {
-			$message = 'Password is missing';
-		}
-
 		$response = $this->isLoggedIn ? $this->generateLogoutButtonHTML($message) : $this->generateLoginFormHTML($message);
 		return $response;
 	}
@@ -83,6 +84,10 @@ class LoginView {
 
 	private function getRequestPassword() : string {
 		return $_POST[self::$password] ?? '';
+	}
+
+	private function userAttemptLogin() : bool {
+		return $_SERVER['REQUEST_METHOD'] === 'POST';
 	}
 
 	public function login () : void {
