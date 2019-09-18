@@ -35,7 +35,7 @@ class LoginView {
 
         if (isset($_COOKIE[self::$cookieName])) {
             $message = 'Welcome back with cookie';
-        }
+        } // fixa - ska ej ge feedback vid reload. Test 3.2
 
         if (!$this->isLoggedIn && $this->userAttemptLogin()) {
             $message = $this->validateForm();
