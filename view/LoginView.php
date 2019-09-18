@@ -1,5 +1,7 @@
 <?php
 
+session_start();
+
 class LoginView {
     private static $login = 'LoginView::Login';
     private static $logout = 'LoginView::Logout';
@@ -9,7 +11,9 @@ class LoginView {
     private static $cookiePassword = 'LoginView::CookiePassword';
     private static $keep = 'LoginView::KeepMeLoggedIn';
     private static $messageId = 'LoginView::Message';
+    private static $SESSION_KEY = 'LoginView::SessionKey';
     private $isLoggedIn = false;
+    private $isFirstLogin = false;
 
     /**
      * Create HTTP response
@@ -21,9 +25,10 @@ class LoginView {
     public function response() {
         $message = '';
 
-        if ($this->isLoggedIn) {
+        if ($this->isLoggedIn && $this->isFirstLogin) {
             $message = 'Welcome';
-        } else if ($this->userAttemptLogin()) {
+        }
+        if (!$this->isLoggedIn && $this->userAttemptLogin()) {
             $message = $this->validateForm();
         }
 
@@ -89,8 +94,12 @@ class LoginView {
     }
 
     public function login(): void {
-        if ($this->getRequestUserName() === 'Admin' && $this->getRequestPassword() === 'Password') {
+        if (strlen($this->loadUser()) > 0) {
             $this->isLoggedIn = true;
+        } else if ($this->getRequestUserName() === 'Admin' && $this->getRequestPassword() === 'Password') {
+            $this->isFirstLogin = true;
+            $this->isLoggedIn = true;
+            $this->saveUser($this->getRequestUserName());
         }
     }
 
@@ -103,6 +112,15 @@ class LoginView {
             return 'Password is missing';
         }
         return 'Wrong name or password';
+
+    }
+
+    private function saveUser(string $toBeSaved): void {
+        $_SESSION[self::$SESSION_KEY] = $toBeSaved;
+    }
+
+    private function loadUser(): string {
+        return $_SESSION[self::$SESSION_KEY] ?? '';
 
     }
 
