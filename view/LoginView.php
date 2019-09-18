@@ -11,7 +11,6 @@ class LoginView {
     private static $cookiePassword = 'LoginView::CookiePassword';
     private static $keep = 'LoginView::KeepMeLoggedIn';
     private static $messageId = 'LoginView::Message';
-    private static $SESSION_KEY = 'LoginView::SessionKey';
     private $isLoggedIn = false;
     private $isFirstLogin = false;
     private $isFirstLogout = false;
@@ -24,11 +23,20 @@ class LoginView {
      * @return  void BUT writes to standard output and cookies!
      */
     public function response() {
+
         $message = '';
 
         if ($this->isLoggedIn && $this->isFirstLogin) {
             $message = 'Welcome';
+            if (isset($_POST[self::$keep])) {
+                $message .= ' and you will be remembered';
+            }
         }
+
+        if (isset($_COOKIE[self::$cookieName])) {
+            $message = 'Welcome back with cookie';
+        }
+
         if (!$this->isLoggedIn && $this->userAttemptLogin()) {
             $message = $this->validateForm();
         }
@@ -104,18 +112,21 @@ class LoginView {
 
     public function login(): void {
         if ($this->logout()) {
-            if (strlen($this->loadUser()) > 0) {
+            if (strlen($this->loadSession()) > 0) {
                 $this->isFirstLogout = true;
             }
             $this->isLoggedIn = false;
-            $this->saveUser(''); // ful-lösning.. Deleta cookie istället..
+            $this->saveSession(''); // ful-lösning.. Deleta cookie istället..
 
-        } else if (strlen($this->loadUser()) > 0) {
+        } else if (strlen($this->loadSession()) > 0) {
+            $this->isLoggedIn = true;
+        } else if (isset($_COOKIE[self::$cookieName])) {
             $this->isLoggedIn = true;
         } else if ($this->getRequestUserName() === 'Admin' && $this->getRequestPassword() === 'Password') {
             $this->isFirstLogin = true;
             $this->isLoggedIn = true;
-            $this->saveUser($this->getRequestUserName());
+            $this->saveSession($this->getRequestUserName());
+            $this->setCookie();
         }
     }
 
@@ -131,13 +142,19 @@ class LoginView {
 
     }
 
-    private function saveUser(string $toBeSaved): void {
-        $_SESSION[self::$SESSION_KEY] = $toBeSaved;
+    private function saveSession(string $toBeSaved): void {
+        $_SESSION['session'] = $toBeSaved;
     }
 
-    private function loadUser(): string {
-        return $_SESSION[self::$SESSION_KEY] ?? '';
+    private function loadSession(): string {
+        return $_SESSION['session'] ?? '';
+    }
 
+    private function setCookie(): void {
+        if (isset($_POST[self::$keep])) {
+            setcookie(self::$cookieName, $this->getRequestUserName(), time() + 60 * 60 * 24 * 30); // 30 days
+            setcookie(self::$cookiePassword, bin2hex(random_bytes(16)), time() + 60 * 60 * 24 * 30); // 30 days
+        }
     }
 
 }
