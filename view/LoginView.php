@@ -104,7 +104,7 @@ class LoginView {
 
     public function login(): void {
         if ($this->logout()) {
-            if ($this->isLoggedIn) {
+            if (strlen($this->loadUser()) > 0) {
                 $this->isFirstLogout = true;
             }
             $this->isLoggedIn = false;
