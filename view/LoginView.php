@@ -14,6 +14,7 @@ class LoginView {
     private static $SESSION_KEY = 'LoginView::SessionKey';
     private $isLoggedIn = false;
     private $isFirstLogin = false;
+    private $isFirstLogout = false;
 
     /**
      * Create HTTP response
@@ -30,6 +31,10 @@ class LoginView {
         }
         if (!$this->isLoggedIn && $this->userAttemptLogin()) {
             $message = $this->validateForm();
+        }
+
+        if (!$this->isLoggedIn && $this->isFirstLogout) {
+            $message = 'Bye bye!';
         }
 
         $response = $this->isLoggedIn ? $this->generateLogoutButtonHTML($message) : $this->generateLoginFormHTML($message);
@@ -86,7 +91,11 @@ class LoginView {
     }
 
     private function userAttemptLogin(): bool {
-        return $_SERVER['REQUEST_METHOD'] === 'POST';
+        return !$this->logout() && $_SERVER['REQUEST_METHOD'] === 'POST';
+    }
+
+    private function logout(): bool {
+        return isset($_POST[self::$logout]) ? true : false;
     }
 
     public function getIsLoggedIn(): bool {
@@ -94,7 +103,14 @@ class LoginView {
     }
 
     public function login(): void {
-        if (strlen($this->loadUser()) > 0) {
+        if ($this->logout()) {
+            if ($this->isLoggedIn) {
+                $this->isFirstLogout = true;
+            }
+            $this->isLoggedIn = false;
+            $this->saveUser(''); // ful-lösning.. Deleta cookie istället..
+
+        } else if (strlen($this->loadUser()) > 0) {
             $this->isLoggedIn = true;
         } else if ($this->getRequestUserName() === 'Admin' && $this->getRequestPassword() === 'Password') {
             $this->isFirstLogin = true;
