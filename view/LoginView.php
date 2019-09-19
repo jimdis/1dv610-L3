@@ -2,7 +2,8 @@
 
 session_start();
 
-class LoginView {
+class LoginView
+{
     private static $login = 'LoginView::Login';
     private static $logout = 'LoginView::Logout';
     private static $name = 'LoginView::UserName';
@@ -22,7 +23,8 @@ class LoginView {
      *
      * @return  void BUT writes to standard output and cookies!
      */
-    public function response() {
+    public function response()
+    {
 
         $message = '';
 
@@ -33,9 +35,9 @@ class LoginView {
             }
         }
 
-        if (isset($_COOKIE[self::$cookieName])) {
+        if (isset($_COOKIE[self::$cookieName]) && $this->isFirstLogin) {
             $message = 'Welcome back with cookie';
-        } // fixa - ska ej ge feedback vid reload. Test 3.2
+        }
 
         if (!$this->isLoggedIn && $this->userAttemptLogin()) {
             $message = $this->validateForm();
@@ -54,7 +56,8 @@ class LoginView {
      * @param $message, String output message
      * @return  void, BUT writes to standard output!
      */
-    private function generateLogoutButtonHTML($message) {
+    private function generateLogoutButtonHTML($message)
+    {
         return '
 			<form  method="post" >
 				<p id="' . self::$messageId . '">' . $message . '</p>
@@ -68,7 +71,8 @@ class LoginView {
      * @param $message, String output message
      * @return  void, BUT writes to standard output!
      */
-    private function generateLoginFormHTML($message) {
+    private function generateLoginFormHTML($message)
+    {
         return '
 			<form method="post" >
 				<fieldset>
@@ -90,27 +94,33 @@ class LoginView {
 		';
     }
 
-    private function getRequestUserName(): string {
+    private function getRequestUserName(): string
+    {
         return $_POST[self::$name] ?? '';
     }
 
-    private function getRequestPassword(): string {
+    private function getRequestPassword(): string
+    {
         return $_POST[self::$password] ?? '';
     }
 
-    private function userAttemptLogin(): bool {
+    private function userAttemptLogin(): bool
+    {
         return !$this->logout() && $_SERVER['REQUEST_METHOD'] === 'POST';
     }
 
-    private function logout(): bool {
+    private function logout(): bool
+    {
         return isset($_POST[self::$logout]) ? true : false;
     }
 
-    public function getIsLoggedIn(): bool {
+    public function getIsLoggedIn(): bool
+    {
         return $this->isLoggedIn;
     }
 
-    public function login(): void {
+    public function login(): void
+    {
         if ($this->logout()) {
             if (strlen($this->loadSession()) > 0) {
                 $this->isFirstLogout = true;
@@ -122,6 +132,8 @@ class LoginView {
             $this->isLoggedIn = true;
         } else if (isset($_COOKIE[self::$cookieName])) {
             $this->isLoggedIn = true;
+            $this->isFirstLogin = true;
+            $this->saveSession($_COOKIE[self::$cookieName]);
         } else if ($this->getRequestUserName() === 'Admin' && $this->getRequestPassword() === 'Password') {
             $this->isFirstLogin = true;
             $this->isLoggedIn = true;
@@ -130,7 +142,8 @@ class LoginView {
         }
     }
 
-    private function validateForm(): string {
+    private function validateForm(): string
+    {
 
         if ($this->getRequestUserName() === '') {
             return 'Username is missing';
@@ -139,22 +152,23 @@ class LoginView {
             return 'Password is missing';
         }
         return 'Wrong name or password';
-
     }
 
-    private function saveSession(string $toBeSaved): void {
+    private function saveSession(string $toBeSaved): void
+    {
         $_SESSION['session'] = $toBeSaved;
     }
 
-    private function loadSession(): string {
+    private function loadSession(): string
+    {
         return $_SESSION['session'] ?? '';
     }
 
-    private function setCookie(): void {
+    private function setCookie(): void
+    {
         if (isset($_POST[self::$keep])) {
             setcookie(self::$cookieName, $this->getRequestUserName(), time() + 60 * 60 * 24 * 30); // 30 days
             setcookie(self::$cookiePassword, bin2hex(random_bytes(16)), time() + 60 * 60 * 24 * 30); // 30 days
         }
     }
-
 }
