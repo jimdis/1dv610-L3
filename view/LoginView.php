@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 class LoginView
@@ -11,9 +12,16 @@ class LoginView
     private static $cookiePassword = 'LoginView::CookiePassword';
     private static $keep = 'LoginView::KeepMeLoggedIn';
     private static $messageId = 'LoginView::Message';
+    private $userStorage;
     private $isLoggedIn = false;
     private $isFirstLogin = false;
     private $isFirstLogout = false;
+
+    public function __construct()
+    {
+        $this->userStorage = new DOMDocument();
+        $this->userStorage->load('users.xml');
+    }
 
     /**
      * Create HTTP response
@@ -25,7 +33,7 @@ class LoginView
     public function response()
     {
 
-        $users = $this->loadUsers();
+        // $users = $this->loadUsers();
 
         // foreach ($users->getElementsByTagName('user') as $user) {
         //     if ($user->getElementsByTagName('name')[0]->textContent == 'Jim') {
@@ -191,12 +199,11 @@ class LoginView
             $cookiePassword = bin2hex(random_bytes(16));
             setcookie(self::$cookieName, $username, time() + 60 * 60 * 24 * 30); // 30 days
             setcookie(self::$cookiePassword, $cookiePassword, time() + 60 * 60 * 24 * 30); // 30 days
-            $users = $this->loadUsers();
 
-            foreach ($users->getElementsByTagName('user') as $user) {
+            foreach ($this->userStorage->getElementsByTagName('user') as $user) {
                 if ($user->getElementsByTagName('name')[0]->textContent == $username) {
                     if (!$user->getElementsByTagName('cookiePassword')[0]) {
-                        $newPassword = $users->createElement('cookiePassword');
+                        $newPassword = $this->userStorage->createElement('cookiePassword');
                         $newPassword->textContent = $cookiePassword;
                         $user->appendChild($newPassword);
                     } else {
@@ -205,20 +212,16 @@ class LoginView
                 }
             }
 
-            $this->saveUsers($users);
+            $this->saveUserStorage();
         }
     }
 
-    private function loadUsers(): DOMDocument
+    private function saveUserStorage(): void
     {
-        // $users = simplexml_load_file('users.xml');
-        $users = new DOMDocument();
-        $users->load('users.xml');
-        return $users;
+        $this->userStorage->save('users.xml');
     }
 
-    private function saveUsers(DOMDocument $users): void
-    {
-        $users->save('users.xml');
-    }
+    // private function validateCookie() : bool {
+
+    // }
 }
