@@ -1,5 +1,4 @@
 <?php
-
 session_start();
 
 class LoginView
@@ -25,6 +24,26 @@ class LoginView
      */
     public function response()
     {
+
+        $users = $this->loadUsers();
+
+        // foreach ($users->getElementsByTagName('user') as $user) {
+        //     if ($user->getElementsByTagName('name')[0]->textContent == 'Jim') {
+        //         var_dump($user->getElementsByTagName('password')[0]->textContent);
+        //     }
+        // }
+
+
+
+
+        // $findPassword = '';
+
+        // foreach ($users as $user) {
+        //     if ($user->name == 'Jim') {
+        //         $findPassword = $user->password;
+        //         break;
+        //     }
+        // }
 
         $message = '';
 
@@ -167,8 +186,39 @@ class LoginView
     private function setCookie(): void
     {
         if (isset($_POST[self::$keep])) {
-            setcookie(self::$cookieName, $this->getRequestUserName(), time() + 60 * 60 * 24 * 30); // 30 days
-            setcookie(self::$cookiePassword, bin2hex(random_bytes(16)), time() + 60 * 60 * 24 * 30); // 30 days
+
+            $username = $this->getRequestUserName();
+            $cookiePassword = bin2hex(random_bytes(16));
+            setcookie(self::$cookieName, $username, time() + 60 * 60 * 24 * 30); // 30 days
+            setcookie(self::$cookiePassword, $cookiePassword, time() + 60 * 60 * 24 * 30); // 30 days
+            $users = $this->loadUsers();
+
+            foreach ($users->getElementsByTagName('user') as $user) {
+                if ($user->getElementsByTagName('name')[0]->textContent == $username) {
+                    if (!$user->getElementsByTagName('cookiePassword')[0]) {
+                        $newPassword = $users->createElement('cookiePassword');
+                        $newPassword->textContent = $cookiePassword;
+                        $user->appendChild($newPassword);
+                    } else {
+                        $user->getElementsByTagName('cookiePassword')[0]->textContent = $cookiePassword;
+                    }
+                }
+            }
+
+            $this->saveUsers($users);
         }
+    }
+
+    private function loadUsers(): DOMDocument
+    {
+        // $users = simplexml_load_file('users.xml');
+        $users = new DOMDocument();
+        $users->load('users.xml');
+        return $users;
+    }
+
+    private function saveUsers(DOMDocument $users): void
+    {
+        $users->save('users.xml');
     }
 }
