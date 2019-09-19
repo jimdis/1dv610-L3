@@ -16,6 +16,7 @@ class LoginView
     private $isLoggedIn = false;
     private $isFirstLogin = false;
     private $isFirstLogout = false;
+    private $isCookieError = false;
 
     public function __construct()
     {
@@ -32,27 +33,6 @@ class LoginView
      */
     public function response()
     {
-
-        // $users = $this->loadUsers();
-
-        // foreach ($users->getElementsByTagName('user') as $user) {
-        //     if ($user->getElementsByTagName('name')[0]->textContent == 'Jim') {
-        //         var_dump($user->getElementsByTagName('password')[0]->textContent);
-        //     }
-        // }
-
-
-
-
-        // $findPassword = '';
-
-        // foreach ($users as $user) {
-        //     if ($user->name == 'Jim') {
-        //         $findPassword = $user->password;
-        //         break;
-        //     }
-        // }
-
         $message = '';
 
         if ($this->isLoggedIn && $this->isFirstLogin) {
@@ -62,8 +42,12 @@ class LoginView
             }
         }
 
-        if (isset($_COOKIE[self::$cookieName]) && $this->isFirstLogin) {
+        if ($this->isLoggedIn && isset($_COOKIE[self::$cookieName]) && $this->isFirstLogin) {
             $message = 'Welcome back with cookie';
+        }
+
+        if ($this->isCookieError) {
+            $message = 'Wrong information in cookies';
         }
 
         if (!$this->isLoggedIn && $this->userAttemptLogin()) {
@@ -157,10 +141,14 @@ class LoginView
 
         } else if (strlen($this->loadSession()) > 0) {
             $this->isLoggedIn = true;
-        } else if (isset($_COOKIE[self::$cookieName])) {
-            $this->isLoggedIn = true;
-            $this->isFirstLogin = true;
-            $this->saveSession($_COOKIE[self::$cookieName]);
+        } else if (!$this->userAttemptLogin() && isset($_COOKIE[self::$cookieName])) {
+            if ($this->validateCookie()) {
+                $this->isLoggedIn = true;
+                $this->isFirstLogin = true;
+                $this->saveSession($_COOKIE[self::$cookieName]);
+            } else {
+                $this->isCookieError = true;
+            }
         } else if ($this->getRequestUserName() === 'Admin' && $this->getRequestPassword() === 'Password') {
             $this->isFirstLogin = true;
             $this->isLoggedIn = true;
@@ -221,7 +209,26 @@ class LoginView
         $this->userStorage->save('users.xml');
     }
 
-    // private function validateCookie() : bool {
+    private function validateCookie(): bool
+    {
+        $username = $_COOKIE[self::$cookieName];
+        $cookiePassword = $_COOKIE[self::$cookiePassword];
 
-    // }
+        $passwordMatch = false;
+
+        foreach ($this->userStorage->getElementsByTagName('user') as $user) {
+            if ($user->getElementsByTagName('name')[0]->textContent == $username) {
+                if ($user->getElementsByTagName('cookiePassword')[0]->textContent == $cookiePassword) {
+                    $passwordMatch = true;
+                }
+            }
+        }
+
+        if (!$passwordMatch) {
+            setcookie(self::$cookieName, $username, time() - 1000);
+            setcookie(self::$cookiePassword, $cookiePassword, time() - 1000);
+        }
+
+        return $passwordMatch;
+    }
 }
