@@ -2,13 +2,13 @@
 
 class LoginView
 {
-    private static $login = 'LoginView::Login';
-    private static $logout = 'LoginView::Logout';
-    private static $name = 'LoginView::UserName';
-    private static $password = 'LoginView::Password';
-    private static $cookieName = 'LoginView::CookieName';
-    private static $cookiePassword = 'LoginView::CookiePassword';
-    private static $keep = 'LoginView::KeepMeLoggedIn';
+    public static $login = 'LoginView::Login';
+    public static $logout = 'LoginView::Logout';
+    public static $name = 'LoginView::UserName';
+    public static $password = 'LoginView::Password';
+    public static $cookieName = 'LoginView::CookieName';
+    public static $cookiePassword = 'LoginView::CookiePassword';
+    public static $keep = 'LoginView::KeepMeLoggedIn';
     private static $messageId = 'LoginView::Message';
     // private $userStorage;
     private $isLoggedIn = false;
@@ -114,132 +114,132 @@ class LoginView
         return $_POST[self::$password] ?? '';
     }
 
-    private function userAttemptLogin(): bool
-    {
-        return !$this->logout() && $_SERVER['REQUEST_METHOD'] === 'POST';
-    }
+    // private function userAttemptLogin(): bool
+    // {
+    //     return !$this->logout() && $_SERVER['REQUEST_METHOD'] === 'POST';
+    // }
 
-    private function logout(): bool
-    {
-        return isset($_POST[self::$logout]) ? true : false;
-    }
+    // private function logout(): bool
+    // {
+    //     return isset($_POST[self::$logout]) ? true : false;
+    // }
 
-    public function getIsLoggedIn(): bool
-    {
-        return $this->isLoggedIn;
-    }
+    // public function getIsLoggedIn(): bool
+    // {
+    //     return $this->isLoggedIn;
+    // }
 
-    public function login(): void
-    {
-        if ($this->logout()) {
-            if (strlen($this->loadSession()) > 0) {
-                $this->isFirstLogout = true;
-            }
-            $this->isLoggedIn = false;
-            $this->saveSession(''); // ful-lösning.. Deleta cookie istället..
+    // public function login(): void
+    // {
+    //     if ($this->logout()) {
+    //         if (strlen($this->loadSession()) > 0) {
+    //             $this->isFirstLogout = true;
+    //         }
+    //         $this->isLoggedIn = false;
+    //         $this->saveSession(''); // ful-lösning.. Deleta cookie istället..
 
-        } else if (strlen($this->loadSession()) > 0) {
-            $this->isLoggedIn = true;
-        } else if (!$this->userAttemptLogin() && isset($_COOKIE[self::$cookieName])) {
-            if ($this->validateCookie()) {
-                $this->isLoggedIn = true;
-                $this->isFirstLogin = true;
-                $this->saveSession($_COOKIE[self::$cookieName]);
-            } else {
-                $this->isCookieError = true;
-            }
-        } else if ($this->getRequestUserName() === 'Admin' && $this->getRequestPassword() === 'Password') {
-            $this->isFirstLogin = true;
-            $this->isLoggedIn = true;
-            $this->saveSession($this->getRequestUserName());
-            $this->setCookie();
-        }
-    }
+    //     } else if (strlen($this->loadSession()) > 0) {
+    //         $this->isLoggedIn = true;
+    //     } else if (!$this->userAttemptLogin() && isset($_COOKIE[self::$cookieName])) {
+    //         if ($this->validateCookie()) {
+    //             $this->isLoggedIn = true;
+    //             $this->isFirstLogin = true;
+    //             $this->saveSession($_COOKIE[self::$cookieName]);
+    //         } else {
+    //             $this->isCookieError = true;
+    //         }
+    //     } else if ($this->getRequestUserName() === 'Admin' && $this->getRequestPassword() === 'Password') {
+    //         $this->isFirstLogin = true;
+    //         $this->isLoggedIn = true;
+    //         $this->saveSession($this->getRequestUserName());
+    //         $this->setCookie();
+    //     }
+    // }
 
-    private function validateForm(): string
-    {
+    // private function validateForm(): string
+    // {
 
-        if ($this->getRequestUserName() === '') {
-            return 'Username is missing';
-        }
-        if ($this->getRequestPassword() === '') {
-            return 'Password is missing';
-        }
-        return 'Wrong name or password';
-    }
+    //     if ($this->getRequestUserName() === '') {
+    //         return 'Username is missing';
+    //     }
+    //     if ($this->getRequestPassword() === '') {
+    //         return 'Password is missing';
+    //     }
+    //     return 'Wrong name or password';
+    // }
 
-    private function saveSession(string $toBeSaved): void
-    {
-        $_SESSION['session'] = $toBeSaved;
-    }
+    // private function saveSession(string $toBeSaved): void
+    // {
+    //     $_SESSION['session'] = $toBeSaved;
+    // }
 
-    private function loadSession(): string
-    {
-        return $_SESSION['session'] ?? '';
-    }
+    // private function loadSession(): string
+    // {
+    //     return $_SESSION['session'] ?? '';
+    // }
 
-    private function setCookie(): void
-    {
-        if (isset($_POST[self::$keep])) {
+    // private function setCookie(): void
+    // {
+    //     if (isset($_POST[self::$keep])) {
 
-            $username = $this->getRequestUserName();
-            $cookiePassword = bin2hex(random_bytes(16));
-            setcookie(self::$cookieName, $username, time() + 60 * 60 * 24 * 30); // 30 days
-            setcookie(self::$cookiePassword, $cookiePassword, time() + 60 * 60 * 24 * 30); // 30 days
+    //         $username = $this->getRequestUserName();
+    //         $cookiePassword = bin2hex(random_bytes(16));
+    //         setcookie(self::$cookieName, $username, time() + 60 * 60 * 24 * 30); // 30 days
+    //         setcookie(self::$cookiePassword, $cookiePassword, time() + 60 * 60 * 24 * 30); // 30 days
 
-            foreach ($this->userStorage->getElementsByTagName('user') as $user) {
-                if ($user->getElementsByTagName('name')[0]->textContent == $username) {
-                    if (!$user->getElementsByTagName('cookiePassword')[0]) {
-                        $newPassword = $this->userStorage->createElement('cookiePassword');
-                        $newPassword->textContent = $cookiePassword;
-                        $user->appendChild($newPassword);
-                    } else {
-                        $user->getElementsByTagName('cookiePassword')[0]->textContent = $cookiePassword;
-                    }
-                }
-            }
+    //         foreach ($this->userStorage->getElementsByTagName('user') as $user) {
+    //             if ($user->getElementsByTagName('name')[0]->textContent == $username) {
+    //                 if (!$user->getElementsByTagName('cookiePassword')[0]) {
+    //                     $newPassword = $this->userStorage->createElement('cookiePassword');
+    //                     $newPassword->textContent = $cookiePassword;
+    //                     $user->appendChild($newPassword);
+    //                 } else {
+    //                     $user->getElementsByTagName('cookiePassword')[0]->textContent = $cookiePassword;
+    //                 }
+    //             }
+    //         }
 
-            $this->saveUserStorage();
-        }
-    }
+    //         $this->saveUserStorage();
+    //     }
+    // }
 
-    private function saveUserStorage(): void
-    {
-        $this->userStorage->save('users.xml');
-    }
+    // private function saveUserStorage(): void
+    // {
+    //     $this->userStorage->save('users.xml');
+    // }
 
-    private function validateCookie(): bool
-    {
-        $username = $_COOKIE[self::$cookieName];
-        $cookiePassword = $_COOKIE[self::$cookiePassword];
+    // private function validateCookie(): bool
+    // {
+    //     $username = $_COOKIE[self::$cookieName];
+    //     $cookiePassword = $_COOKIE[self::$cookiePassword];
 
-        $passwordMatch = false;
+    //     $passwordMatch = false;
 
-        foreach ($this->userStorage->getElementsByTagName('user') as $user) {
-            if ($user->getElementsByTagName('name')[0]->textContent == $username) {
-                if ($user->getElementsByTagName('cookiePassword')[0]->textContent == $cookiePassword) {
-                    $passwordMatch = true;
-                }
-            }
-        }
+    //     foreach ($this->userStorage->getElementsByTagName('user') as $user) {
+    //         if ($user->getElementsByTagName('name')[0]->textContent == $username) {
+    //             if ($user->getElementsByTagName('cookiePassword')[0]->textContent == $cookiePassword) {
+    //                 $passwordMatch = true;
+    //             }
+    //         }
+    //     }
 
-        if (!$passwordMatch) {
-            setcookie(self::$cookieName, $username, time() - 1000);
-            setcookie(self::$cookiePassword, $cookiePassword, time() - 1000);
-        }
+    //     if (!$passwordMatch) {
+    //         setcookie(self::$cookieName, $username, time() - 1000);
+    //         setcookie(self::$cookiePassword, $cookiePassword, time() - 1000);
+    //     }
 
-        return $passwordMatch;
-    }
+    //     return $passwordMatch;
+    // }
 
-    public function getCookieName(): string
-    {
-        return self::$cookieName;
-    }
+    // public function getCookieName(): string
+    // {
+    //     return self::$cookieName;
+    // }
 
-    public function getCookiePassword(): string
-    {
-        return self::$cookiePassword;
-    }
+    // public function getCookiePassword(): string
+    // {
+    //     return self::$cookiePassword;
+    // }
 
     public function setIsLoggedIn(bool $bool): void
     {
