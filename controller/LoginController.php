@@ -75,7 +75,7 @@ class LoginController
     {
         $session = $_SESSION['session'] ?? null;
         if (
-            $session == 'saved' && isset($_SESSION['HTTP_USER_AGENT']) &&
+            isset($_SESSION['HTTP_USER_AGENT']) &&
             $_SESSION['HTTP_USER_AGENT'] == md5($_SERVER['HTTP_USER_AGENT'])
         ) {
             $this->isLoggedIn = true;
@@ -126,7 +126,8 @@ class LoginController
 
     private function saveSession(): void
     {
-        $_SESSION['session'] = 'saved';
+        // $_SESSION['session'] = 'saved';
+        $_SESSION['HTTP_USER_AGENT'] = md5($_SERVER['HTTP_USER_AGENT']);
     }
 
     private function validateCookie(string $cookieName, string $cookiePassword): bool
