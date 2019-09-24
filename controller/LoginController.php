@@ -1,6 +1,7 @@
 <?php
 
 session_start();
+$_SESSION['key'] = bin2hex(random_bytes(16));
 
 class LoginController
 {
@@ -73,7 +74,8 @@ class LoginController
 
     private function checkSession(): void
     {
-        if (strlen($this->loadSession()) > 0) { // ändra så den jämför med username
+        $session = $_SESSION['session'] ?? null;
+        if ($session == $_SESSION['key']) {
             $this->isLoggedIn = true;
         }
     }
@@ -114,15 +116,15 @@ class LoginController
         if (isset($_COOKIE[LoginView::$cookieName])) {
             if ($this->validateCookie($_COOKIE[LoginView::$cookieName], $_COOKIE[LoginView::$cookiePassword])) {
                 $this->isLoggedIn = true;
-                $this->saveSession('Admin'); //replace med $this->username
+                $this->saveSession();
                 $this->message = 'Welcome back with cookie';
             }
         }
     }
 
-    private function saveSession(string $toBeSaved): void
+    private function saveSession(): void
     {
-        $_SESSION['session'] = $toBeSaved; // ändra till username
+        $_SESSION['session'] = $_SESSION['key'];
     }
 
     private function loadSession(): string
