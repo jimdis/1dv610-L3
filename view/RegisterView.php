@@ -50,8 +50,9 @@ class RegisterView
                     <input type="submit" name="' . self::$register . '" value="register" />
                     
 				</fieldset>
-			</form>
-		';
+            </form>
+            <a href="."><button>Back to login</button></a>
+        ';
     }
 
     public function getRequestUserName(): string
