@@ -88,7 +88,7 @@ class LoginController
             $username = $this->loginView->getRequestUserName();
             $password = $this->loginView->getRequestPassword();
             // ändra hårdkodat mot en check mot databas!
-            if ($username === 'Admin' && $password === 'Password') {
+            if ($this->validateLogin($username, $password)) {
                 $this->isLoggedIn = true;
                 $this->username = $username;
                 $this->saveSession($this->loginView->getRequestUserName());
@@ -192,5 +192,18 @@ class LoginController
     private function saveUserStorage(): void
     {
         $this->userStorage->save('users.xml');
+    }
+
+    private function validateLogin(string $username, string $password): bool
+    {
+        $match = false;
+        foreach ($this->userStorage->getElementsByTagName('user') as $user) {
+            if ($user->getElementsByTagName('name')[0]->textContent == $username) {
+                if ($user->getElementsByTagName('password')[0]->textContent == $password) {
+                    $match = true;
+                }
+            }
+        }
+        return $match;
     }
 }
