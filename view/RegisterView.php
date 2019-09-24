@@ -8,7 +8,6 @@ class RegisterView
     public static $passwordRepeat = 'RegisterView::PasswordRepeat';
     public static $showLoginView = 'RegistrationView::showLoginView';
     private static $messageId = 'RegisterView::Message';
-    private $isLoggedIn = false;
     private $message = '';
 
 

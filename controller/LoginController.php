@@ -7,7 +7,6 @@ class LoginController
     private $isLoggedIn = false;
     private $loginView;
     private $registerView;
-    private $username;
     private $userStorage;
     private $message = '';
     private $currentView = 'login';
@@ -22,7 +21,7 @@ class LoginController
 
     public function updateState(): void
     {
-        if ($this->getRequestMethod() === 'GET') {
+        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             $this->handleGet();
         } else {
             $this->handlePost();
@@ -37,17 +36,14 @@ class LoginController
         }
     }
 
-    public function getIsLoggedIn(): bool
-    {
-        return $this->isLoggedIn;
-    }
-
     private function handleGet(): void
     {
+        // set view to register if in query
         if (isset($_GET['register'])) {
             $this->currentView = 'register';
             return;
         }
+        // else check session and then cookie
         $this->checkSession();
         if (!$this->isLoggedIn) {
             $this->checkCookie();
@@ -56,21 +52,22 @@ class LoginController
 
     private function handlePost(): void
     {
+        // set view to register and handle registration post if in query
         if (isset($_GET['register'])) {
             $this->currentView = 'register';
             $this->attemptRegister();
-        } else {
-            $this->checkSession(); // login if session
-            // user wants to logout
-            if ($this->isLoggedIn && isset($_POST[LoginView::$logout])) {
-                $this->logout();
-                // user wants to login
-            } else if (!$this->isLoggedIn && isset($_POST[LoginView::$name])) {
-                $this->attemptLogin();
-                if (isset($_POST[LoginView::$keep])) {
-                    $this->setCookie();
-                }
-            }
+            return;
+        }
+        // login if session
+        $this->checkSession();
+        // user wants to logout
+        if ($this->isLoggedIn && isset($_POST[LoginView::$logout])) {
+            $this->logout();
+            return;
+        }
+        // user wants to login
+        if (!$this->isLoggedIn) {
+            $this->attemptLogin();
         }
     }
 
@@ -81,11 +78,6 @@ class LoginController
         session_destroy();
         $this->destroyCookies();
         $this->message = 'Bye bye!';
-    }
-
-    private function getRequestMethod(): string
-    {
-        return $_SERVER['REQUEST_METHOD'];
     }
 
     private function checkSession(): void
@@ -100,17 +92,18 @@ class LoginController
 
     private function attemptLogin(): void
     {
-        if ($this->validateLoginForm()) {
-            $username = $this->loginView->getRequestUserName();
-            $password = $this->loginView->getRequestPassword();
-            if ($this->authenticateUser($username, $password)) {
-                $this->isLoggedIn = true;
-                $this->username = $username;
-                $this->saveSession($this->loginView->getRequestUserName());
-                $this->message = 'Welcome';
-            } else {
-                $this->message = 'Wrong name or password';
-            }
+        if (!$this->validateLoginForm()) {
+            return;
+        }
+        $username = $this->loginView->getRequestUserName();
+        $password = $this->loginView->getRequestPassword();
+        if ($this->authenticateUser($username, $password)) {
+            $this->isLoggedIn = true;
+            $this->saveSession();
+            $this->setCookie();
+            $this->message = 'Welcome';
+        } else {
+            $this->message = 'Wrong name or password';
         }
     }
 
@@ -130,16 +123,17 @@ class LoginController
 
     private function attemptRegister(): void
     {
-        if ($this->validateRegisterForm()) {
-            if ($this->findUser($this->registerView->getRequestUserName())) {
-                $this->message = 'User exists, pick another username.';
-            } else {
-                $this->createNewUser($this->registerView->getRequestUserName(), $this->registerView->getRequestPassword());
-                $this->message = 'Registered new user.';
-                $this->loginView->setFormUsername($this->registerView->getRequestUserName());
-                $this->currentView = 'login';
-            }
+        if (!$this->validateRegisterForm()) {
+            return;
         }
+        if ($this->findUser($this->registerView->getRequestUserName())) {
+            $this->message = 'User exists, pick another username.';
+            return;
+        }
+        $this->createNewUser($this->registerView->getRequestUserName(), $this->registerView->getRequestPassword());
+        $this->message = 'Registered new user.';
+        $this->loginView->setFormUsername($this->registerView->getRequestUserName());
+        $this->currentView = 'login';
     }
 
     private function validateRegisterForm(): bool
@@ -178,18 +172,18 @@ class LoginController
 
     private function checkCookie(): void
     {
-        if (isset($_COOKIE[LoginView::$cookieName])) {
-            if ($this->validateCookie($_COOKIE[LoginView::$cookieName], $_COOKIE[LoginView::$cookiePassword])) {
-                $this->isLoggedIn = true;
-                $this->saveSession();
-                $this->message = 'Welcome back with cookie';
-            }
+        if (!isset($_COOKIE[LoginView::$cookieName])) {
+            return;
+        }
+        if ($this->validateCookie($_COOKIE[LoginView::$cookieName], $_COOKIE[LoginView::$cookiePassword])) {
+            $this->isLoggedIn = true;
+            $this->saveSession();
+            $this->message = 'Welcome back with cookie';
         }
     }
 
     private function saveSession(): void
     {
-        // $_SESSION['session'] = 'saved';
         $_SESSION['HTTP_USER_AGENT'] = md5($_SERVER['HTTP_USER_AGENT']);
     }
 
@@ -213,19 +207,21 @@ class LoginController
 
     private function setCookie(): void
     {
+        if (isset($_POST[LoginView::$keep])) {
 
-        $username = $this->loginView->getRequestUserName(); // sätt tidigare i kedjan!
-        $cookiePassword = bin2hex(random_bytes(16));
-        $expires = time() + 60 * 60 * 24 * 30; // 30 days
-        setcookie(LoginView::$cookieName, $username, $expires);
-        setcookie(LoginView::$cookiePassword, $cookiePassword, $expires);
+            $username = $this->loginView->getRequestUserName(); // sätt tidigare i kedjan!
+            $cookiePassword = bin2hex(random_bytes(16));
+            $expires = time() + 60 * 60 * 24 * 30; // 30 days
+            setcookie(LoginView::$cookieName, $username, $expires);
+            setcookie(LoginView::$cookiePassword, $cookiePassword, $expires);
 
-        $user = $this->findUser($username);
+            $user = $this->findUser($username);
 
-        $user->getElementsByTagName('cookiePassword')[0]->textContent = $cookiePassword;
-        $user->getElementsByTagName('cookieExpires')[0]->textContent = $expires;
+            $user->getElementsByTagName('cookiePassword')[0]->textContent = $cookiePassword;
+            $user->getElementsByTagName('cookieExpires')[0]->textContent = $expires;
 
-        $this->saveUserStorage();
+            $this->saveUserStorage();
+        }
     }
 
     private function destroyCookies(): void
@@ -288,5 +284,10 @@ class LoginController
     public function getCurrentView(): string
     {
         return $this->currentView;
+    }
+
+    public function getIsLoggedIn(): bool
+    {
+        return $this->isLoggedIn;
     }
 }
