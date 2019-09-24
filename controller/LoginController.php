@@ -61,7 +61,8 @@ class LoginController
     private function logout(): void
     {
         $this->isLoggedIn = false;
-        $this->saveSession(''); // ful-lösning.. Deleta cookie istället..
+        $_SESSION = array();
+        session_destroy();
         $this->destroyCookies();
         $this->message = 'Bye bye!';
     }
@@ -73,7 +74,6 @@ class LoginController
 
     private function checkSession(): void
     {
-        $session = $_SESSION['session'] ?? null;
         if (
             isset($_SESSION['HTTP_USER_AGENT']) &&
             $_SESSION['HTTP_USER_AGENT'] == md5($_SERVER['HTTP_USER_AGENT'])
