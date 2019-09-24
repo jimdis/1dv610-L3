@@ -8,7 +8,7 @@ class LayoutView
   {
     $form = $currentView == 'register' ? $rv->response() : $v->response();
     echo '<!DOCTYPE html>
-      <html>
+      <html lang="en">
         <head>
           <meta charset="utf-8">
           <title>Login Example</title>
