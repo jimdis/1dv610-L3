@@ -70,9 +70,7 @@ class LoginView
                     
 				</fieldset>
             </form>
-            <form method="get">
-                    <button type="submit" name="register"> Register new user</button>
-            <form>
+            <a href="?register"><button>Register a new user</button></a>
 		';
     }
 
