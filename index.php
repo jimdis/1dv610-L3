@@ -16,7 +16,7 @@ $v = new LoginView();
 $rv = new RegisterView();
 $dtv = new DateTimeView();
 $lv = new LayoutView();
-$lc = new LoginController($v);
+$lc = new LoginController($v, $rv);
 
 $lc->updateState();
 

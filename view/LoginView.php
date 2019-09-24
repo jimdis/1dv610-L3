@@ -51,7 +51,8 @@ class LoginView
     private function generateLoginFormHTML($message)
     {
         return '
-			<form method="post" >
+            <a href="?register">Register a new user</a><br /><br />    
+            <form method="post" >
 				<fieldset>
 					<legend>Login - enter Username and password</legend>
 					<p id="' . self::$messageId . '">' . $message . '</p>
@@ -70,7 +71,6 @@ class LoginView
                     
 				</fieldset>
             </form>
-            <a href="?register"><button>Register a new user</button></a>
 		';
     }
 

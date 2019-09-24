@@ -6,14 +6,16 @@ class LoginController
 {
     private $isLoggedIn = false;
     private $loginView;
+    private $registerView;
     private $username;
     private $userStorage;
     private $message = '';
     private $currentView = 'login';
 
-    public function __construct(LoginView $loginView)
+    public function __construct(LoginView $loginView, RegisterView $registerView)
     {
         $this->loginView = $loginView;
+        $this->registerView = $registerView;
         $this->userStorage = new DOMDocument();
         $this->userStorage->load('users.xml');
     }
@@ -25,8 +27,14 @@ class LoginController
         } else {
             $this->handlePost();
         }
-        $this->loginView->setIsLoggedIn($this->isLoggedIn);
-        $this->loginView->setMessage($this->message);
+
+        if ($this->currentView == 'login') {
+            $this->loginView->setIsLoggedIn($this->isLoggedIn);
+            $this->loginView->setMessage($this->message);
+        }
+        if ($this->currentView == 'register') {
+            $this->registerView->setMessage($this->message);
+        }
     }
 
     public function getIsLoggedIn(): bool
@@ -50,17 +58,18 @@ class LoginController
     {
         if (isset($_GET['register'])) {
             $this->currentView = 'register';
-            return;
-        }
-        $this->checkSession(); // login if session
-        // user wants to logout
-        if ($this->isLoggedIn && isset($_POST[LoginView::$logout])) {
-            $this->logout();
-            // user wants to login
-        } else if (!$this->isLoggedIn && isset($_POST[LoginView::$name])) {
-            $this->attemptLogin();
-            if (isset($_POST[LoginView::$keep])) {
-                $this->setCookie();
+            $this->attemptRegister();
+        } else {
+            $this->checkSession(); // login if session
+            // user wants to logout
+            if ($this->isLoggedIn && isset($_POST[LoginView::$logout])) {
+                $this->logout();
+                // user wants to login
+            } else if (!$this->isLoggedIn && isset($_POST[LoginView::$name])) {
+                $this->attemptLogin();
+                if (isset($_POST[LoginView::$keep])) {
+                    $this->setCookie();
+                }
             }
         }
     }
@@ -91,7 +100,7 @@ class LoginController
 
     private function attemptLogin(): void
     {
-        if ($this->validateForm()) {
+        if ($this->validateLoginForm()) {
             $username = $this->loginView->getRequestUserName();
             $password = $this->loginView->getRequestPassword();
             // ändra hårdkodat mot en check mot databas!
@@ -106,7 +115,7 @@ class LoginController
         }
     }
 
-    private function validateForm(): bool
+    private function validateLoginForm(): bool
     {
 
         if ($this->loginView->getRequestUserName() === '') {
@@ -118,6 +127,37 @@ class LoginController
             return false;
         }
         return true;
+    }
+
+    private function attemptRegister(): void
+    {
+        if ($this->validateRegisterForm()) {
+            echo 'Yey!';
+        }
+    }
+
+    private function validateRegisterForm(): bool
+    {
+        $isValidated = true;
+
+        $messageName = '';
+        $messagePassword = '';
+        $lineBreak = '';
+
+        if (strlen($this->registerView->getRequestUserName()) < 3) {
+            $messageName = 'Username has too few characters, at least 3 characters.';
+            $isValidated = false;
+        }
+        if (strlen($this->registerView->getRequestPassword()) < 6) {
+            $messagePassword = 'Password has too few characters, at least 6 characters.';
+            if (!$isValidated) {
+                $lineBreak = '<br />';
+            }
+            $isValidated = false;
+        }
+
+        $this->message = $messageName . $lineBreak . $messagePassword;
+        return $isValidated;
     }
 
     private function checkCookie(): void

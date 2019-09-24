@@ -33,7 +33,8 @@ class RegisterView
     private function generateRegisterFormHTML($message)
     {
         return '
-			<form method="post" action="?register">
+            <a href=".">Back to login</a><br /><br />
+            <form method="post" action="?register">
 				<fieldset>
 					<legend>Register a new user - Write username and password</legend>
 					<p id="' . self::$messageId . '">' . $message . '</p>
@@ -51,7 +52,6 @@ class RegisterView
                     
 				</fieldset>
             </form>
-            <a href="."><button>Back to login</button></a>
         ';
     }
 
@@ -63,5 +63,10 @@ class RegisterView
     public function getRequestPassword(): string
     {
         return $_POST[self::$password] ?? '';
+    }
+
+    public function setMessage(string $message): void
+    {
+        $this->message = $message;
     }
 }
