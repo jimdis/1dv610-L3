@@ -66,7 +66,7 @@ class LoginController
             return;
         }
         // user wants to login
-        if (!$this->isLoggedIn) {
+        if (!$this->isLoggedIn && isset($_POST[LoginView::$login])) {
             $this->attemptLogin();
         }
     }
