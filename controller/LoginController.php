@@ -136,6 +136,7 @@ class LoginController
                 $this->message = 'User exists, pick another username.';
             } else {
                 $this->message = 'Registered new user.';
+                $this->loginView->setFormUsername($this->registerView->getRequestUserName());
                 $this->currentView = 'login';
             }
         }
