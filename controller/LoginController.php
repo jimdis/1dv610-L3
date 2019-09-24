@@ -1,7 +1,6 @@
 <?php
 
 session_start();
-$_SESSION['key'] = bin2hex(random_bytes(16));
 
 class LoginController
 {
@@ -75,7 +74,10 @@ class LoginController
     private function checkSession(): void
     {
         $session = $_SESSION['session'] ?? null;
-        if ($session == $_SESSION['key']) {
+        if (
+            $session == 'saved' && isset($_SESSION['HTTP_USER_AGENT']) &&
+            $_SESSION['HTTP_USER_AGENT'] == md5($_SERVER['HTTP_USER_AGENT'])
+        ) {
             $this->isLoggedIn = true;
         }
     }
@@ -124,12 +126,7 @@ class LoginController
 
     private function saveSession(): void
     {
-        $_SESSION['session'] = $_SESSION['key'];
-    }
-
-    private function loadSession(): string
-    {
-        return $_SESSION['session'] ?? '';
+        $_SESSION['session'] = 'saved';
     }
 
     private function validateCookie(string $cookieName, string $cookiePassword): bool
