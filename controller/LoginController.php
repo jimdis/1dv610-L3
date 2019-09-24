@@ -103,7 +103,6 @@ class LoginController
         if ($this->validateLoginForm()) {
             $username = $this->loginView->getRequestUserName();
             $password = $this->loginView->getRequestPassword();
-            // ändra hårdkodat mot en check mot databas!
             if ($this->authenticateUser($username, $password)) {
                 $this->isLoggedIn = true;
                 $this->username = $username;
@@ -135,6 +134,7 @@ class LoginController
             if ($this->findUser($this->registerView->getRequestUserName())) {
                 $this->message = 'User exists, pick another username.';
             } else {
+                $this->createNewUser($this->registerView->getRequestUserName(), $this->registerView->getRequestPassword());
                 $this->message = 'Registered new user.';
                 $this->loginView->setFormUsername($this->registerView->getRequestUserName());
                 $this->currentView = 'login';
@@ -254,27 +254,29 @@ class LoginController
 
     private function findUser(string $username): ?DOMElement
     {
+        $foundUser = null;
         foreach ($this->userStorage->getElementsByTagName('user') as $user) {
             if ($user->getElementsByTagName('name')[0]->textContent == $username) {
-                return $user;
-            } else return null;
+                $foundUser = $user;
+            }
         }
+        return $foundUser;
     }
 
     private function createNewUser(string $username, string $password): void
     {
-        $user = $this->userStorage->createElement('user');
-        $name = $this->userStorage->createElement('name');
-        $password = $this->userStorage->createElement('password');
+        $newUser = $this->userStorage->createElement('user');
+        $newName = $this->userStorage->createElement('name');
+        $newPassword = $this->userStorage->createElement('password');
         $cookiePassword = $this->userStorage->createElement('cookiePassword');
         $cookieExpires = $this->userStorage->createElement('cookieExpires');
-        $name->textContent = $username;
-        $password->textContent = $password;
-        $user->appendChild($name);
-        $user->appendChild($password);
-        $user->appendChild($cookiePassword);
-        $user->appendChild($cookieExpires);
-        $this->userStorage->getElementsByTagName('users')[0]->appendChild($user);
+        $newName->textContent = $username;
+        $newPassword->textContent = $password;
+        $newUser->appendChild($newName);
+        $newUser->appendChild($newPassword);
+        $newUser->appendChild($cookiePassword);
+        $newUser->appendChild($cookieExpires);
+        $this->userStorage->getElementsByTagName('users')[0]->appendChild($newUser);
         $this->saveUserStorage();
     }
 
