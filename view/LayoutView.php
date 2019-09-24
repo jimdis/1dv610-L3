@@ -1,9 +1,12 @@
 <?php
 
 
-class LayoutView {
-  
-  public function render($isLoggedIn, LoginView $v, DateTimeView $dtv) {
+class LayoutView
+{
+
+  public function render(bool $isLoggedIn, string $currentView, LoginView $v, RegisterView $rv, DateTimeView $dtv)
+  {
+    $form = $currentView == 'register' ? $rv->response() : $v->response();
     echo '<!DOCTYPE html>
       <html>
         <head>
@@ -15,7 +18,7 @@ class LayoutView {
           ' . $this->renderIsLoggedIn($isLoggedIn) . '
           
           <div class="container">
-              ' . $v->response() . '
+              ' . $form . '
               
               ' . $dtv->show() . '
           </div>
@@ -23,12 +26,12 @@ class LayoutView {
       </html>
     ';
   }
-  
-  private function renderIsLoggedIn($isLoggedIn) {
+
+  private function renderIsLoggedIn($isLoggedIn)
+  {
     if ($isLoggedIn) {
       return '<h2>Logged in</h2>';
-    }
-    else {
+    } else {
       return '<h2>Not logged in</h2>';
     }
   }

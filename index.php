@@ -2,6 +2,7 @@
 
 //INCLUDE THE FILES NEEDED...
 require_once 'view/LoginView.php';
+require_once 'view/RegisterView.php';
 require_once 'view/DateTimeView.php';
 require_once 'view/LayoutView.php';
 require_once 'controller/LoginController.php';
@@ -12,10 +13,11 @@ ini_set('display_errors', 'On');
 
 //CREATE OBJECTS OF THE VIEWS
 $v = new LoginView();
+$rv = new RegisterView();
 $dtv = new DateTimeView();
 $lv = new LayoutView();
 $lc = new LoginController($v);
 
 $lc->updateState();
 
-$lv->render($lc->getIsLoggedIn(), $v, $dtv);
+$lv->render($lc->getIsLoggedIn(), $lc->getCurrentView(), $v, $rv, $dtv);

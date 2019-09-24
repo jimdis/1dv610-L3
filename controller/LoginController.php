@@ -9,6 +9,7 @@ class LoginController
     private $username;
     private $userStorage;
     private $message = '';
+    private $currentView = 'login';
 
     public function __construct(LoginView $loginView)
     {
@@ -19,8 +20,6 @@ class LoginController
 
     public function updateState(): void
     {
-        // $this->loginView->login();
-        // $this->isLoggedIn = $this->loginView->getIsLoggedIn();
         if ($this->getRequestMethod() === 'GET') {
             $this->handleGet();
         } else {
@@ -37,6 +36,10 @@ class LoginController
 
     private function handleGet(): void
     {
+        if (isset($_GET['register'])) {
+            $this->currentView = 'register';
+            return;
+        }
         $this->checkSession();
         if (!$this->isLoggedIn) {
             $this->checkCookie();
@@ -45,6 +48,10 @@ class LoginController
 
     private function handlePost(): void
     {
+        if (isset($_GET['register'])) {
+            $this->currentView = 'register';
+            return;
+        }
         $this->checkSession(); // login if session
         // user wants to logout
         if ($this->isLoggedIn && isset($_POST[LoginView::$logout])) {
@@ -218,5 +225,10 @@ class LoginController
     private function saveUserStorage(): void
     {
         $this->userStorage->save('users.xml');
+    }
+
+    public function getCurrentView(): string
+    {
+        return $this->currentView;
     }
 }
