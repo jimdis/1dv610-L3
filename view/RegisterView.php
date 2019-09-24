@@ -45,7 +45,7 @@ class RegisterView
 					<label for="' . self::$password . '">Password :</label>
                     <input type="password" id="' . self::$password . '" name="' . self::$password . '" />
                     
-                    <label for="' . self::$passwordRepeat . '">Password :</label>
+                    <label for="' . self::$passwordRepeat . '">Repeat password :</label>
 					<input type="password" id="' . self::$passwordRepeat . '" name="' . self::$passwordRepeat . '" />
 
                     <input type="submit" name="' . self::$register . '" value="register" />
@@ -63,6 +63,11 @@ class RegisterView
     public function getRequestPassword(): string
     {
         return $_POST[self::$password] ?? '';
+    }
+
+    public function getRequestPasswordRepeat(): string
+    {
+        return $_POST[self::$passwordRepeat] ?? '';
     }
 
     public function setMessage(string $message): void

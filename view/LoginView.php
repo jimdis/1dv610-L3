@@ -52,7 +52,7 @@ class LoginView
     {
         return '
             <a href="?register">Register a new user</a><br /><br />    
-            <form method="post" >
+            <form method="post" action=".">
 				<fieldset>
 					<legend>Login - enter Username and password</legend>
 					<p id="' . self::$messageId . '">' . $message . '</p>

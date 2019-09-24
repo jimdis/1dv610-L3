@@ -132,7 +132,12 @@ class LoginController
     private function attemptRegister(): void
     {
         if ($this->validateRegisterForm()) {
-            echo 'Yey!';
+            if ($this->findUser($this->registerView->getRequestUserName())) {
+                $this->message = 'User exists, pick another username.';
+            } else {
+                $this->message = 'Registered new user.';
+                $this->currentView = 'login';
+            }
         }
     }
 
@@ -148,6 +153,10 @@ class LoginController
             $messageName = 'Username has too few characters, at least 3 characters.';
             $isValidated = false;
         }
+        if (preg_match("/</", $this->registerView->getRequestUserName())) {
+            $messageName = 'Username contains invalid characters.';
+            $isValidated = false;
+        }
         if (strlen($this->registerView->getRequestPassword()) < 6) {
             $messagePassword = 'Password has too few characters, at least 6 characters.';
             if (!$isValidated) {
@@ -155,6 +164,12 @@ class LoginController
             }
             $isValidated = false;
         }
+        if ($this->registerView->getRequestPassword() !== $this->registerView->getRequestPasswordRepeat()) {
+            $messagePassword = 'Passwords do not match.';
+            $isValidated = false;
+        }
+
+
 
         $this->message = $messageName . $lineBreak . $messagePassword;
         return $isValidated;
