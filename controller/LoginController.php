@@ -7,10 +7,7 @@ class LoginController
     private $isLoggedIn = false;
     private $loginView;
     private $username;
-    private $password;
     private $userStorage;
-    private $cookieName;
-    private $cookiePassword;
     private $message = '';
 
     public function __construct(LoginView $loginView)
@@ -49,7 +46,6 @@ class LoginController
     private function handlePost(): void
     {
         $this->checkSession(); // login if session
-        // $this->checkCookie(); // login & load cookie vars if cookie
         // user wants to logout
         if ($this->isLoggedIn && isset($_POST[LoginView::$logout])) {
             $this->logout();
@@ -88,7 +84,7 @@ class LoginController
             $username = $this->loginView->getRequestUserName();
             $password = $this->loginView->getRequestPassword();
             // ändra hårdkodat mot en check mot databas!
-            if ($this->validateLogin($username, $password)) {
+            if ($this->authenticateUser($username, $password)) {
                 $this->isLoggedIn = true;
                 $this->username = $username;
                 $this->saveSession($this->loginView->getRequestUserName());
@@ -116,9 +112,7 @@ class LoginController
     private function checkCookie(): void
     {
         if (isset($_COOKIE[LoginView::$cookieName])) {
-            $this->cookieName = $_COOKIE[LoginView::$cookieName];
-            $this->cookiePassword = $_COOKIE[LoginView::$cookiePassword];
-            if ($this->validateCookie()) {
+            if ($this->validateCookie($_COOKIE[LoginView::$cookieName], $_COOKIE[LoginView::$cookiePassword])) {
                 $this->isLoggedIn = true;
                 $this->saveSession('Admin'); //replace med $this->username
                 $this->message = 'Welcome back with cookie';
@@ -136,24 +130,22 @@ class LoginController
         return $_SESSION['session'] ?? '';
     }
 
-    private function validateCookie(): bool
+    private function validateCookie(string $cookieName, string $cookiePassword): bool
     {
-        $passwordMatch = false;
+        $isValidated = false;
 
-        foreach ($this->userStorage->getElementsByTagName('user') as $user) {
-            if ($user->getElementsByTagName('name')[0]->textContent == $this->cookieName) {
-                if ($user->getElementsByTagName('cookiePassword')[0]->textContent == $this->cookiePassword) {
-                    $passwordMatch = true;
-                }
-            }
+        $user = $this->findUser($cookieName);
+        // check that user exists, cookiePassword matches & cookie has not expired.
+        if ($user && $user->getElementsByTagName('cookiePassword')[0]->textContent == $cookiePassword && (int) $user->getElementsByTagName('cookieExpires')[0]->textContent > time()) {
+            $isValidated = true;
         }
 
-        if (!$passwordMatch) {
+        if (!$isValidated) {
             $this->destroyCookies();
             $this->message = 'Wrong information in cookies';
         }
 
-        return $passwordMatch;
+        return $isValidated;
     }
 
     private function setCookie(): void
@@ -161,22 +153,16 @@ class LoginController
 
         $username = $this->loginView->getRequestUserName(); // sätt tidigare i kedjan!
         $cookiePassword = bin2hex(random_bytes(16));
-        setcookie(LoginView::$cookieName, $username, time() + 60 * 60 * 24 * 30); // 30 days
-        setcookie(LoginView::$cookiePassword, $cookiePassword, time() + 60 * 60 * 24 * 30); // 30 days
+        $expires = time() + 60 * 60 * 24 * 30; // 30 days
+        setcookie(LoginView::$cookieName, $username, $expires);
+        setcookie(LoginView::$cookiePassword, $cookiePassword, $expires);
 
-        foreach ($this->userStorage->getElementsByTagName('user') as $user) {
-            if ($user->getElementsByTagName('name')[0]->textContent == $username) {
-                if (!$user->getElementsByTagName('cookiePassword')[0]) {
-                    $newPassword = $this->userStorage->createElement('cookiePassword');
-                    $newPassword->textContent = $cookiePassword;
-                    $user->appendChild($newPassword);
-                } else {
-                    $user->getElementsByTagName('cookiePassword')[0]->textContent = $cookiePassword;
-                }
-            }
+        $user = $this->findUser($username);
 
-            $this->saveUserStorage();
-        }
+        $user->getElementsByTagName('cookiePassword')[0]->textContent = $cookiePassword;
+        $user->getElementsByTagName('cookieExpires')[0]->textContent = $expires;
+
+        $this->saveUserStorage();
     }
 
     private function destroyCookies(): void
@@ -189,21 +175,48 @@ class LoginController
         }
     }
 
+
+
+    private function authenticateUser(string $username, string $password): bool
+    {
+
+        $user = $this->findUser($username);
+
+        if ($user && $user->getElementsByTagName('password')[0]->textContent == $password) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private function findUser(string $username): ?DOMElement
+    {
+        foreach ($this->userStorage->getElementsByTagName('user') as $user) {
+            if ($user->getElementsByTagName('name')[0]->textContent == $username) {
+                return $user;
+            } else return null;
+        }
+    }
+
+    private function createNewUser(string $username, string $password): void
+    {
+        $user = $this->userStorage->createElement('user');
+        $name = $this->userStorage->createElement('name');
+        $password = $this->userStorage->createElement('password');
+        $cookiePassword = $this->userStorage->createElement('cookiePassword');
+        $cookieExpires = $this->userStorage->createElement('cookieExpires');
+        $name->textContent = $username;
+        $password->textContent = $password;
+        $user->appendChild($name);
+        $user->appendChild($password);
+        $user->appendChild($cookiePassword);
+        $user->appendChild($cookieExpires);
+        $this->userStorage->getElementsByTagName('users')[0]->appendChild($user);
+        $this->saveUserStorage();
+    }
+
     private function saveUserStorage(): void
     {
         $this->userStorage->save('users.xml');
-    }
-
-    private function validateLogin(string $username, string $password): bool
-    {
-        $match = false;
-        foreach ($this->userStorage->getElementsByTagName('user') as $user) {
-            if ($user->getElementsByTagName('name')[0]->textContent == $username) {
-                if ($user->getElementsByTagName('password')[0]->textContent == $password) {
-                    $match = true;
-                }
-            }
-        }
-        return $match;
     }
 }
