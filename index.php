@@ -20,4 +20,4 @@ $lc = new LoginController($v, $rv);
 
 $lc->updateState();
 
-$lv->render($lc->getIsLoggedIn(), $lc->getCurrentView(), $v, $rv, $dtv);
+$lv->render($lc->getIsLoggedIn(), $lc->getCurrentView(), $dtv);

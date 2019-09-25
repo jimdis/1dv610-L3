@@ -4,9 +4,8 @@
 class LayoutView
 {
 
-  public function render(bool $isLoggedIn, string $currentView, LoginView $v, RegisterView $rv, DateTimeView $dtv)
+  public function render(bool $isLoggedIn, $currentView, DateTimeView $dtv)
   {
-    $form = $currentView == 'register' ? $rv->response() : $v->response();
     echo '<!DOCTYPE html>
       <html lang="en">
         <head>
@@ -18,7 +17,7 @@ class LayoutView
           ' . $this->renderIsLoggedIn($isLoggedIn) . '
           
           <div class="container">
-              ' . $form . '
+              ' . $currentView->response() . '
               
               ' . $dtv->show() . '
           </div>

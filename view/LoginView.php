@@ -2,13 +2,13 @@
 
 class LoginView
 {
-    public static $login = 'LoginView::Login';
-    public static $logout = 'LoginView::Logout';
-    public static $name = 'LoginView::UserName';
-    public static $password = 'LoginView::Password';
-    public static $cookieName = 'LoginView::CookieName';
-    public static $cookiePassword = 'LoginView::CookiePassword';
-    public static $keep = 'LoginView::KeepMeLoggedIn';
+    private static $login = 'LoginView::Login';
+    private static $logout = 'LoginView::Logout';
+    private static $name = 'LoginView::UserName';
+    private static $password = 'LoginView::Password';
+    private static $cookieName = 'LoginView::CookieName';
+    private static $cookiePassword = 'LoginView::CookiePassword';
+    private static $keep = 'LoginView::KeepMeLoggedIn';
     private static $messageId = 'LoginView::Message';
     private $formUserName = '';
     private $isLoggedIn = false;
@@ -75,14 +75,14 @@ class LoginView
 		';
     }
 
-    public function getRequestUserName(): string
+    private function getFormUsername(): string
     {
-        return $_POST[self::$name] ?? '';
+        return $this->getRequestUserName() ? $this->getRequestUserName() : $this->formUserName;
     }
 
-    public function getRequestPassword(): string
+    public function setFormUsername(string $name): void
     {
-        return $_POST[self::$password] ?? '';
+        $this->formUserName = $name;
     }
 
     public function setIsLoggedIn(bool $bool): void
@@ -95,13 +95,38 @@ class LoginView
         $this->message = $message;
     }
 
-    public function setFormUsername(string $name): void
+    public function getRequestUserName(): string
     {
-        $this->formUserName = $name;
+        return $_POST[self::$name] ?? '';
     }
 
-    private function getFormUsername(): string
+    public function getRequestPassword(): string
     {
-        return $this->getRequestUserName() ? $this->getRequestUserName() : $this->formUserName;
+        return $_POST[self::$password] ?? '';
+    }
+
+    public function loginAttempted(): bool
+    {
+        return isset($_POST[self::$login]);
+    }
+
+    public function logoutAttempted(): bool
+    {
+        return isset($_POST[self::$logout]);
+    }
+
+    public function keepLoggedIn(): bool
+    {
+        return isset($_POST[self::$keep]);
+    }
+
+    public function getCookieName(): string
+    {
+        return self::$cookieName;
+    }
+
+    public function getCookiePassword(): string
+    {
+        return self::$cookiePassword;
     }
 }
