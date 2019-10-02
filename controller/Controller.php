@@ -1,40 +1,44 @@
 <?php
 
-session_start();
+namespace Controller;
 
-class LoginController
+class Controller
 {
     private $isLoggedIn = false;
     private $loginView;
-    private $registerView;
-    private $userStorage;
+    // private $registerView;
+    // private $userStorage;
     private $message = '';
     private $currentView;
+    private $user;
+    private $storage;
 
-    public function __construct(LoginView $loginView, RegisterView $registerView)
+    public function __construct(\model\UserStorage $storage, \view\LoginView $loginView)
     {
         $this->loginView = $loginView;
-        $this->registerView = $registerView;
+        $this->storage = $storage;
+        // $this->registerView = $registerView;
         $this->currentView = $loginView;
-        $this->userStorage = new DOMDocument();
-        $this->userStorage->load('users.xml');
+        // $this->userStorage = new DOMDocument();
+        // $this->userStorage->load('users.xml');
     }
 
     public function updateState(): void
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-            $this->handleGet();
-        } else {
-            $this->handlePost();
-        }
+        $this->handlePost();
+        // if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+        //     $this->handleGet();
+        // } else {
+        //     $this->handlePost();
+        // }
 
-        if ($this->currentView === $this->loginView) {
-            $this->loginView->setIsLoggedIn($this->isLoggedIn);
-            $this->loginView->setMessage($this->message);
-        }
-        if ($this->currentView == $this->registerView) {
-            $this->registerView->setMessage($this->message);
-        }
+        // if ($this->currentView === $this->loginView) {
+        //     $this->loginView->setIsLoggedIn($this->isLoggedIn);
+        //     $this->loginView->setMessage($this->message);
+        // }
+        // if ($this->currentView == $this->registerView) {
+        //     $this->registerView->setMessage($this->message);
+        // }
     }
 
     private function handleGet(): void
@@ -53,23 +57,31 @@ class LoginController
 
     private function handlePost(): void
     {
-        // set view to register and handle registration post if in query
-        if (isset($_GET['register'])) {
-            $this->currentView = $this->registerView;
-            $this->attemptRegister();
-            return;
+        if ($this->loginView->userWantsToLogin()) {
+            try {
+                $user = $this->loginView->getUser();
+                $this->loginView->setMessage($user->getUserName());
+            } catch (\Exception $e) {
+                $this->loginView->setMessage($e->getMessage());
+            }
         }
-        // login if session
-        $this->checkSession();
-        // user wants to logout
-        if ($this->isLoggedIn && $this->loginView->logoutAttempted()) {
-            $this->logout();
-            return;
-        }
-        // user wants to login
-        if (!$this->isLoggedIn && $this->loginView->loginAttempted()) {
-            $this->attemptLogin();
-        }
+        // // set view to register and handle registration post if in query
+        // if (isset($_GET['register'])) {
+        //     $this->currentView = $this->registerView;
+        //     $this->attemptRegister();
+        //     return;
+        // }
+        // // login if session
+        // $this->checkSession();
+        // // user wants to logout
+        // if ($this->isLoggedIn && $this->loginView->logoutAttempted()) {
+        //     $this->logout();
+        //     return;
+        // }
+        // // user wants to login
+        // if (!$this->isLoggedIn && $this->loginView->loginAttempted()) {
+        //     $this->attemptLogin();
+        // }
     }
 
     private function logout(): void

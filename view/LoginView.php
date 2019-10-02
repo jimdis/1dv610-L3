@@ -1,19 +1,45 @@
 <?php
 
+namespace View;
+
 class LoginView
 {
-    private static $login = 'LoginView::Login';
-    private static $logout = 'LoginView::Logout';
-    private static $name = 'LoginView::UserName';
-    private static $password = 'LoginView::Password';
-    private static $cookieName = 'LoginView::CookieName';
-    private static $cookiePassword = 'LoginView::CookiePassword';
-    private static $keep = 'LoginView::KeepMeLoggedIn';
-    private static $messageId = 'LoginView::Message';
+    private static $login = __CLASS__ .  '::Login';
+    private static $logout = __CLASS__ .  '::Logout';
+    private static $name = __CLASS__ .  '::UserName';
+    private static $password = __CLASS__ .  '::Password';
+    private static $cookieName = __CLASS__ .  '::CookieName';
+    private static $cookiePassword = __CLASS__ .  '::CookiePassword';
+    private static $keep = __CLASS__ .  '::KeepMeLoggedIn';
+    private static $messageId = __CLASS__ .  '::Message';
     private $formUserName = '';
     private $isLoggedIn = false;
     private $message = '';
+    private $storage;
 
+    public function __construct(\Model\UserStorage $storage)
+    {
+        $this->storage = $storage;
+        // $this->isLoggedIn = $this->user != null; // fixa
+    }
+
+    public function userWantsToLogin(): bool
+    {
+        return isset($_POST[self::$login]);
+    }
+    public function getUser(): \Model\User
+    {
+        return new \Model\User($this->getInputValueFiltered());
+    }
+
+    private function getInputValueFiltered(): string
+    {
+        if ($this->userWantsToLogin() && isset($_POST[self::$name])) {
+            $username = $_POST[self::$name];
+            return \Model\User::applyFilter($username);
+        }
+        return '';
+    }
 
     /**
      * Create HTTP response

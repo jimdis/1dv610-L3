@@ -1,5 +1,7 @@
 <?php
 
+namespace View;
+
 class RegisterView
 {
     public static $register = 'RegisterView::Register';
