@@ -13,12 +13,13 @@ class Application
 {
     private $storage;
     private $controller;
-    // private $user;
+    private $dtv;
     private $loginView;
     // private $registerView;
 
     public function __construct()
     {
+        $this->dtv = new \View\DateTimeView();
         $this->storage = new \Model\UserStorage();
         // $this->user = $this->storage->loadUser();
         $this->loginView = new \View\LoginView($this->storage);
@@ -40,8 +41,13 @@ class Application
 
     private function generateOutput()
     {
-        $body = $this->controller->getCurrentView()->response(); // fixa så h1 kommer med.
         $title = 'Login example'; // fixa till en dynamisk title
+        $header = 'Assignment 3';
+        $container = $this->controller->getCurrentView()->response();
+        $footer = $this->dtv->show();
+        $isLoggedIn = $this->controller->getIsLoggedIn();
+        $view = new \View\LayoutView($header, $container, $footer, $isLoggedIn);
+        $body = $view->getBody();
         $pageView = new \View\HTMLPageView($title, $body);
         $pageView->echoHTML();
     }

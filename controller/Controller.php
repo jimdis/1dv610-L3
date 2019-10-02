@@ -4,7 +4,7 @@ namespace Controller;
 
 class Controller
 {
-    private $isLoggedIn = false;
+    private $isLoggedIn;
     private $loginView;
     // private $registerView;
     // private $userStorage;
@@ -15,10 +15,12 @@ class Controller
 
     public function __construct(\model\UserStorage $storage, \view\LoginView $loginView)
     {
+        $this->isLoggedIn = false;
         $this->loginView = $loginView;
         $this->storage = $storage;
         // $this->registerView = $registerView;
         $this->currentView = $loginView;
+
         // $this->userStorage = new DOMDocument();
         // $this->userStorage->load('users.xml');
     }
@@ -61,6 +63,7 @@ class Controller
             try {
                 $user = $this->loginView->getUser();
                 $this->loginView->setMessage($user->getUserName());
+                $this->isLoggedIn = true;
             } catch (\Exception $e) {
                 $this->loginView->setMessage($e->getMessage());
             }
