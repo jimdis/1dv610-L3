@@ -162,8 +162,8 @@ class LoginView extends View
     {
         if (isset($_POST[self::$keep])) {
             $cookies = new \Model\Cookies($this->getRequestUserName());
-            setcookie(self::$cookieName, $cookies->getUsername(), $cookies->getExpires);
-            setcookie(self::$cookiePassword, $cookies->getPassword(), $cookies->getExpires);
+            setcookie(self::$cookieName, $cookies->getUsername(), $cookies->getExpires());
+            setcookie(self::$cookiePassword, $cookies->getPassword(), $cookies->getExpires());
         }
     }
 

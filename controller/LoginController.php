@@ -40,7 +40,7 @@ class LoginController extends Controller
         $credentials = $this->view->getUserCredentials();
         $this->isLoggedIn = \Model\UserStorage::validateUserCredentials($credentials);
         $this->view->setMessage($this->isLoggedIn ? \Model\Messages::$welcome : \Model\Messages::$incorrectCredentials);
-        $this->saveSession($credentials->username);
+        $this->saveSession($credentials->getUsername());
         $this->view->setCookies();
     }
 
