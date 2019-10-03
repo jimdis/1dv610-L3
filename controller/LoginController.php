@@ -12,7 +12,7 @@ class LoginController extends Controller
             try {
                 $this->isLoggedIn = \Model\UserStorage::validateUserCredentials($this->view->getUserCredentials());
                 $this->view->setIsLoggedIn($this->isLoggedIn);
-                $this->view->setMessage(\Model\Messages::$welcome);
+                $this->view->setMessage($this->isLoggedIn ? \Model\Messages::$welcome : \Model\Messages::$incorrectCredentials);
             } catch (\Exception $e) {
                 $this->view->setMessage($e->getMessage());
             }
