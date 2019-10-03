@@ -43,6 +43,11 @@ class UserStorage
         $_SESSION[self::$SESSION_USERNAME] = $credentials->getUserName();
     }
 
+    public static function destroySession()
+    {
+        session_destroy();
+    }
+
     // private function loadUserFromCookies() : User {
     //     if (!isset($_COOKIE[$this->loginView->getCookieName()])) {
     //         return null;

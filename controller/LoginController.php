@@ -32,6 +32,7 @@ class LoginController extends Controller
     private function logout(): void
     {
         $this->isLoggedIn = false;
+        \Model\UserStorage::destroySession();
         $this->view->setMessage(\Model\Messages::$logout);
     }
     public function getIsLoggedIn(): bool
