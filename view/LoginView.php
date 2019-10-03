@@ -27,6 +27,12 @@ class LoginView extends View
     {
         return isset($_POST[self::$login]);
     }
+
+    public function userWantsToLogout(): bool
+    {
+        return isset($_POST[self::$logout]);
+    }
+
     public function getUserCredentials(): \Model\UserCredentials
     {
         $credentials = new \Model\UserCredentials($_POST[self::$name] ?? '', $_POST[self::$password] ?? '');

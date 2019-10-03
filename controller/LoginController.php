@@ -13,6 +13,9 @@ class LoginController extends Controller
             if (!$this->isLoggedIn && $this->view->userWantsToLogin()) {
                 $this->attemptLogin();
             }
+            if ($this->isLoggedIn && $this->view->userWantsToLogout()) {
+                $this->logout();
+            }
             $this->view->setIsLoggedIn($this->isLoggedIn);
         } catch (\Exception $e) {
             $this->view->setMessage($e->getMessage());
@@ -24,6 +27,12 @@ class LoginController extends Controller
         $this->isLoggedIn = \Model\UserStorage::validateUserCredentials($this->view->getUserCredentials());
         $this->view->setMessage($this->isLoggedIn ? \Model\Messages::$welcome : \Model\Messages::$incorrectCredentials);
         $this->saveSession();
+    }
+
+    private function logout(): void
+    {
+        $this->isLoggedIn = false;
+        $this->view->setMessage(\Model\Messages::$logout);
     }
     public function getIsLoggedIn(): bool
     {
