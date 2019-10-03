@@ -10,6 +10,9 @@ class LoginController extends Controller
     {
         try {
             $this->isLoggedIn = \Model\UserStorage::validateSession();
+            if (!$this->isLoggedIn) {
+                $this->loginWithCookies();
+            }
             if (!$this->isLoggedIn && $this->view->userWantsToLogin()) {
                 $this->attemptLogin();
             }
@@ -22,17 +25,30 @@ class LoginController extends Controller
         }
     }
 
+    private function loginWithCookies(): void
+    {
+        $cookies = $this->view->getCookies();
+        if ($cookies) {
+            $this->isLoggedIn = \Model\UserStorage::validateCookies($cookies);
+            $this->saveSession($cookies->getUsername());
+            $this->view->setMessage($this->isLoggedIn ? \Model\Messages::$welcomeWithCookie : \Model\Messages::$incorrectCookies);
+        }
+    }
+
     private function attemptLogin(): void
     {
-        $this->isLoggedIn = \Model\UserStorage::validateUserCredentials($this->view->getUserCredentials());
+        $credentials = $this->view->getUserCredentials();
+        $this->isLoggedIn = \Model\UserStorage::validateUserCredentials($credentials);
         $this->view->setMessage($this->isLoggedIn ? \Model\Messages::$welcome : \Model\Messages::$incorrectCredentials);
-        $this->saveSession();
+        $this->saveSession($credentials->username);
+        $this->view->setCookies();
     }
 
     private function logout(): void
     {
         $this->isLoggedIn = false;
         \Model\UserStorage::destroySession();
+        $this->view->unsetCookies();
         $this->view->setMessage(\Model\Messages::$logout);
     }
     public function getIsLoggedIn(): bool
@@ -40,10 +56,10 @@ class LoginController extends Controller
         return $this->isLoggedIn;
     }
 
-    private function saveSession(): void
+    private function saveSession(string $username): void
     {
         if ($this->isLoggedIn) {
-            \Model\UserStorage::saveSession($this->view->getUserCredentials());
+            \Model\UserStorage::saveSession($username);
         }
     }
 }

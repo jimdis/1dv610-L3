@@ -10,7 +10,7 @@ class UserStorage
 
     public static function validateUserCredentials(\model\UserCredentials $credentials): bool
     {
-        if ($credentials->getUserName() == 'Admin' && $credentials->getPassword() == 'Password') {
+        if ($credentials->getUsername() == 'Admin' && $credentials->getPassword() == 'Password') {
             return true;
         } else return false;
     }
@@ -37,10 +37,10 @@ class UserStorage
         }
     }
 
-    public static function saveSession(\Model\UserCredentials $credentials)
+    public static function saveSession(string $username)
     {
         $_SESSION[self::$SESSION_AGENT] = md5($_SERVER[self::$SESSION_AGENT]);
-        $_SESSION[self::$SESSION_USERNAME] = $credentials->getUserName();
+        $_SESSION[self::$SESSION_USERNAME] = $username;
     }
 
     public static function destroySession()
@@ -48,14 +48,11 @@ class UserStorage
         session_destroy();
     }
 
-    // private function loadUserFromCookies() : User {
-    //     if (!isset($_COOKIE[$this->loginView->getCookieName()])) {
-    //         return null;
-    //     }
-    //     if ($this->validateCookie($_COOKIE[$this->loginView->getCookieName()], $_COOKIE[$this->loginView->getCookiePassword()])) {
-    //         $this->isLoggedIn = true;
-    //         $this->saveSession();
-    //         $this->message = 'Welcome back with cookie';
-    //     }
-    // }
+    public static function validateCookies(\Model\Cookies $cookies): bool
+    {
+        // TO BE IMPLEMENTED
+        if ($cookies->getUsername() == 'Admin') {
+            return true;
+        } else return false;
+    }
 }

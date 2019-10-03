@@ -138,28 +138,49 @@ class LoginView extends View
         return $_POST[self::$password] ?? '';
     }
 
-    public function loginAttempted(): bool
+    // public function loginAttempted(): bool
+    // {
+    //     return isset($_POST[self::$login]);
+    // }
+
+    // public function logoutAttempted(): bool
+    // {
+    //     return isset($_POST[self::$logout]);
+    // }
+
+    // public function getCookieName(): string
+    // {
+    //     return self::$cookieName;
+    // }
+
+    // public function getCookiePassword(): string
+    // {
+    //     return self::$cookiePassword;
+    // }
+
+    public function setCookies(): void
     {
-        return isset($_POST[self::$login]);
+        if (isset($_POST[self::$keep])) {
+            $cookies = new \Model\Cookies($this->getRequestUserName());
+            setcookie(self::$cookieName, $cookies->getUsername(), $cookies->getExpires);
+            setcookie(self::$cookiePassword, $cookies->getPassword(), $cookies->getExpires);
+        }
     }
 
-    public function logoutAttempted(): bool
+    public function getCookies(): ?\Model\Cookies
     {
-        return isset($_POST[self::$logout]);
+        if (isset($_COOKIE[self::$cookieName]) && isset($_COOKIE[self::$cookiePassword])) {
+            return new \Model\Cookies($_COOKIE[self::$cookieName], $_COOKIE[self::$cookiePassword]);
+        } else return null;
     }
 
-    public function keepLoggedIn(): bool
+    public function unsetCookies(): void
     {
-        return isset($_POST[self::$keep]);
-    }
-
-    public function getCookieName(): string
-    {
-        return self::$cookieName;
-    }
-
-    public function getCookiePassword(): string
-    {
-        return self::$cookiePassword;
+        if (isset($_COOKIE[self::$cookieName])) {
+            setcookie(self::$cookieName, '', time() - 3600);
+        }
+        if (isset($_COOKIE[self::$cookiePassword])) {
+            setcookie(self::$cookiePassword, '', time() - 3600);
+        }
     }
 }
