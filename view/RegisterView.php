@@ -2,7 +2,7 @@
 
 namespace View;
 
-class RegisterView
+class RegisterView extends View
 {
     public static $register = 'RegisterView::Register';
     public static $name = 'RegisterView::UserName';

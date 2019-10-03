@@ -4,18 +4,35 @@ namespace View;
 
 class LayoutView
 {
-    private $header;
-    private $container;
-    private $footer;
-    private $isLoggedIn;
+    private $header = '';
+    private $container = '';
+    private $footer = '';
+    private $isLoggedIn = false;
 
-    //gör smartare  ta in view på nåt sätt
-    public function __construct(string $header, string $container, string $footer, bool $isLoggedIn)
+    public function getQuery(): string
+    {
+        $query = array_keys($_GET);
+        return $query[0] ?? '';
+    }
+
+    public function setIsLoggedIn(bool $isLoggedIn): void
+    {
+        $this->isLoggedIn = $isLoggedIn;
+    }
+
+    public function setHeader(string $header): void
     {
         $this->header = $header;
+    }
+
+    public function setContainer(string $container): void
+    {
         $this->container = $container;
+    }
+
+    public function setFooter(string $footer): void
+    {
         $this->footer = $footer;
-        $this->isLoggedIn = $isLoggedIn;
     }
 
     public function getBody(): string

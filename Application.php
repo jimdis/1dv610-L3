@@ -1,11 +1,15 @@
 <?php
 
+require_once 'view/View.php';
 require_once 'view/LoginView.php';
 require_once 'view/RegisterView.php';
 require_once 'view/DateTimeView.php';
 require_once 'view/LayoutView.php';
 require_once 'view/HTMLPageView.php';
 require_once 'controller/Controller.php';
+require_once 'controller/LayoutController.php';
+require_once 'controller/LoginController.php';
+require_once 'controller/RegisterController.php';
 require_once 'model/UserStorage.php';
 require_once 'model/User.php';
 
@@ -15,16 +19,19 @@ class Application
     private $controller;
     private $dtv;
     private $loginView;
+    private $view;
+    private $currentView;
     // private $registerView;
 
     public function __construct()
     {
         $this->dtv = new \View\DateTimeView();
         $this->storage = new \Model\UserStorage();
+        $this->view = new \View\LayoutView();
         // $this->user = $this->storage->loadUser();
-        $this->loginView = new \View\LoginView($this->storage);
+
         // $this->registerView = new \View\RegisterView($this->user);
-        $this->controller = new \Controller\Controller($this->storage, $this->loginView);
+        $this->controller = new \Controller\LayoutController($this->view);
     }
 
     public function run()
@@ -35,19 +42,19 @@ class Application
 
     private function changeState()
     {
-        $this->controller->updateState();
+        $this->controller->updateView();
         // $this->storage->saveUser($this->user);
     }
 
     private function generateOutput()
     {
         $title = 'Login example'; // fixa till en dynamisk title
-        $header = 'Assignment 3';
-        $container = $this->controller->getCurrentView()->response();
-        $footer = $this->dtv->show();
-        $isLoggedIn = $this->controller->getIsLoggedIn();
-        $view = new \View\LayoutView($header, $container, $footer, $isLoggedIn);
-        $body = $view->getBody();
+        // $header = 'Assignment 3';
+        // $container = $this->controller->getCurrentView()->response();
+        // $footer = $this->dtv->show();
+        // $isLoggedIn = $this->controller->getIsLoggedIn();
+        // $view = new \View\LayoutView($header, $container, $footer, $isLoggedIn);
+        $body = $this->view->getBody();
         $pageView = new \View\HTMLPageView($title, $body);
         $pageView->echoHTML();
     }

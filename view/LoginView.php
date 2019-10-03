@@ -2,7 +2,7 @@
 
 namespace View;
 
-class LoginView
+class LoginView extends View
 {
     private static $login = __CLASS__ .  '::Login';
     private static $logout = __CLASS__ .  '::Logout';
@@ -17,11 +17,11 @@ class LoginView
     private $message = '';
     private $storage;
 
-    public function __construct(\Model\UserStorage $storage)
-    {
-        $this->storage = $storage;
-        // $this->isLoggedIn = $this->user != null; // fixa
-    }
+    // public function __construct(\Model\UserStorage $storage)
+    // {
+    //     $this->storage = $storage;
+    //     // $this->isLoggedIn = $this->user != null; // fixa
+    // }
 
     public function userWantsToLogin(): bool
     {
@@ -48,7 +48,7 @@ class LoginView
      *
      * @return  void BUT writes to standard output and cookies!
      */
-    public function response()
+    public function response(): string
     {
 
         $response = $this->isLoggedIn ? $this->generateLogoutButtonHTML($this->message) : $this->generateLoginFormHTML($this->message);
@@ -60,7 +60,7 @@ class LoginView
      * @param $message, String output message
      * @return  void, BUT writes to standard output!
      */
-    private function generateLogoutButtonHTML($message)
+    private function generateLogoutButtonHTML($message): string
     {
         return '
 			<form  method="post" >
@@ -75,7 +75,7 @@ class LoginView
      * @param $message, String output message
      * @return  void, BUT writes to standard output!
      */
-    private function generateLoginFormHTML($message)
+    private function generateLoginFormHTML($message): string
     {
         return '
             <a href="?register">Register a new user</a><br /><br />    
