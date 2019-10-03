@@ -5,8 +5,8 @@ namespace Model;
 session_start();
 class UserStorage
 {
-    private static $SESSION_USERNAME =  __CLASS__ .  "::UserName";
-    private static $SESSION_AGENT =  __CLASS__ .  "::UserAgent";
+    private static $SESSION_USERNAME = 'UserStorage::UserName';
+    private static $SESSION_AGENT = 'HTTP_USER_AGENT';
 
     public static function validateUserCredentials(\model\UserCredentials $credentials): bool
     {
@@ -23,17 +23,25 @@ class UserStorage
     //     if ($sessionUser) return $sessionUser;
     // }
 
-    // private function loadUserFromSession() : User {
-    //     if (
-    //         isset($_SESSION[self::$SESSION_AGENT]) &&
-    //         $_SESSION[self::$SESSION_AGENT] == md5($_SERVER[self::$SESSION_AGENT]) &&
-    //         isset($_SESSION[self::$SESSION_USERNAME])
-    //     ) {
-    //         return $_SESSION[self::$SESSION_USERNAME];
-    //     } else {
-    //         return null; // fixa: kolla cookies etc.
-    //     }
-    // }
+    // gör eventuellt om till att returnera en user, alt username..
+    public static function validateSession(): bool
+    {
+        if (
+            isset($_SESSION[self::$SESSION_AGENT]) &&
+            $_SESSION[self::$SESSION_AGENT] == md5($_SERVER[self::$SESSION_AGENT]) &&
+            isset($_SESSION[self::$SESSION_USERNAME])
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static function saveSession(\Model\UserCredentials $credentials)
+    {
+        $_SESSION[self::$SESSION_AGENT] = md5($_SERVER[self::$SESSION_AGENT]);
+        $_SESSION[self::$SESSION_USERNAME] = $credentials->getUserName();
+    }
 
     // private function loadUserFromCookies() : User {
     //     if (!isset($_COOKIE[$this->loginView->getCookieName()])) {
@@ -44,11 +52,5 @@ class UserStorage
     //         $this->saveSession();
     //         $this->message = 'Welcome back with cookie';
     //     }
-    // }
-
-    // public function saveUser(UserName $toBeSaved)
-    // {
-    //     $_SESSION[self::$SESSION_AGENT] = md5($_SERVER[self::$SESSION_AGENT]);
-    //     $_SESSION[self::$SESSION_USERNAME] = $toBeSaved;
     // }
 }
