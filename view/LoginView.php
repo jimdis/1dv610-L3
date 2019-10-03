@@ -4,14 +4,14 @@ namespace View;
 
 class LoginView extends View
 {
-    private static $login = __CLASS__ .  '::Login';
-    private static $logout = __CLASS__ .  '::Logout';
-    private static $name = __CLASS__ .  '::UserName';
-    private static $password = __CLASS__ .  '::Password';
-    private static $cookieName = __CLASS__ .  '::CookieName';
-    private static $cookiePassword = __CLASS__ .  '::CookiePassword';
-    private static $keep = __CLASS__ .  '::KeepMeLoggedIn';
-    private static $messageId = __CLASS__ .  '::Message';
+    private static $login = 'LoginView::Login';
+    private static $logout = 'LoginView::Logout';
+    private static $name = 'LoginView::UserName';
+    private static $password = 'LoginView::Password';
+    private static $cookieName = 'LoginView::CookieName';
+    private static $cookiePassword = 'LoginView::CookiePassword';
+    private static $keep = 'LoginView::KeepMeLoggedIn';
+    private static $messageId = 'LoginView::Message';
     private $formUserName = '';
     // private $isLoggedIn = false;
     private $message = '';
