@@ -46,7 +46,6 @@ class LayoutView extends View
 
     private function renderIsLoggedIn(): string
     {
-        var_dump($this->isLoggedIn);
         if ($this->isLoggedIn) {
             return '<h2>Logged in</h2>';
         } else {

@@ -30,6 +30,7 @@ class LayoutController extends Controller
     public function updateView(): void
     {
         $this->view->setHeader($this->header);
+        $this->view->setIsLoggedIn($this->loginController->getIsLoggedIn());
 
         if ($this->view->getQuery() == self::$registerQuery) {
             $this->view->setContainer($this->registerController->getViewResponse());
