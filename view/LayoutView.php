@@ -2,12 +2,11 @@
 
 namespace View;
 
-class LayoutView
+class LayoutView extends View
 {
     private $header = '';
     private $container = '';
     private $footer = '';
-    private $isLoggedIn = false;
 
     public function getQuery(): string
     {
@@ -15,10 +14,10 @@ class LayoutView
         return $query[0] ?? '';
     }
 
-    public function setIsLoggedIn(bool $isLoggedIn): void
-    {
-        $this->isLoggedIn = $isLoggedIn;
-    }
+    // public function setIsLoggedIn(bool $isLoggedIn): void
+    // {
+    //     $this->isLoggedIn = $isLoggedIn;
+    // }
 
     public function setHeader(string $header): void
     {
@@ -47,6 +46,7 @@ class LayoutView
 
     private function renderIsLoggedIn(): string
     {
+        var_dump($this->isLoggedIn);
         if ($this->isLoggedIn) {
             return '<h2>Logged in</h2>';
         } else {

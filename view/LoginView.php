@@ -13,7 +13,7 @@ class LoginView extends View
     private static $keep = __CLASS__ .  '::KeepMeLoggedIn';
     private static $messageId = __CLASS__ .  '::Message';
     private $formUserName = '';
-    private $isLoggedIn = false;
+    // private $isLoggedIn = false;
     private $message = '';
     private $storage;
 
@@ -27,14 +27,15 @@ class LoginView extends View
     {
         return isset($_POST[self::$login]);
     }
-    public function getUser(): \Model\User
+    public function getUserCredentials(): \Model\UserCredentials
     {
-        return new \Model\User($this->getInputValueFiltered());
+        $credentials = new \Model\UserCredentials($_POST[self::$name] ?? '', $_POST[self::$password] ?? '');
+        return $credentials;
     }
 
-    private function getInputValueFiltered(): string
+    private function getUserNameFiltered(): string
     {
-        if ($this->userWantsToLogin() && isset($_POST[self::$name])) {
+        if (isset($_POST[self::$name])) {
             $username = $_POST[self::$name];
             return \Model\User::applyFilter($username);
         }
@@ -111,10 +112,10 @@ class LoginView extends View
         $this->formUserName = $name;
     }
 
-    public function setIsLoggedIn(bool $bool): void
-    {
-        $this->isLoggedIn = $bool;
-    }
+    // public function setIsLoggedIn(bool $bool): void
+    // {
+    //     $this->isLoggedIn = $bool;
+    // }
 
     public function setMessage(string $message): void
     {

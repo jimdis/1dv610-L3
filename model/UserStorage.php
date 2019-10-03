@@ -8,6 +8,13 @@ class UserStorage
     private static $SESSION_USERNAME =  __CLASS__ .  "::UserName";
     private static $SESSION_AGENT =  __CLASS__ .  "::UserAgent";
 
+    public static function validateUserCredentials(\model\UserCredentials $credentials): bool
+    {
+        if ($credentials->getUserName() == 'Admin' && $credentials->getPassword() == 'Password') {
+            return true;
+        } else return false;
+    }
+
     // fixa så nedan returnerar en User-instans. Gör abstrakt, ta ner isset etc till en egen metod.
     // public function loadUser() : User
     // {

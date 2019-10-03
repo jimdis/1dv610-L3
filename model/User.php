@@ -7,15 +7,22 @@ namespace Model;
 class User
 {
     private static $minNameLength = 3;
-    private $name = null;
+    private static $minPasswordLength = 6;
+    private $name;
+    private $password;
 
-    public function __construct(string $newName)
+    public function __construct(string $newName, string $newPassword)
     {
 
         $this->name = $this->applyFilter($newName);
+        $this->password = $newPassword;
 
         if (strlen($this->name) < self::$minNameLength) {
             throw new \Exception('Username has too few characters, at least 3 characters.');
+        }
+
+        if (strlen($this->password) < self::$minPasswordLength) {
+            throw new \Exception('Password has too few characters, at least 6 characters.');
         }
 
         if ($newName != htmlspecialchars($newName)) {

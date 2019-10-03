@@ -11,6 +11,7 @@ require_once 'controller/LayoutController.php';
 require_once 'controller/LoginController.php';
 require_once 'controller/RegisterController.php';
 require_once 'model/UserStorage.php';
+require_once 'model/UserCredentials.php';
 require_once 'model/User.php';
 
 class Application
@@ -42,7 +43,7 @@ class Application
 
     private function changeState()
     {
-        $this->controller->updateView();
+        $this->controller->updateState();
         // $this->storage->saveUser($this->user);
     }
 
