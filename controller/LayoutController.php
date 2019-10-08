@@ -10,7 +10,6 @@ class LayoutController extends Controller
     private $loginController;
     private $registerController;
 
-
     public function __construct(\View\LayoutView $view)
     {
         parent::__construct($view);
@@ -23,16 +22,26 @@ class LayoutController extends Controller
     public function updateState(): void
     {
         $this->loginController->updateState();
-        // $this->registerController->updateState();
+        $this->registerController->updateState();
         $this->updateView();
     }
 
-    public function updateView(): void
+    private function updateView(): void
     {
         $this->view->setHeader($this->header);
         $this->view->setIsLoggedIn($this->loginController->getIsLoggedIn());
+        $this->selectContainer();
+    }
 
-        if ($this->view->getQuery() == self::$registerQuery) {
+    private function selectContainer(): void
+    {
+        $query = $this->view->getQuery();
+        $successfulRegister = $this->registerController->getRegisterSuccess();
+
+        if ($successfulRegister) {
+            $this->loginController->updateMessage('Registered new user.');
+        }
+        if ($query == self::$registerQuery && !$successfulRegister) {
             $this->view->setContainer($this->registerController->getViewResponse());
         } else {
             $this->view->setContainer($this->loginController->getViewResponse());

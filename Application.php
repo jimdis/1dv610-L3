@@ -15,6 +15,7 @@ require_once 'model/UserStorage.php';
 require_once 'model/User.php';
 require_once 'model/Messages.php';
 require_once 'model/LoginForm.php';
+require_once 'model/RegisterForm.php';
 require_once 'model/FormAction.php';
 
 class Application

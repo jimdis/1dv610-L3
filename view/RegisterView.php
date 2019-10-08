@@ -12,6 +12,44 @@ class RegisterView extends View
     private static $messageId = 'RegisterView::Message';
     private $message = '';
 
+    public function getForm(): \Model\RegisterForm
+    {
+        $action = $this->getFormAction();
+        $username = $this->getUsername();
+        $password = $this->getPassword();
+        $passwordRepeat = $this->getPasswordRepeat();
+        $form = new \Model\RegisterForm($action, $username, $password, $passwordRepeat);
+        return $form;
+    }
+
+    private function getFormAction(): string
+    {
+        $action = \Model\FormAction::$none;
+        if (isset($_POST[self::$register])) {
+            $action = \Model\FormAction::$register;
+        }
+        return $action;
+    }
+
+    private function getUserName(): string
+    {
+        return $_POST[self::$name] ?? '';
+    }
+
+    private function getPassword(): string
+    {
+        return $_POST[self::$password] ?? '';
+    }
+
+    private function getPasswordRepeat(): string
+    {
+        return $_POST[self::$passwordRepeat] ?? '';
+    }
+
+    public function setMessage(string $message): void
+    {
+        $this->message = $message;
+    }
 
     /**
      * Create HTTP response
@@ -41,7 +79,7 @@ class RegisterView extends View
 					<p id="' . self::$messageId . '">' . $message . '</p>
 
 					<label for="' . self::$name . '">Username :</label>
-					<input type="text" id="' . self::$name . '" name="' . self::$name . '" value="' . strip_tags($this->getRequestUserName()) . '" />
+					<input type="text" id="' . self::$name . '" name="' . self::$name . '" value="' . strip_tags($this->getUserName()) . '" />
 
 					<label for="' . self::$password . '">Password :</label>
                     <input type="password" id="' . self::$password . '" name="' . self::$password . '" />
@@ -54,25 +92,5 @@ class RegisterView extends View
 				</fieldset>
             </form>
         ';
-    }
-
-    public function getRequestUserName(): string
-    {
-        return $_POST[self::$name] ?? '';
-    }
-
-    public function getRequestPassword(): string
-    {
-        return $_POST[self::$password] ?? '';
-    }
-
-    public function getRequestPasswordRepeat(): string
-    {
-        return $_POST[self::$passwordRepeat] ?? '';
-    }
-
-    public function setMessage(string $message): void
-    {
-        $this->message = $message;
     }
 }

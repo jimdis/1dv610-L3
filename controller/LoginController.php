@@ -26,6 +26,16 @@ class LoginController extends Controller
         }
     }
 
+    public function getIsLoggedIn(): bool
+    {
+        return $this->isLoggedIn;
+    }
+
+    public function updateMessage(string $message): void
+    {
+        $this->view->setMessage($message);
+    }
+
     private function loginWithCookies(): void
     {
         $cookies = $this->view->getCookies();
@@ -52,10 +62,7 @@ class LoginController extends Controller
         $this->view->unsetCookies();
         $this->view->setMessage(\Model\Messages::$logout);
     }
-    public function getIsLoggedIn(): bool
-    {
-        return $this->isLoggedIn;
-    }
+
 
     private function saveSession(string $username): void
     {
