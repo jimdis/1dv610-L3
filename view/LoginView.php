@@ -13,7 +13,6 @@ class LoginView extends View
     private static $keep = 'LoginView::KeepMeLoggedIn';
     private static $messageId = 'LoginView::Message';
     private $formUserName = '';
-    // private $isLoggedIn = false;
     private $message = '';
     private $storage;
 
@@ -23,20 +22,34 @@ class LoginView extends View
     //     // $this->isLoggedIn = $this->user != null; // fixa
     // }
 
-    public function userWantsToLogin(): bool
+    public function getForm(): \Model\LoginForm
     {
-        return isset($_POST[self::$login]);
+        $action = $this->getFormAction();
+        $username = $this->getUsername();
+        $password = $this->getPassword();
+        $form = new \Model\LoginForm($action, $username, $password);
+        return $form;
     }
 
-    public function userWantsToLogout(): bool
+    private function getFormAction(): string
     {
-        return isset($_POST[self::$logout]);
+        $action = \Model\FormAction::$none;
+        if (isset($_POST[self::$login])) {
+            $action = \Model\FormAction::$login;
+        } else if (isset($_POST[self::$logout])) {
+            $action = \Model\FormAction::$logout;
+        }
+        return $action;
     }
 
-    public function getUserCredentials(): \Model\UserCredentials
+    private function getUsername(): string
     {
-        $credentials = new \Model\UserCredentials($_POST[self::$name] ?? '', $_POST[self::$password] ?? '');
-        return $credentials;
+        return $_POST[self::$name] ?? '';
+    }
+
+    private function getPassword(): string
+    {
+        return $_POST[self::$password] ?? '';
     }
 
     private function getUserNameFiltered(): string
@@ -46,6 +59,48 @@ class LoginView extends View
             return \Model\User::applyFilter($username);
         }
         return '';
+    }
+
+    private function getFormUsername(): string
+    {
+        return $this->getUsername() ?? $this->formUserName;
+    }
+
+    public function setFormUsername(string $name): void
+    {
+        $this->formUserName = $name;
+    }
+
+    public function setMessage(string $message): void
+    {
+        $this->message = $message;
+    }
+
+
+    public function setCookies(): void
+    {
+        if (isset($_POST[self::$keep])) {
+            $cookies = new \Model\Cookies($this->getUsername());
+            setcookie(self::$cookieName, $cookies->getUsername(), $cookies->getExpires());
+            setcookie(self::$cookiePassword, $cookies->getPassword(), $cookies->getExpires());
+        }
+    }
+
+    public function getCookies(): ?\Model\Cookies
+    {
+        if (isset($_COOKIE[self::$cookieName]) && isset($_COOKIE[self::$cookiePassword])) {
+            return new \Model\Cookies($_COOKIE[self::$cookieName], $_COOKIE[self::$cookiePassword]);
+        } else return null;
+    }
+
+    public function unsetCookies(): void
+    {
+        if (isset($_COOKIE[self::$cookieName])) {
+            setcookie(self::$cookieName, '', time() - 3600);
+        }
+        if (isset($_COOKIE[self::$cookiePassword])) {
+            setcookie(self::$cookiePassword, '', time() - 3600);
+        }
     }
 
     /**
@@ -106,81 +161,5 @@ class LoginView extends View
 				</fieldset>
             </form>
 		';
-    }
-
-    private function getFormUsername(): string
-    {
-        return $this->getRequestUserName() ? $this->getRequestUserName() : $this->formUserName;
-    }
-
-    public function setFormUsername(string $name): void
-    {
-        $this->formUserName = $name;
-    }
-
-    // public function setIsLoggedIn(bool $bool): void
-    // {
-    //     $this->isLoggedIn = $bool;
-    // }
-
-    public function setMessage(string $message): void
-    {
-        $this->message = $message;
-    }
-
-    public function getRequestUserName(): string
-    {
-        return $_POST[self::$name] ?? '';
-    }
-
-    public function getRequestPassword(): string
-    {
-        return $_POST[self::$password] ?? '';
-    }
-
-    // public function loginAttempted(): bool
-    // {
-    //     return isset($_POST[self::$login]);
-    // }
-
-    // public function logoutAttempted(): bool
-    // {
-    //     return isset($_POST[self::$logout]);
-    // }
-
-    // public function getCookieName(): string
-    // {
-    //     return self::$cookieName;
-    // }
-
-    // public function getCookiePassword(): string
-    // {
-    //     return self::$cookiePassword;
-    // }
-
-    public function setCookies(): void
-    {
-        if (isset($_POST[self::$keep])) {
-            $cookies = new \Model\Cookies($this->getRequestUserName());
-            setcookie(self::$cookieName, $cookies->getUsername(), $cookies->getExpires());
-            setcookie(self::$cookiePassword, $cookies->getPassword(), $cookies->getExpires());
-        }
-    }
-
-    public function getCookies(): ?\Model\Cookies
-    {
-        if (isset($_COOKIE[self::$cookieName]) && isset($_COOKIE[self::$cookiePassword])) {
-            return new \Model\Cookies($_COOKIE[self::$cookieName], $_COOKIE[self::$cookiePassword]);
-        } else return null;
-    }
-
-    public function unsetCookies(): void
-    {
-        if (isset($_COOKIE[self::$cookieName])) {
-            setcookie(self::$cookieName, '', time() - 3600);
-        }
-        if (isset($_COOKIE[self::$cookiePassword])) {
-            setcookie(self::$cookiePassword, '', time() - 3600);
-        }
     }
 }

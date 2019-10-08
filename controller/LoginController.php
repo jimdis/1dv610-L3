@@ -9,14 +9,15 @@ class LoginController extends Controller
     public function updateState(): void
     {
         try {
+            $form = $this->view->getForm();
             $this->isLoggedIn = \Model\UserStorage::validateSession();
             if (!$this->isLoggedIn) {
                 $this->loginWithCookies();
             }
-            if (!$this->isLoggedIn && $this->view->userWantsToLogin()) {
+            if (!$this->isLoggedIn && $form->getAction() == \Model\FormAction::$login) {
                 $this->attemptLogin();
             }
-            if ($this->isLoggedIn && $this->view->userWantsToLogout()) {
+            if ($this->isLoggedIn && $form->getAction() == \Model\FormAction::$logout) {
                 $this->logout();
             }
             $this->view->setIsLoggedIn($this->isLoggedIn);
@@ -37,10 +38,10 @@ class LoginController extends Controller
 
     private function attemptLogin(): void
     {
-        $credentials = $this->view->getUserCredentials();
-        $this->isLoggedIn = \Model\UserStorage::validateUserCredentials($credentials);
+        $form = $this->view->getForm();
+        $this->isLoggedIn = \Model\UserStorage::validateUserCredentials($form);
         $this->view->setMessage($this->isLoggedIn ? \Model\Messages::$welcome : \Model\Messages::$incorrectCredentials);
-        $this->saveSession($credentials->getUsername());
+        $this->saveSession($form->getUsername());
         $this->view->setCookies();
     }
 

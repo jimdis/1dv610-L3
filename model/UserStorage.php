@@ -8,9 +8,9 @@ class UserStorage
     private static $SESSION_USERNAME = 'UserStorage::UserName';
     private static $SESSION_AGENT = 'HTTP_USER_AGENT';
 
-    public static function validateUserCredentials(\model\UserCredentials $credentials): bool
+    public static function validateUserCredentials(\model\LoginForm $form): bool
     {
-        if ($credentials->getUsername() == 'Admin' && $credentials->getPassword() == 'Password') {
+        if ($form->getUsername() == 'Admin' && $form->getPassword() == 'Password') {
             return true;
         } else return false;
     }
