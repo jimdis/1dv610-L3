@@ -5,13 +5,27 @@ namespace Model;
 session_start();
 class UserStorage
 {
+    private static $salt = 'leflwefjweiofj823r';
     private static $SESSION_USERNAME = 'UserStorage::UserName';
     private static $SESSION_AGENT = 'HTTP_USER_AGENT';
 
-    public static function validateUserCredentials(\model\LoginForm $form): bool
+    public static function loadUser(string $username, string $password): ?\Model\User
     {
-        if ($form->getUsername() == 'Admin' && $form->getPassword() == 'Password') {
-            return true;
+        $username = $username;
+        $password = self::createHash($password);
+        //TODO: load user from DB instead of below.
+        if ($username == 'Admin' && $password == self::createHash('Password')) {
+            return new User($username, $password);
+        } else return null;
+    }
+
+    public static function loadUserFromCookies(\Model\Cookies $cookies): ?\Model\User
+    {
+        $username = $cookies->getUsername();
+        $password = $cookies->getPassword();
+        //TODO: load user from DB instead of below.
+        if ($username == 'Admin' && $password == self::createHash('Password')) {
+            return new User($username, $password);
         } else return false;
     }
 
@@ -37,10 +51,10 @@ class UserStorage
         }
     }
 
-    public static function saveSession(string $username)
+    public static function saveSession(\Model\User $user)
     {
         $_SESSION[self::$SESSION_AGENT] = md5($_SERVER[self::$SESSION_AGENT]);
-        $_SESSION[self::$SESSION_USERNAME] = $username;
+        $_SESSION[self::$SESSION_USERNAME] = $user->getUserName();
     }
 
     public static function destroySession()
@@ -48,11 +62,24 @@ class UserStorage
         session_destroy();
     }
 
-    public static function validateCookies(\Model\Cookies $cookies): bool
+    // public static function validateCookies(\Model\Cookies $cookies): bool
+    // {
+    //     //TODO: get user from storage as object based on cookie and compare passwords.
+
+    //     public function validateCookies(string $username, string $password): bool
+    // {
+    //     $hashedPassword = $this->createHash($password);
+    //     if ($username == $this->username && $hashedPassword == $this->password) {
+    //         return true;
+    //     } else return false;
+    // }
+
+    //     $user = new User('Admin', 'Password');
+    //     return $cookies->validateCookies()
+    // }
+
+    public static function createHash(string $string): string
     {
-        // TO BE IMPLEMENTED
-        if ($cookies->getUsername() == 'Admin') {
-            return true;
-        } else return false;
+        return md5(self::$salt . $string);
     }
 }

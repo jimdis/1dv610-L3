@@ -77,10 +77,10 @@ class LoginView extends View
     }
 
 
-    public function setCookies(): void
+    public function setCookies(\Model\User $user): void
     {
         if (isset($_POST[self::$keep])) {
-            $cookies = new \Model\Cookies($this->getUsername());
+            $cookies = new \Model\Cookies($user);
             setcookie(self::$cookieName, $cookies->getUsername(), $cookies->getExpires());
             setcookie(self::$cookiePassword, $cookies->getPassword(), $cookies->getExpires());
         }

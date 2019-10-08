@@ -10,10 +10,11 @@ class Cookies
     private $expires;
 
 
-    public function __construct(string $username, string $password = null)
+    public function __construct(\Model\User $user)
     {
-        $this->username = $username;
-        $this->password = $password ?? bin2hex(random_bytes(16));
+
+        $this->username = $user->getUserName();
+        $this->password = \Model\UserStorage::createHash($user->getPassword());
         $this->expires = time() + 60 * 60 * 24 * self::$EXPIRY_IN_DAYS;
     }
 
