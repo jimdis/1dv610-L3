@@ -6,43 +6,33 @@ namespace Model;
 
 class User
 {
-    private static $minNameLength = 3;
-    private static $minPasswordLength = 6;
-    private $name;
+    private $username;
     private $password;
 
-    public function __construct(string $newName, string $newPassword)
+    public function __construct(string $username, string $password)
     {
-
-        $this->name = $this->applyFilter($newName);
-        $this->password = $newPassword;
-
-        if (strlen($this->name) < self::$minNameLength) {
-            throw new \Exception('Username has too few characters, at least 3 characters.');
-        }
-
-        if (strlen($this->password) < self::$minPasswordLength) {
-            throw new \Exception('Password has too few characters, at least 6 characters.');
-        }
-
-        if ($newName != htmlspecialchars($newName)) {
-            throw new \Exception('Username contains invalid characters.');
-        }
-    }
-
-    public function setName(UserName $newName)
-    {
-        $this->name = $newName->getUserName();
+        $this->username = $this->applyFilter($username);
+        $this->password = $password;
     }
 
     public function getUserName()
     {
-        return $this->name;
+        return $this->username;
+    }
+
+    public function getPassword()
+    {
+        return $this->password;
+    }
+
+    public function setUsername(UserName $newName)
+    {
+        $this->username = $newName->getUserName();
     }
 
     public function hasUserName(): bool
     {
-        return $this->name != null;
+        return $this->username != null;
     }
 
     public static function applyFilter(string $rawInput): string
