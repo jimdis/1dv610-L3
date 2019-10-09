@@ -39,34 +39,20 @@ class LoginController extends Controller
     private function loginWithCookies(): void
     {
         $cookies = $this->view->getCookies();
-        if ($cookies) $this->validateCookies($cookies);
-    }
-
-    private function validateCookies(\Model\Cookies $cookies): void
-    {
-        //TODO: denna kod körs även i attemptLogin
-        $user = \Model\UserStorage::loadUserFromCookies($cookies);
-        if ($user) {
-            $this->isLoggedIn = true;
-            $this->saveSession($user);
-            $this->view->setMessage(\Model\Messages::$welcomeWithCookie);
-        } else {
-            $this->view->setMessage(\Model\Messages::$incorrectCookies);
+        if ($cookies) {
+            $this->isLoggedIn = \Model\UserStorage::validateCookies($cookies);
+            $this->saveSession($cookies->getUsername());
+            $this->view->setMessage($this->isLoggedIn ? \Model\Messages::$welcomeWithCookie : \Model\Messages::$incorrectCookies);
         }
     }
 
     private function attemptLogin(): void
     {
         $form = $this->view->getForm();
-        $user = \Model\UserStorage::loadUser($form->getUsername(), $form->getPassword());
-        if ($user) {
-            $this->isLoggedIn = true;
-            $this->view->setMessage(\Model\Messages::$welcome);
-            $this->saveSession($user);
-            $this->view->setCookies($user);
-        } else {
-            $this->view->setMessage(\Model\Messages::$incorrectCredentials);
-        }
+        $this->isLoggedIn = \Model\UserStorage::validateUserCredentials($form);
+        $this->view->setMessage($this->isLoggedIn ? \Model\Messages::$welcome : \Model\Messages::$incorrectCredentials);
+        $this->saveSession($form->getUsername());
+        $this->view->setCookies();
     }
 
     private function logout(): void
@@ -78,10 +64,10 @@ class LoginController extends Controller
     }
 
 
-    private function saveSession(\Model\User $user): void
+    private function saveSession(string $username): void
     {
         if ($this->isLoggedIn) {
-            \Model\UserStorage::saveSession($user);
+            \Model\UserStorage::saveSession($username);
         }
     }
 }
