@@ -39,14 +39,11 @@ class LoginController extends Controller
 
     private function attemptLoginWithCookies(): void
     {
-        if ($this->isLoggedIn) {
-            return;
-        }
-
-        $cookies = $this->view->getCookies();
-        if ($cookies) {
-            $this->isLoggedIn = \Model\UserStorage::validateCookies($cookies);
-            $this->saveSession($cookies->getUsername());
+        if (!$this->isLoggedIn) {
+            $cookieUsername = $this->view->getCookieUsername();
+            $cookiePassword = $this->view->getCookiePassword();
+            $this->isLoggedIn = \Model\UserStorage::validateCookies($cookieUsername, $cookiePassword);
+            $this->saveSession($cookieUsername);
             $this->view->setMessage($this->isLoggedIn ? \Model\Messages::$welcomeWithCookie : \Model\Messages::$incorrectCookies);
         }
     }

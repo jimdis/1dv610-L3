@@ -75,21 +75,24 @@ class LoginView extends View
         $this->message = $message;
     }
 
-
     public function setCookies(): void
     {
         if (isset($_POST[self::$keep])) {
-            $cookies = new \Model\Cookies($this->getUsername());
-            setcookie(self::$cookieName, $cookies->getUsername(), $cookies->getExpires());
-            setcookie(self::$cookiePassword, $cookies->getPassword(), $cookies->getExpires());
+            $cookieUsername = new \Model\Cookie($this->getFormUsername());
+            $cookiePassword = new \Model\Cookie();
+            setcookie(self::$cookieName, $cookieUsername->getContent(), $cookieUsername->getExpires());
+            setcookie(self::$cookiePassword, $cookiePassword->getContent(), $cookiePassword->getExpires());
         }
     }
 
-    public function getCookies(): ?\Model\Cookies
+    public function getCookieUsername(): string
     {
-        if (isset($_COOKIE[self::$cookieName]) && isset($_COOKIE[self::$cookiePassword])) {
-            return new \Model\Cookies($_COOKIE[self::$cookieName], $_COOKIE[self::$cookiePassword]);
-        } else return null;
+        return $_COOKIE[self::$cookieName] ?? '';
+    }
+
+    public function getCookiePassword(): string
+    {
+        return $_COOKIE[self::$cookiePassword] ?? '';
     }
 
     public function unsetCookies(): void

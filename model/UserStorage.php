@@ -48,10 +48,10 @@ class UserStorage
         session_destroy();
     }
 
-    public static function validateCookies(\Model\Cookies $cookies): bool
+    public static function validateCookies(string $username, string $password): bool
     {
         // TO BE IMPLEMENTED
-        if ($cookies->getUsername() == 'Admin') {
+        if ($username == 'Admin') {
             return true;
         } else return false;
     }

@@ -10,7 +10,7 @@ require_once 'controller/Controller.php';
 require_once 'controller/LayoutController.php';
 require_once 'controller/LoginController.php';
 require_once 'controller/RegisterController.php';
-require_once 'model/Cookies.php';
+require_once 'model/Cookie.php';
 require_once 'model/UserStorage.php';
 require_once 'model/User.php';
 require_once 'model/Messages.php';
