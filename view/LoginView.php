@@ -22,16 +22,15 @@ class LoginView extends View
     //     // $this->isLoggedIn = $this->user != null; // fixa
     // }
 
-    public function getForm(): \Model\LoginForm
-    {
-        $action = $this->getFormAction();
-        $username = $this->getUsername();
-        $password = $this->getPassword();
-        $form = new \Model\LoginForm($action, $username, $password);
-        return $form;
-    }
+    // public function getLoginFormCredentials(): \Model\LoginCredentials
+    // {
+    //     $username = $this->getFormUsername();
+    //     $password = $this->getFormPassword();
+    //     $form = new \Model\LoginCredentials($username, $password);
+    //     return $form;
+    // }
 
-    private function getFormAction(): string
+    public function getFormAction(): string
     {
         $action = \Model\FormAction::$none;
         if (isset($_POST[self::$login])) {
@@ -42,12 +41,12 @@ class LoginView extends View
         return $action;
     }
 
-    private function getUsername(): string
+    public function getFormUsername(): string
     {
         return $_POST[self::$name] ?? '';
     }
 
-    private function getPassword(): string
+    public function getFormPassword(): string
     {
         return $_POST[self::$password] ?? '';
     }
@@ -61,10 +60,10 @@ class LoginView extends View
         return '';
     }
 
-    private function getFormUsername(): string
-    {
-        return $this->getUsername() ?? $this->formUserName;
-    }
+    // private function getFormUsername(): string
+    // {
+    //     return $this->getUsername() ?? $this->formUserName;
+    // }
 
     public function setFormUsername(string $name): void
     {
