@@ -19,7 +19,6 @@ class UserStorage
             $userDAL = new \Model\UserDAL();
             $user = $userDAL->getUser($username);
             $isCorrectPassword = password_verify($password, $user->getPassword());
-            var_dump($user->getUsername());
             if ($isCorrectPassword) {
                 return $user;
             } else throw new \Exception();

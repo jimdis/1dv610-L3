@@ -15,7 +15,6 @@ class Cookie
         $this->expires = time() + 60 * 60 * 24 * self::$EXPIRY_IN_DAYS;
         if ($this->content == null) {
             $this->content = md5(time());
-            var_dump($this->content);
         }
     }
 
