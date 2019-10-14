@@ -19,12 +19,14 @@ class UserDAL extends Database
         }
     }
 
-    public function register(string $username, string $password)
+    public function register(string $username, string $password): \Model\User
     {
         $sql = "INSERT INTO user (username, password) VALUES (?, ?)";
         $query = $this->connect()->prepare($sql);
         $success = $query->execute([$username, $password]);
-        if (!$success) {
+        if ($success) {
+            return new \Model\User($username, $password);
+        } else {
             $this->handlePDOError($query->errorInfo());
         }
     }

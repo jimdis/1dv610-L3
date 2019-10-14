@@ -35,7 +35,8 @@ class UserStorage
         try {
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
             $userDAL = new \Model\UserDAL();
-            $userDAL->register($username, $hashedPassword);
+            $user = $userDAL->register($username, $hashedPassword);
+            return $user;
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
         }

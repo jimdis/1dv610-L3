@@ -12,7 +12,7 @@ class LoginView extends View
     private static $cookiePassword = 'LoginView::CookiePassword';
     private static $keep = 'LoginView::KeepMeLoggedIn';
     private static $messageId = 'LoginView::Message';
-    private $loginUserName = '';
+    private $loginUsername = '';
     private $message = '';
 
     // public function __construct(\Model\UserStorage $storage)
