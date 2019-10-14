@@ -33,6 +33,7 @@ class LayoutController extends Controller
         $this->selectContainer();
     }
 
+    //TODO: Improve logic.. Does user have to be fetched this way? storage as instance?
     private function selectContainer(): void
     {
         $query = $this->view->getQuery();
