@@ -32,6 +32,11 @@ class LoginController extends Controller
         $this->view->setMessage($message);
     }
 
+    public function updateLoginUsername(string $username)
+    {
+        $this->view->setLoginUsername($username);
+    }
+
     private function attemptLoginWithSession(): void
     {
         $this->isLoggedIn = \Model\UserStorage::validateSession();
@@ -53,6 +58,7 @@ class LoginController extends Controller
         if (!$this->isLoggedIn && $this->view->loginFormWasSubmitted()) {
             $username = $this->getUsername();
             $password = $this->getPassword();
+            $this->view->setFormUsername($username);
             // TODO: do something with user object..
             $user = \Model\UserStorage::loginUser($username, $password);
             $this->isLoggedIn = true;

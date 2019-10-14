@@ -12,7 +12,7 @@ class LoginView extends View
     private static $cookiePassword = 'LoginView::CookiePassword';
     private static $keep = 'LoginView::KeepMeLoggedIn';
     private static $messageId = 'LoginView::Message';
-    private $formUserName = '';
+    private $loginUserName = '';
     private $message = '';
 
     // public function __construct(\Model\UserStorage $storage)
@@ -74,9 +74,9 @@ class LoginView extends View
     //     return $this->getUsername() ?? $this->formUserName;
     // }
 
-    public function setFormUsername(string $name): void
+    public function setLoginUsername(string $username): void
     {
-        $this->formUserName = $name;
+        $this->loginUsername = $username;
     }
 
     public function setMessage(string $message): void
@@ -161,7 +161,7 @@ class LoginView extends View
 					<p id="' . self::$messageId . '">' . $message . '</p>
 
 					<label for="' . self::$name . '">Username :</label>
-					<input type="text" id="' . self::$name . '" name="' . self::$name . '" value="' . $this->getFormUsername() . '" />
+					<input type="text" id="' . self::$name . '" name="' . self::$name . '" value="' . $this->loginUsername . '" />
 
 					<label for="' . self::$password . '">Password :</label>
 					<input type="password" id="' . self::$password . '" name="' . self::$password . '" />

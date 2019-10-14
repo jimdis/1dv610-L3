@@ -39,7 +39,9 @@ class LayoutController extends Controller
         $successfulRegister = $this->registerController->getRegisterSuccess();
 
         if ($successfulRegister) {
+            $user = $this->registerController->getUser();
             $this->loginController->updateMessage('Registered new user.');
+            $this->loginController->updateLoginUsername($user->getUsername());
         }
         if ($query == self::$registerQuery && !$successfulRegister) {
             $this->view->setContainer($this->registerController->getViewResponse());
