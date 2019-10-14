@@ -4,20 +4,57 @@ namespace Model;
 
 session_start();
 class UserStorage
+//TODO: handle arg validation in separate methods?
 {
+    private static $minNameLength = 3;
+    private static $minPasswordLength = 6;
     private static $SESSION_USERNAME = 'UserStorage::UserName';
     private static $SESSION_AGENT = 'HTTP_USER_AGENT';
 
-    public static function validateUserCredentials(\model\LoginCredentials $form): bool
+    public static function loginUser(string $username, string $password): \Model\User
     {
-        //TODO: returnera en user?
-        $userDAL = new \Model\UserDAL();
-        $result = $userDAL->login($form->getUsername(), $form->getPassword());
-        if ($result != null) {
-            var_dump($result);
-            // echo $result["username"]; // username
-            return true;
-        } else return false;
+        if (strlen($username) == 0) throw new \Exception('Username is missing');
+        if (strlen($password) == 0) throw new \Exception('Password is missing');
+        try {
+            $userDAL = new \Model\UserDAL();
+            $user = $userDAL->login($username, $password);
+            return $user;
+        } catch (\Exception $e) {
+            throw new \Exception('Wrong name or password');
+        }
+    }
+
+    public static function registerNewUser(string $username, string $password)
+    {
+        self::validateRegistrationCredentials($username, $password);
+        try {
+            // $userDAL = new \Model\UserDAL();
+            // $user = $userDAL->login($username, $password);
+            // return $user;
+        } catch (\Exception $e) {
+            throw new \Exception('Wrong name or password');
+        }
+    }
+
+    private static function validateRegistrationCredentials(string $username, string $password): void
+    {
+        $errorMessage = '';
+        if (strlen($username) < self::$minNameLength) {
+            $errorMessage .= 'Username has too few characters, at least 3 characters.';
+        }
+
+        if (strlen($password) < self::$minPasswordLength) {
+            $message = 'Password has too few characters, at least 6 characters.';
+            $errorMessage .= strlen($errorMessage) > 0 ?  '<br />' . $message : $message;
+        }
+
+        if ($username != htmlspecialchars($username)) {
+            $errorMessage .= 'Username contains invalid characters.';
+        }
+
+        if (strlen($errorMessage) > 0) {
+            throw new \Exception($errorMessage);
+        }
     }
 
     // fixa så nedan returnerar en User-instans. Gör abstrakt, ta ner isset etc till en egen metod.

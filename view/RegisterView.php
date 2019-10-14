@@ -12,39 +12,45 @@ class RegisterView extends View
     private static $messageId = 'RegisterView::Message';
     private $message = '';
 
-    public function getForm(): \Model\RegisterForm
-    {
-        $action = $this->getFormAction();
-        $username = $this->getUsername();
-        $password = $this->getPassword();
-        $passwordRepeat = $this->getPasswordRepeat();
-        $form = new \Model\RegisterForm($action, $username, $password, $passwordRepeat);
-        return $form;
-    }
+    // public function getForm(): \Model\RegisterForm
+    // {
+    //     $action = $this->getFormAction();
+    //     $username = $this->getUsername();
+    //     $password = $this->getPassword();
+    //     $passwordRepeat = $this->getPasswordRepeat();
+    //     $form = new \Model\RegisterForm($action, $username, $password, $passwordRepeat);
+    //     return $form;
+    // }
 
-    private function getFormAction(): string
+    public function userAttemptedRegistration(): bool
     {
-        $action = \Model\FormAction::$none;
         if (isset($_POST[self::$register])) {
-            $action = \Model\FormAction::$register;
+            return true;
+        } else {
+            return false;
         }
-        return $action;
     }
 
-    private function getUserName(): string
+    public function getFormUserName(): string
     {
         return $_POST[self::$name] ?? '';
     }
 
-    private function getPassword(): string
+    public function getFormPassword(): string
     {
-        return $_POST[self::$password] ?? '';
+        $password = $_POST[self::$password] ?? '';
+        $passwordRepeat = $_POST[self::$passwordRepeat] ?? '';
+        if ($password == $passwordRepeat) {
+            return $password;
+        } else {
+            throw new \Exception('Passwords do not match.');
+        }
     }
 
-    private function getPasswordRepeat(): string
-    {
-        return $_POST[self::$passwordRepeat] ?? '';
-    }
+    // private function getPasswordRepeat(): string
+    // {
+    //     return $_POST[self::$passwordRepeat] ?? '';
+    // }
 
     public function setMessage(string $message): void
     {
@@ -79,7 +85,7 @@ class RegisterView extends View
 					<p id="' . self::$messageId . '">' . $message . '</p>
 
 					<label for="' . self::$name . '">Username :</label>
-					<input type="text" id="' . self::$name . '" name="' . self::$name . '" value="' . strip_tags($this->getUserName()) . '" />
+					<input type="text" id="' . self::$name . '" name="' . self::$name . '" value="' . strip_tags($this->getFormUserName()) . '" />
 
 					<label for="' . self::$password . '">Password :</label>
                     <input type="password" id="' . self::$password . '" name="' . self::$password . '" />

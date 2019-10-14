@@ -52,16 +52,13 @@ class LoginController extends Controller
     {
         if (!$this->isLoggedIn && $this->formAction == \Model\FormAction::$login) {
 
-            $username = $this->view->getFormUsername();
-            $password = $this->view->getFormPassword();
-            $form = new \Model\LoginCredentials($username, $password);
-            $this->isLoggedIn = \Model\UserStorage::validateUserCredentials($form);
-            $this->view->setMessage(
-                $this->isLoggedIn
-                    ? \Model\Messages::$welcome
-                    : \Model\Messages::$incorrectCredentials
-            );
-            $this->saveSession($form->getUsername());
+            $username = $this->getUsername();
+            $password = $this->getPassword();
+            // TODO: do something with user object..
+            $user = \Model\UserStorage::LoginUser($username, $password);
+            $this->isLoggedIn = true;
+            $this->view->setMessage(\Model\Messages::$welcome);
+            $this->saveSession($username);
             $this->setCookies();
         }
     }

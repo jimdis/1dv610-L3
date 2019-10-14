@@ -21,4 +21,14 @@ abstract class Controller
 
     public function updateState(): void
     { }
+
+    protected function getUsername(): string
+    {
+        return $this->view->getFormUsername();
+    }
+
+    protected function getPassword(): string
+    {
+        return $this->view->getFormPassword();
+    }
 }

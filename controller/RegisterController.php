@@ -10,10 +10,7 @@ class RegisterController extends Controller
     public function updateState(): void
     {
         try {
-            $this->form = $this->view->getForm();
-            if ($this->form->getAction() == \Model\FormAction::$register) {
-                $this->attemptRegisterNewUser();
-            }
+            $this->attemptRegisterNewUser();
         } catch (\Exception $e) {
             $this->view->setMessage($e->getMessage());
         }
@@ -26,8 +23,12 @@ class RegisterController extends Controller
 
     private function attemptRegisterNewUser(): void
     {
-        $this->checkForExistingUsername();
-        $this->registerSuccess = true;
+        if ($this->view->userAttemptedRegistration()) {
+            $username = $this->getUsername();
+            $password = $this->getPassword();
+            \Model\UserStorage::registerNewUser($username, $password);
+            $this->registerSuccess = true;
+        }
     }
 
     private function checkForExistingUsername(): void

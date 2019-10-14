@@ -16,8 +16,6 @@ require_once 'model/Database.php';
 require_once 'model/UserDAL.php';
 require_once 'model/User.php';
 require_once 'model/Messages.php';
-require_once 'model/LoginCredentials.php';
-require_once 'model/RegisterForm.php';
 require_once 'model/FormAction.php';
 
 
