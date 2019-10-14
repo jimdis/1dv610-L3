@@ -58,7 +58,7 @@ class LoginController extends Controller
         if (!$this->isLoggedIn && $this->view->loginFormWasSubmitted()) {
             $username = $this->getUsername();
             $password = $this->getPassword();
-            $this->view->setFormUsername($username);
+            $this->view->setLoginUsername($username);
             // TODO: do something with user object..
             $user = \Model\UserStorage::loginUser($username, $password);
             $this->isLoggedIn = true;
