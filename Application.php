@@ -13,6 +13,7 @@ require_once 'controller/RegisterController.php';
 require_once 'model/Cookie.php';
 require_once 'model/UserStorage.php';
 require_once 'model/Database.php';
+require_once 'model/UserDAL.php';
 require_once 'model/User.php';
 require_once 'model/Messages.php';
 require_once 'model/LoginCredentials.php';

@@ -2,31 +2,19 @@
 
 namespace Model;
 
-class User extends Database
+class User
 {
-    //Todo: vad returneras om result är tomt?
-    public function getUser()
+    private $username;
+    private $password;
+
+    public function __construct(string $username, string $password)
     {
-        $sql = "SELECT * from user";
-        $result = $this->connect()->query($sql);
-        if ($result) {
-            //TODO: return user?
-        } else {
-            //TODO: throw error?
-        }
-        // var_dump($result);
+        $this->username = $username;
+        $this->password = $password;
     }
 
-    //TODO: välj returtyp, 
-    public function login(string $username, string $password)
+    public function getUsername(): string
     {
-        $query = $this->connect()->prepare("SELECT id FROM user WHERE username = ? AND password = ?");
-        $query->execute(array($username, $password));
-        if ($query) {
-            return $query->fetchColumn();
-        } else {
-            return null;
-            //TODO: kasta undantag?
-        }
+        return $this->username;
     }
 }

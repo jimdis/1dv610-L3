@@ -11,9 +11,11 @@ class UserStorage
     public static function validateUserCredentials(\model\LoginCredentials $form): bool
     {
         //TODO: returnera en user?
-        $user = new \Model\User();
-        $id = $user->login($form->getUsername(), $form->getPassword());
-        if ($id != null) {
+        $userDAL = new \Model\UserDAL();
+        $result = $userDAL->login($form->getUsername(), $form->getPassword());
+        if ($result != null) {
+            var_dump($result);
+            // echo $result["username"]; // username
             return true;
         } else return false;
     }
