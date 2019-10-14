@@ -2,6 +2,8 @@
 
 namespace Model;
 
+require_once('exceptions/IncorrectCredentialsException.php');
+
 session_start();
 class UserStorage
 //TODO: handle arg validation in separate methods?
@@ -21,8 +23,8 @@ class UserStorage
             $isCorrectPassword = password_verify($password, $user->getPassword());
             if ($isCorrectPassword) {
                 return $user;
-            } else throw new \Exception();
-        } catch (\Exception $e) {
+            } else throw new \Model\IncorrectCredentialsException();
+        } catch (\Model\IncorrectCredentialsException $e) {
             throw new \Exception('Wrong name or password');
         }
     }

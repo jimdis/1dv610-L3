@@ -15,7 +15,7 @@ class UserDAL extends Database
             $user = new \Model\User($foundUser['username'], $foundUser['password']);
             return $user;
         } else {
-            throw new \Exception();
+            throw new \Model\IncorrectCredentialsException();
         }
     }
 
