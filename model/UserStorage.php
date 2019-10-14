@@ -13,12 +13,16 @@ class UserStorage
 
     public static function loginUser(string $username, string $password): \Model\User
     {
-        if (strlen($username) == 0) throw new \Exception('Username is missing');
-        if (strlen($password) == 0) throw new \Exception('Password is missing');
         try {
+            if (strlen($username) == 0) throw new \Exception('Username is missing');
+            if (strlen($password) == 0) throw new \Exception('Password is missing');
             $userDAL = new \Model\UserDAL();
-            $user = $userDAL->login($username, $password);
-            return $user;
+            $user = $userDAL->getUser($username);
+            $isCorrectPassword = password_verify($password, $user->getPassword());
+            var_dump($user->getUsername());
+            if ($isCorrectPassword) {
+                return $user;
+            } else throw new \Exception();
         } catch (\Exception $e) {
             throw new \Exception('Wrong name or password');
         }
@@ -28,11 +32,11 @@ class UserStorage
     {
         self::validateRegistrationCredentials($username, $password);
         try {
-            // $userDAL = new \Model\UserDAL();
-            // $user = $userDAL->login($username, $password);
-            // return $user;
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+            $userDAL = new \Model\UserDAL();
+            $userDAL->register($username, $hashedPassword);
         } catch (\Exception $e) {
-            throw new \Exception('Wrong name or password');
+            throw new \Exception($e->getMessage());
         }
     }
 

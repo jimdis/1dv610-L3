@@ -5,13 +5,13 @@ namespace Controller;
 class LoginController extends Controller
 {
     private $isLoggedIn = false;
-    private $formAction;
+    // private $formAction;
 
     public function updateState(): void
     {
         try {
             //TODO: rename these methods..
-            $this->formAction = $this->view->getFormAction();
+            // $this->formAction = $this->view->getFormAction();
             $this->attemptLoginWithSession();
             $this->attemptLoginWithCookies();
             $this->attemptLoginWithLoginForm();
@@ -39,7 +39,7 @@ class LoginController extends Controller
 
     private function attemptLoginWithCookies(): void
     {
-        if (!$this->isLoggedIn) {
+        if (!$this->isLoggedIn && $this->view->userHasCookies()) {
             $cookieUsername = $this->view->getCookieUsername();
             $cookiePassword = $this->view->getCookiePassword();
             $this->isLoggedIn = \Model\UserStorage::validateCookies($cookieUsername, $cookiePassword);
@@ -50,12 +50,11 @@ class LoginController extends Controller
 
     private function attemptLoginWithLoginForm(): void
     {
-        if (!$this->isLoggedIn && $this->formAction == \Model\FormAction::$login) {
-
+        if (!$this->isLoggedIn && $this->view->loginFormWasSubmitted()) {
             $username = $this->getUsername();
             $password = $this->getPassword();
             // TODO: do something with user object..
-            $user = \Model\UserStorage::LoginUser($username, $password);
+            $user = \Model\UserStorage::loginUser($username, $password);
             $this->isLoggedIn = true;
             $this->view->setMessage(\Model\Messages::$welcome);
             $this->saveSession($username);
@@ -65,7 +64,7 @@ class LoginController extends Controller
 
     private function attemptLogout(): void
     {
-        if ($this->isLoggedIn && $this->formAction == \Model\FormAction::$logout) {
+        if ($this->isLoggedIn && $this->view->logoutWasSubmitted()) {
             $this->isLoggedIn = false;
             \Model\UserStorage::destroySession();
             $this->view->unsetCookies();

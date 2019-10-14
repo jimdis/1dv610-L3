@@ -14,7 +14,6 @@ class LoginView extends View
     private static $messageId = 'LoginView::Message';
     private $formUserName = '';
     private $message = '';
-    private $storage;
 
     // public function __construct(\Model\UserStorage $storage)
     // {
@@ -30,15 +29,20 @@ class LoginView extends View
     //     return $form;
     // }
 
-    public function getFormAction(): string
+    // public function getFormAction(): string
+    // {
+    //     $action = \Model\FormAction::$none;
+    //     if (isset($_POST[self::$login])) {
+    //         $action = \Model\FormAction::$login;
+    //     } else if (isset($_POST[self::$logout])) {
+    //         $action = \Model\FormAction::$logout;
+    //     }
+    //     return $action;
+    // }
+
+    public function loginFormWasSubmitted(): bool
     {
-        $action = \Model\FormAction::$none;
-        if (isset($_POST[self::$login])) {
-            $action = \Model\FormAction::$login;
-        } else if (isset($_POST[self::$logout])) {
-            $action = \Model\FormAction::$logout;
-        }
-        return $action;
+        return isset($_POST[self::$login]);
     }
 
     public function getFormUsername(): string
@@ -49,6 +53,11 @@ class LoginView extends View
     public function getFormPassword(): string
     {
         return $_POST[self::$password] ?? '';
+    }
+
+    public function logoutWasSubmitted(): bool
+    {
+        return isset($_POST[self::$logout]);
     }
 
     // private function getUserNameFiltered(): string
@@ -85,6 +94,11 @@ class LoginView extends View
         }
     }
 
+    public function userHasCookies(): bool
+    {
+        return isset($_COOKIE[self::$cookieName]) && isset($_COOKIE[self::$cookiePassword]);
+    }
+
     public function getCookieUsername(): string
     {
         return $_COOKIE[self::$cookieName] ?? '';
@@ -97,10 +111,8 @@ class LoginView extends View
 
     public function unsetCookies(): void
     {
-        if (isset($_COOKIE[self::$cookieName])) {
+        if ($this->userHasCookies()) {
             setcookie(self::$cookieName, '', time() - 3600);
-        }
-        if (isset($_COOKIE[self::$cookiePassword])) {
             setcookie(self::$cookiePassword, '', time() - 3600);
         }
     }

@@ -17,4 +17,9 @@ class User
     {
         return $this->username;
     }
+
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
 }

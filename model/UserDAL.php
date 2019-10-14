@@ -4,34 +4,40 @@ namespace Model;
 
 class UserDAL extends Database
 {
-    //Todo: vad returneras om result är tomt?
-    public function getUser()
+    //TODO: bättre felhantering?
+    public function getUser(string $username): \Model\User
     {
-        $sql = "SELECT * from user";
-        $result = $this->connect()->query($sql);
-        if ($result) {
-            //TODO: return user?
-        } else {
-            //TODO: throw error?
-        }
-        // var_dump($result);
-    }
-
-    //TODO: välj returtyp, 
-    public function login(string $username, string $password): \Model\User
-    {
-        $query = $this->connect()->prepare("SELECT username, password FROM user WHERE username = ? AND password = ?");
-        $query->execute(array($username, $password));
+        $sql = "SELECT username, password FROM user WHERE username = ?";
+        $query = $this->connect()->prepare($sql);
+        $query->execute([$username]);
         $foundUser = $query->fetch(\PDO::FETCH_ASSOC);
         if ($foundUser) {
             $user = new \Model\User($foundUser['username'], $foundUser['password']);
             return $user;
         } else {
-            //TODO: skapa eget failedLogin exception ?
             throw new \Exception();
         }
     }
 
-    public function register()
-    { }
+    public function register(string $username, string $password)
+    {
+        $sql = "INSERT INTO user (username, password) VALUES (?, ?)";
+        $query = $this->connect()->prepare($sql);
+        $success = $query->execute([$username, $password]);
+        if (!$success) {
+            $this->handlePDOError($query->errorInfo());
+        }
+    }
+
+    //TODO: custom exception, handle error message in UserStorage?
+    private function handlePDOError(array $errorInfo)
+    {
+        $errorCode = $errorInfo[0];
+        $errorMessage = $errorInfo[2];
+        if ($errorCode == '23000') {
+            throw new \Exception('User exists, pick another username.');
+        } else {
+            throw new \Exception("There was an error: Code $errorCode: $errorMessage");
+        }
+    }
 }

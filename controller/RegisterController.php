@@ -30,12 +30,4 @@ class RegisterController extends Controller
             $this->registerSuccess = true;
         }
     }
-
-    private function checkForExistingUsername(): void
-    {
-        //TODO: connect to userstorage.
-        if ($this->form->getUsername() == 'Admin') {
-            throw new \Exception('User exists, pick another username.');
-        }
-    }
 }
