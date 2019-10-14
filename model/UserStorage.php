@@ -10,7 +10,10 @@ class UserStorage
 
     public static function validateUserCredentials(\model\LoginCredentials $form): bool
     {
-        if ($form->getUsername() == 'Admin' && $form->getPassword() == 'Password') {
+        //TODO: returnera en user?
+        $user = new \Model\User();
+        $id = $user->login($form->getUsername(), $form->getPassword());
+        if ($id != null) {
             return true;
         } else return false;
     }

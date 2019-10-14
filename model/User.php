@@ -2,51 +2,31 @@
 
 namespace Model;
 
-// require_once("TooShortNameException.php");
-
-class User
+class User extends Database
 {
-    private static $minNameLength = 3;
-    private static $minPasswordLength = 6;
-    private $name;
-    private $password;
-
-    public function __construct(string $newName, string $newPassword)
+    //Todo: vad returneras om result är tomt?
+    public function getUser()
     {
-
-        $this->name = $this->applyFilter($newName);
-        $this->password = $newPassword;
-
-        if (strlen($this->name) < self::$minNameLength) {
-            throw new \Exception('Username has too few characters, at least 3 characters.');
+        $sql = "SELECT * from user";
+        $result = $this->connect()->query($sql);
+        if ($result) {
+            //TODO: return user?
+        } else {
+            //TODO: throw error?
         }
+        // var_dump($result);
+    }
 
-        if (strlen($this->password) < self::$minPasswordLength) {
-            throw new \Exception('Password has too few characters, at least 6 characters.');
+    //TODO: välj returtyp, 
+    public function login(string $username, string $password)
+    {
+        $query = $this->connect()->prepare("SELECT id FROM user WHERE username = ? AND password = ?");
+        $query->execute(array($username, $password));
+        if ($query) {
+            return $query->fetchColumn();
+        } else {
+            return null;
+            //TODO: kasta undantag?
         }
-
-        if ($newName != htmlspecialchars($newName)) {
-            throw new \Exception('Username contains invalid characters.');
-        }
-    }
-
-    public function setName(UserName $newName)
-    {
-        $this->name = $newName->getUserName();
-    }
-
-    public function getUserName()
-    {
-        return $this->name;
-    }
-
-    public function hasUserName(): bool
-    {
-        return $this->name != null;
-    }
-
-    public static function applyFilter(string $rawInput): string
-    {
-        return trim(htmlentities($rawInput));
     }
 }

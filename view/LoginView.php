@@ -51,14 +51,14 @@ class LoginView extends View
         return $_POST[self::$password] ?? '';
     }
 
-    private function getUserNameFiltered(): string
-    {
-        if (isset($_POST[self::$name])) {
-            $username = $_POST[self::$name];
-            return \Model\User::applyFilter($username);
-        }
-        return '';
-    }
+    // private function getUserNameFiltered(): string
+    // {
+    //     if (isset($_POST[self::$name])) {
+    //         $username = $_POST[self::$name];
+    //         return \Model\User::applyFilter($username);
+    //     }
+    //     return '';
+    // }
 
     // private function getFormUsername(): string
     // {
