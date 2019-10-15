@@ -15,8 +15,10 @@ class LayoutController extends Controller
         parent::__construct($view, $storage);
         $dtv = new \View\DateTimeView;
         $this->view->setFooter($dtv->show());
-        $this->loginController = new \Controller\LoginController(new \View\LoginView(), $this->storage);
-        $this->registerController = new \Controller\RegisterController(new \View\RegisterView(), $this->storage);
+        $loginView = new \View\LoginView($this->storage);
+        $registerView = new \View\RegisterView($this->storage);
+        $this->loginController = new \Controller\LoginController($loginView, $this->storage);
+        $this->registerController = new \Controller\RegisterController($registerView, $this->storage);
     }
 
     public function updateState(): void
@@ -29,7 +31,7 @@ class LayoutController extends Controller
     private function updateView(): void
     {
         $this->view->setHeader($this->header);
-        $this->view->setIsLoggedIn($this->loginController->getIsLoggedIn());
+        $this->view->setIsLoggedIn($this->storage->getIsAuthenticated());
         $this->selectContainer();
     }
 

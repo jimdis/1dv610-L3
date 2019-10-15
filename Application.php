@@ -28,7 +28,7 @@ class Application
     public function __construct()
     {
         $storage = new \Model\UserStorage();
-        $this->view = new \View\LayoutView();
+        $this->view = new \View\LayoutView($storage);
         $this->controller = new \Controller\LayoutController($this->view, $storage);
     }
 

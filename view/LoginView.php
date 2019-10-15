@@ -126,8 +126,7 @@ class LoginView extends View
      */
     public function response(): string
     {
-
-        $response = $this->isLoggedIn ? $this->generateLogoutButtonHTML($this->message) : $this->generateLoginFormHTML($this->message);
+        $response = $this->storage->getIsAuthenticated() ? $this->generateLogoutButtonHTML($this->message) : $this->generateLoginFormHTML($this->message);
         return $response;
     }
 
