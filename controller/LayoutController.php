@@ -10,13 +10,13 @@ class LayoutController extends Controller
     private $loginController;
     private $registerController;
 
-    public function __construct(\View\LayoutView $view)
+    public function __construct(\View\LayoutView $view, \Model\UserStorage $storage)
     {
-        parent::__construct($view);
+        parent::__construct($view, $storage);
         $dtv = new \View\DateTimeView;
         $this->view->setFooter($dtv->show());
-        $this->loginController = new \Controller\LoginController(new \View\LoginView());
-        $this->registerController = new \Controller\RegisterController(new \View\RegisterView());
+        $this->loginController = new \Controller\LoginController(new \View\LoginView(), $this->storage);
+        $this->registerController = new \Controller\RegisterController(new \View\RegisterView(), $this->storage);
     }
 
     public function updateState(): void

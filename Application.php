@@ -22,23 +22,14 @@ require_once 'model/FormAction.php';
 
 class Application
 {
-    private $storage;
-    private $controller;
-    private $dtv;
-    private $loginView;
     private $view;
-    private $currentView;
-    // private $registerView;
+    private $controller;
 
     public function __construct()
     {
-        $this->dtv = new \View\DateTimeView();
-        $this->storage = new \Model\UserStorage();
+        $storage = new \Model\UserStorage();
         $this->view = new \View\LayoutView();
-        // $this->user = $this->storage->loadUser();
-
-        // $this->registerView = new \View\RegisterView($this->user);
-        $this->controller = new \Controller\LayoutController($this->view);
+        $this->controller = new \Controller\LayoutController($this->view, $storage);
     }
 
     public function run()
@@ -50,7 +41,6 @@ class Application
     private function changeState()
     {
         $this->controller->updateState();
-        // $this->storage->saveUser($this->user);
     }
 
     private function generateOutput()

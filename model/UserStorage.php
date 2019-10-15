@@ -12,6 +12,8 @@ class UserStorage
     private static $minPasswordLength = 6;
     private static $SESSION_USERNAME = 'UserStorage::UserName';
     private static $SESSION_AGENT = 'HTTP_USER_AGENT';
+    private $user;
+    private $isAuthenticated = false;
 
     public static function loginUser(string $username, string $password): \Model\User
     {
@@ -23,6 +25,23 @@ class UserStorage
             $isCorrectPassword = password_verify($password, $user->getPassword());
             if ($isCorrectPassword) {
                 return $user;
+            } else throw new \Model\IncorrectCredentialsException();
+        } catch (\Model\IncorrectCredentialsException $e) {
+            throw new \Exception('Wrong name or password');
+        }
+    }
+
+    public static function login(string $username, string $password): void
+    {
+        try {
+            if (strlen($username) == 0) throw new \Exception('Username is missing');
+            if (strlen($password) == 0) throw new \Exception('Password is missing');
+            $userDAL = new \Model\UserDAL();
+            $user = $userDAL->getUser($username);
+            $isCorrectPassword = password_verify($password, $user->getPassword());
+            if ($isCorrectPassword) {
+                $this->user = $user;
+                $this->isAuthenticated = true;
             } else throw new \Model\IncorrectCredentialsException();
         } catch (\Model\IncorrectCredentialsException $e) {
             throw new \Exception('Wrong name or password');
@@ -71,6 +90,22 @@ class UserStorage
     //     if ($sessionUser) return $sessionUser;
     // }
 
+    public function sessionAuth(): void
+    {
+        //TODO: verifiera password på något vis? Säkerhet?
+        if (
+            isset($_SESSION[self::$SESSION_AGENT]) &&
+            $_SESSION[self::$SESSION_AGENT] == md5($_SERVER[self::$SESSION_AGENT]) &&
+            isset($_SESSION[self::$SESSION_USERNAME])
+        ) {
+            $username = $_SESSION[self::$SESSION_USERNAME];
+            $userDAL = new \Model\UserDAL();
+            $user = $userDAL->getUser($username);
+            $this->user = $user;
+            $this->isAuthenticated = true;
+        }
+    }
+
     // gör eventuellt om till att returnera en user, alt username..
     public static function validateSession(): bool
     {
@@ -84,6 +119,8 @@ class UserStorage
             return false;
         }
     }
+
+
 
     public static function saveSession(string $username)
     {
