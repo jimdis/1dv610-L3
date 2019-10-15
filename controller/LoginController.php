@@ -61,10 +61,11 @@ class LoginController extends Controller
         if ($this->view->loginFormWasSubmitted()) {
             $username = $this->getUsername();
             $password = $this->getPassword();
+            $credentials = $this->view->getCredentials();
             $this->view->setLoginUsername($username); //TODO: Få bort denna rad
             // TODO: do something with user object..
             // $user = \Model\UserStorage::loginUser($username, $password);
-            $this->storage->login($username, $password);
+            $this->storage->login($credentials);
             // $this->isLoggedIn = true;
             $this->view->setMessage(\Model\Messages::$welcome); //TODO: Få bort denna rad
             // $this->saveSession($username);

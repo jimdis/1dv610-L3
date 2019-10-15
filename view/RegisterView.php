@@ -31,6 +31,14 @@ class RegisterView extends View
         }
     }
 
+    //TODO: same as in LoginView.. Create FormView parent?
+    public function getFormCredentials(): \Model\Credentials
+    {
+        $username = $_POST[self::$name] ?? '';
+        $password = $_POST[self::$password] ?? '';
+        return new \Model\Credentials($username, $password);
+    }
+
     public function getFormUserName(): string
     {
         return $_POST[self::$name] ?? '';

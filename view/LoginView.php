@@ -45,6 +45,13 @@ class LoginView extends View
         return isset($_POST[self::$login]);
     }
 
+    public function getCredentials(): \Model\Credentials
+    {
+        $username = $_POST[self::$name] ?? '';
+        $password = $_POST[self::$password] ?? '';
+        return new \Model\Credentials($username, $password);
+    }
+
     public function getFormUsername(): string
     {
         return $_POST[self::$name] ?? '';
