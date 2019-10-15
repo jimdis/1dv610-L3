@@ -35,7 +35,7 @@ class RegisterView extends View
     public function getFormCredentials(): \Model\Credentials
     {
         $username = $_POST[self::$name] ?? '';
-        $password = $_POST[self::$password] ?? '';
+        $password = $this->getFormPassword();
         return new \Model\Credentials($username, $password);
     }
 
@@ -44,7 +44,7 @@ class RegisterView extends View
         return $_POST[self::$name] ?? '';
     }
 
-    public function getFormPassword(): string
+    private function getFormPassword(): string
     {
         $password = $_POST[self::$password] ?? '';
         $passwordRepeat = $_POST[self::$passwordRepeat] ?? '';
