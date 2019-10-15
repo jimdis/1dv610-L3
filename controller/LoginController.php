@@ -4,28 +4,18 @@ namespace Controller;
 
 class LoginController extends Controller
 {
-    // private $isLoggedIn = false;
-    // private $formAction;
-
     public function updateState(): void
     {
         try {
             //TODO: rename these methods..
             $this->storage->sessionAuth();
-            // $this->attemptLoginWithSession();
-            // $this->attemptLoginWithCookies();
+            $this->attemptLoginWithCookies();
             $this->attemptLoginWithLoginForm();
             $this->attemptLogout();
-            // $this->view->setIsLoggedIn($this->storage->getIsAuthenticated());
         } catch (\Exception $e) {
             $this->view->setMessage($e->getMessage());
         }
     }
-
-    // public function getIsLoggedIn(): bool
-    // {
-    //     return $this->isLoggedIn;
-    // }
 
     public function updateMessage(string $message): void
     {
@@ -37,19 +27,15 @@ class LoginController extends Controller
         $this->view->setLoginUsername($username);
     }
 
-    private function attemptLoginWithSession(): void
-    {
-        $this->isLoggedIn = \Model\UserStorage::validateSession();
-    }
-
     private function attemptLoginWithCookies(): void
     {
-        if (!$this->isLoggedIn && $this->view->userHasCookies()) {
-            $cookieUsername = $this->view->getCookieUsername();
-            $cookiePassword = $this->view->getCookiePassword();
-            // $this->isLoggedIn = \Model\UserStorage::validateCookies($cookieUsername, $cookiePassword);
-            // $this->saveSession($cookieUsername);
-            $this->view->setMessage($this->isLoggedIn ? \Model\Messages::$welcomeWithCookie : \Model\Messages::$incorrectCookies);
+        if ($this->storage->getIsAuthenticated()) {
+            return;
+        }
+        if ($this->view->userHasCookies()) {
+            $credentials = $this->view->getCredentials();
+            $this->storage->loginWithToken($credentials);
+            $this->view->setMessage(\Model\Messages::$welcomeWithCookie);
         }
     }
 
@@ -60,15 +46,10 @@ class LoginController extends Controller
         }
         if ($this->view->loginFormWasSubmitted()) {
             $username = $this->getUsername();
-            $password = $this->getPassword();
             $credentials = $this->view->getCredentials();
             $this->view->setLoginUsername($username); //TODO: Få bort denna rad
-            // TODO: do something with user object..
-            // $user = \Model\UserStorage::loginUser($username, $password);
             $this->storage->login($credentials);
-            // $this->isLoggedIn = true;
             $this->view->setMessage(\Model\Messages::$welcome); //TODO: Få bort denna rad
-            // $this->saveSession($username);
             $this->setCookies();
         }
     }
@@ -93,7 +74,9 @@ class LoginController extends Controller
 
     private function setCookies(): void
     {
-        // TODO: control cookie login here. Ask view, tell view. No login in view.
-        $this->view->setCookies();
+        if ($this->view->keepLoggedIn()) {
+            $token = $this->view->setCookies();
+            $this->storage->storeToken($token);
+        }
     }
 }

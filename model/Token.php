@@ -2,20 +2,17 @@
 
 namespace Model;
 
-class Cookie
+class Token
 {
     private static $EXPIRY_IN_DAYS = 30;
     private $content;
     private $expires;
 
 
-    public function __construct(string $content = null)
+    public function __construct()
     {
-        $this->content = $content;
+        $this->content = md5(time());
         $this->expires = time() + 60 * 60 * 24 * self::$EXPIRY_IN_DAYS;
-        if ($this->content == null) {
-            $this->content = md5(time());
-        }
     }
 
     public function getContent(): string

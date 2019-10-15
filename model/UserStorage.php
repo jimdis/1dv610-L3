@@ -51,6 +51,24 @@ class UserStorage
         }
     }
 
+    public function loginWithToken(\model\Credentials $credentials): void
+    {
+        try {
+            $userDAL = new \Model\UserDAL();
+            $this->user = $userDAL->getUserWithToken($credentials);
+            $this->isAuthenticated = true;
+            $this->saveSession();
+        } catch (\Model\IncorrectCredentialsException $e) {
+            throw new \Exception('Wrong information in cookies');
+        }
+    }
+
+    public function storeToken(\Model\Token $token)
+    {
+        $userDAL = new \Model\UserDAL();
+        $userDAL->storeToken($token, $this->user->getUsername());
+    }
+
     // public static function registerNewUser(string $username, string $password)
     // {
     //     self::validateRegistrationCredentials($username, $password);
@@ -70,8 +88,9 @@ class UserStorage
         $this->validateRegistrationCredentials();
         try {
             $hashedPassword = password_hash($this->credentials->getPassword(), PASSWORD_DEFAULT);
+            $this->credentials->setPassword($hashedPassword);
             $userDAL = new \Model\UserDAL();
-            $this->user = $userDAL->register($this->credentials->getUsername(), $hashedPassword);
+            $this->user = $userDAL->storeUser($this->credentials);
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
         }

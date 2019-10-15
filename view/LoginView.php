@@ -47,8 +47,13 @@ class LoginView extends View
 
     public function getCredentials(): \Model\Credentials
     {
-        $username = $_POST[self::$name] ?? '';
-        $password = $_POST[self::$password] ?? '';
+        if ($this->userHasCookies()) {
+            $username = $this->getCookieUsername();
+            $password = $this->getCookiePassword();
+        } else {
+            $username = $_POST[self::$name] ?? '';
+            $password = $_POST[self::$password] ?? '';
+        }
         return new \Model\Credentials($username, $password);
     }
 
@@ -91,14 +96,20 @@ class LoginView extends View
         $this->message = $message;
     }
 
-    public function setCookies(): void
+    public function keepLoggedIn(): bool
     {
-        if (isset($_POST[self::$keep])) {
-            $cookieUsername = new \Model\Cookie($this->getFormUsername());
-            $cookiePassword = new \Model\Cookie();
-            setcookie(self::$cookieName, $cookieUsername->getContent(), $cookieUsername->getExpires());
-            setcookie(self::$cookiePassword, $cookiePassword->getContent(), $cookiePassword->getExpires());
-        }
+        return isset($_POST[self::$keep]);
+    }
+
+    public function setCookies(): \Model\Token
+    {
+        $token = new \Model\Token();
+        $expiry = $token->getExpires();
+        $cookieUsername = $this->getCredentials()->getUsername();
+        $cookiePassword = $token->getContent();
+        setcookie(self::$cookieName, $cookieUsername, $expiry);
+        setcookie(self::$cookiePassword, $cookiePassword, $expiry);
+        return $token;
     }
 
     public function userHasCookies(): bool
@@ -106,12 +117,12 @@ class LoginView extends View
         return isset($_COOKIE[self::$cookieName]) && isset($_COOKIE[self::$cookiePassword]);
     }
 
-    public function getCookieUsername(): string
+    private function getCookieUsername(): string
     {
         return $_COOKIE[self::$cookieName] ?? '';
     }
 
-    public function getCookiePassword(): string
+    private function getCookiePassword(): string
     {
         return $_COOKIE[self::$cookiePassword] ?? '';
     }
