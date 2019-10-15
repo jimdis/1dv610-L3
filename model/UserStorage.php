@@ -79,6 +79,11 @@ class UserStorage
         return $this->isAuthenticated;
     }
 
+    public function getUser(): \Model\User
+    {
+        return $this->user;
+    }
+
     private static function validateRegistrationCredentials(string $username, string $password): void
     {
         $errorMessage = '';

@@ -5,7 +5,7 @@ namespace Controller;
 class RegisterController extends Controller
 {
     private $registerSuccess = false;
-    private $user;
+    // private $user;
 
     public function updateState(): void
     {
@@ -21,17 +21,17 @@ class RegisterController extends Controller
         return $this->registerSuccess;
     }
 
-    public function getUser(): \Model\User
-    {
-        return $this->user;
-    }
+    // public function getUser(): \Model\User
+    // {
+    //     return $this->user;
+    // }
 
     private function attemptRegisterNewUser(): void
     {
         if ($this->view->userAttemptedRegistration()) {
             $username = $this->getUsername();
             $password = $this->getPassword();
-            $this->user = \Model\UserStorage::registerNewUser($username, $password);
+            $this->storage->registerNewUser($username, $password);
             $this->registerSuccess = true;
         }
     }

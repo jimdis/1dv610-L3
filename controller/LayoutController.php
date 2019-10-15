@@ -42,7 +42,7 @@ class LayoutController extends Controller
         $successfulRegister = $this->registerController->getRegisterSuccess();
 
         if ($successfulRegister) {
-            $user = $this->registerController->getUser();
+            $user = $this->storage->getUser();
             $this->loginController->updateMessage('Registered new user.');
             $this->loginController->updateLoginUsername($user->getUsername());
         }
