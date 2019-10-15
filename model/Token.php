@@ -11,7 +11,7 @@ class Token
 
     public function __construct()
     {
-        $this->content = md5(time());
+        $this->content = bin2hex(random_bytes(16));
         $this->expires = time() + 60 * 60 * 24 * self::$EXPIRY_IN_DAYS;
     }
 
