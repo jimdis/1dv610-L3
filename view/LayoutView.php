@@ -37,16 +37,16 @@ class LayoutView extends View
     public function getBody(): string
     {
         return '<h1>' . $this->header . '</h1>
-                ' . $this->renderIsLoggedIn() . '
+                ' . $this->renderIsAuthenticated() . '
                 <div class="container">
                 ' . $this->container . '
                 </div>
                 ' . $this->footer . '';
     }
 
-    private function renderIsLoggedIn(): string
+    private function renderIsAuthenticated(): string
     {
-        if ($this->isLoggedIn) {
+        if ($this->storage->getIsAuthenticated()) {
             return '<h2>Logged in</h2>';
         } else {
             return '<h2>Not logged in</h2>';

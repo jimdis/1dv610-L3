@@ -31,7 +31,7 @@ class LayoutController extends Controller
     private function updateView(): void
     {
         $this->view->setHeader($this->header);
-        $this->view->setIsLoggedIn($this->storage->getIsAuthenticated());
+        // $this->view->setIsLoggedIn($this->storage->getIsAuthenticated());
         $this->selectContainer();
     }
 

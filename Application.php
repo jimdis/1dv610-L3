@@ -45,12 +45,7 @@ class Application
 
     private function generateOutput()
     {
-        $title = 'Login example'; // fixa till en dynamisk title
-        // $header = 'Assignment 3';
-        // $container = $this->controller->getCurrentView()->response();
-        // $footer = $this->dtv->show();
-        // $isLoggedIn = $this->controller->getIsLoggedIn();
-        // $view = new \View\LayoutView($header, $container, $footer, $isLoggedIn);
+        $title = 'Login example'; // TODO: fixa till en dynamisk title
         $body = $this->view->getBody();
         $pageView = new \View\HTMLPageView($title, $body);
         $pageView->echoHTML();
