@@ -87,7 +87,7 @@ class RegisterView extends View
     {
         return '
             <a href=".">Back to login</a><br /><br />
-            <form method="post" action="?register">
+            <form method="post" action="">
 				<fieldset>
 					<legend>Register a new user - Write username and password</legend>
 					<p id="' . self::$messageId . '">' . $message . '</p>

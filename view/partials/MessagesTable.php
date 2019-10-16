@@ -20,7 +20,13 @@ class MessagesTable
         <tbody>';
         foreach ($messages as $message) {
             $id = $message->id;
-            $editButton = $username == null ? '' : '<td><a href="http://dn.se">Edit</a></td>';
+            $editButton = $username == null ? '' : '<td>
+                <form action="">
+                    <input hidden name="messages"/>    
+                    <input hidden name="edit" value="' . $id . '"/>
+                    <button type="submit">Update</button>
+                </form>
+            </td>';
             $author = $message->author;
             $content = $message->content;
             $messagesHTML .= '
