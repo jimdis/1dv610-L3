@@ -4,10 +4,13 @@ namespace Controller;
 
 class MessagesController extends Controller
 {
+    private $messages = [];
 
     public function updateState(): void
     {
         try {
+            //TODO: Remove below
+            array_push($this->messages, new \Model\Message('jim', 'Hello World!'));
             $this->updateView();
         } catch (\Exception $e) {
             $this->view->setMessage($e->getMessage());
@@ -16,12 +19,32 @@ class MessagesController extends Controller
 
     private function updateView()
     {
-        $messages = $this->getMessages();
-        $this->view->setMessages($messages);
+        if ($this->storage->getIsAuthenticated()) {
+            $username = $this->storage->getUser()->getUsername();
+            $this->view->setUsername($username);
+        }
+        $this->storeNewMessage();
+        // $messages = $this->getMessages();
+        // $this->view->setMessages($messages);
     }
 
-    private function getMessages()
+    private function storeNewMessage()
     {
-        return ['Hello', 'Bye'];
+        if ($this->view->messageFormWasSubmitted()) {
+            $message = $this->view->getNewMessage();
+            $this->validateMessageAuthor($message);
+
+            \Model\MessageStorage::storeNewMessage($message);
+        }
+    }
+
+    private function validateMessageAuthor(\Model\Message $message)
+    {
+        if (!$this->storage->getIsAuthenticated()) {
+            $author = $message->getAuthor();
+            \Model\MessageStorage::validateAuthor($author);
+        } else {
+            $message->setIsEditable(true);
+        }
     }
 }

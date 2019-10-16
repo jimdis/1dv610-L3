@@ -35,7 +35,7 @@ class LoginController extends Controller
         if ($this->view->userHasCookies()) {
             $credentials = $this->view->getCredentials();
             $this->storage->loginWithToken($credentials);
-            $this->view->setMessage(\Model\Messages::$welcomeWithCookie);
+            $this->view->setMessage('Welcome back with cookie');
         }
     }
 
@@ -49,7 +49,7 @@ class LoginController extends Controller
             $credentials = $this->view->getCredentials();
             $this->view->setLoginUsername($username); //TODO: Få bort denna rad
             $this->storage->login($credentials);
-            $this->view->setMessage(\Model\Messages::$welcome); //TODO: Få bort denna rad
+            $this->view->setMessage('Welcome'); //TODO: Få bort denna rad
             $this->setCookies();
         }
     }
@@ -61,7 +61,7 @@ class LoginController extends Controller
             // \Model\UserStorage::destroySession();
             $this->storage->logout();
             $this->view->unsetCookies();
-            $this->view->setMessage(\Model\Messages::$logout);
+            $this->view->setMessage('Bye bye!');
         }
     }
 

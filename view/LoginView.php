@@ -144,7 +144,7 @@ class LoginView extends View
      */
     public function response(): string
     {
-        $response = $this->storage->getIsAuthenticated() ? $this->generateLogoutButtonHTML($this->message) : $this->generateLoginFormHTML($this->message);
+        $response = $this->storage->getIsAuthenticated() ? $this->generateLoggedInView($this->message) : $this->generateLoginFormHTML($this->message);
         return $response;
     }
 
@@ -153,14 +153,17 @@ class LoginView extends View
      * @param $message, String output message
      * @return  void, BUT writes to standard output!
      */
-    private function generateLogoutButtonHTML($message): string
+    private function generateLoggedInView($message): string
     {
-        return '
-			<form  method="post" >
-				<p id="' . self::$messageId . '">' . $message . '</p>
-				<input type="submit" name="' . self::$logout . '" value="logout"/>
-			</form>
-		';
+        $form = '
+        <form  method="post" >
+            <p id="' . self::$messageId . '">' . $message . '</p>
+            <input type="submit" name="' . self::$logout . '" value="logout"/>
+        </form>
+    ';
+        $messageTable = \View\MessagesTable::generateMessagesTableHTML();
+        $response = $form . '<br/><h2>Your messages</h2>' . $messageTable;
+        return $response;
     }
 
     /**

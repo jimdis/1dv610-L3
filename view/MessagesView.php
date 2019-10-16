@@ -4,26 +4,28 @@ namespace View;
 
 class MessagesView extends View
 {
-    private static $login = __CLASS__ . '::Login';
-    private static $logout = 'LoginView::Logout';
-    private static $name = 'LoginView::UserName';
-    private static $password = 'LoginView::Password';
-    private static $cookieName = 'LoginView::CookieName';
-    private static $cookiePassword = 'LoginView::CookiePassword';
-    private static $keep = 'LoginView::KeepMeLoggedIn';
-    private static $messageId = 'LoginView::Message';
-    private $loginUsername = '';
+    private static $submitMessage = __CLASS__ . '::submitMessage';
+    private static $name = __CLASS__ . '::UserName';
+    private static $messageContent = __CLASS__ . '::messageContent';
+    private static $messageId = __CLASS__ . '::Message';
+    private $username;
     private $message = '';
-    private $messages;
 
-
-    public function setMessages($messages)
+    public function getNewMessage(): \Model\Message
     {
-        $this->messages = $messages;
+        $author = $_POST[self::$name] ?? '';
+        $content = $_POST[self::$messageContent] ?? '';
+        return new \Model\Message($author, $content);
     }
-    public function loginFormWasSubmitted(): bool
+
+    // public function setMessages(array $messages)
+    // {
+    //     $this->messages = $messages;
+    // }
+
+    public function messageFormWasSubmitted(): bool
     {
-        return isset($_POST[self::$login]);
+        return isset($_POST[self::$submitMessage]);
     }
 
     public function getCredentials(): \Model\Credentials
@@ -53,9 +55,9 @@ class MessagesView extends View
         return isset($_POST[self::$logout]);
     }
 
-    public function setLoginUsername(string $username): void
+    public function setUsername(string $username): void
     {
-        $this->loginUsername = $username;
+        $this->username = $username;
     }
 
     public function setMessage(string $message): void
@@ -111,58 +113,39 @@ class MessagesView extends View
      */
     public function response(): string
     {
-        $response = $this->generateMessages();
+        $response = $this->generateViewHTML();
         return $response;
     }
 
-    /**
-     * Generate HTML code on the output buffer for the logout button
-     * @param $message, String output message
-     * @return  void, BUT writes to standard output!
-     */
-    private function generateLogoutButtonHTML($message): string
+    private function generateViewHTML(): string
     {
-        return '
-			<form  method="post" >
-				<p id="' . self::$messageId . '">' . $message . '</p>
-				<input type="submit" name="' . self::$logout . '" value="logout"/>
-			</form>
-		';
+        $form = $this->generateMessageFormHTML($this->message);
+        $messageTable = \View\MessagesTable::generateMessagesTableHTML();
+        $html = $form . '<br/><h2>Message Board</h2>' . $messageTable;
+        return $html;
     }
 
-
-    private function generateMessages(): string
+    private function generateMessageFormHTML($message): string
     {
-        $messages = '';
-        foreach ($this->messages as $message) {
-            $messages .= "<li>$message</li>";
-        }
-        return "<ul>$messages</ul>";
-    }
-    /**
-     * Generate HTML code on the output buffer for the logout button
-     * @param $message, String output message
-     * @return  void, BUT writes to standard output!
-     */
-    private function generateLoginFormHTML($message): string
-    {
+        $isLoggedIn = $this->storage->getIsAuthenticated();
+        $linkText = $isLoggedIn ? 'Account' : 'Go to login';
+        $username = $this->username != null ? "<strong>$this->username</strong>" : '';
+        $hidden = $this->username != null ? 'hidden' : '';
         return '
-            <a href="?register">Register a new user</a><br /><br />    
-            <form method="post" action=".">
+        <a href=".">' . $linkText . '</a><br /><br />
+            <form method="post" action=""?messages"">
 				<fieldset>
-					<legend>Login - enter Username and password</legend>
+					<legend>Write a new message</legend>
 					<p id="' . self::$messageId . '">' . $message . '</p>
-
-					<label for="' . self::$name . '">Username :</label>
-					<input type="text" id="' . self::$name . '" name="' . self::$name . '" value="' . $this->loginUsername . '" />
-
-					<label for="' . self::$password . '">Password :</label>
-					<input type="password" id="' . self::$password . '" name="' . self::$password . '" />
-
-					<label for="' . self::$keep . '">Keep me logged in  :</label>
-					<input type="checkbox" id="' . self::$keep . '" name="' . self::$keep . '" />
-
-                    <input type="submit" name="' . self::$login . '" value="login" />
+                    
+                    <label for="' . self::$name . '">Username :</label>
+                    ' . $username . '
+					<input ' . $hidden . ' type="text" id="' . self::$name . '" name="' . self::$name . '" value="' . $this->username . '" />
+                    <br/>
+					<label for="' . self::$messageContent . '">Your message :</label><br/>
+					<textarea rows=6 cols=50" id="' . self::$messageContent . '" name="' . self::$messageContent . '">Type your message here..</textarea>
+                    <br/>
+                    <input type="submit" name="' . self::$submitMessage . '" value="Submit" />
                     
                     
 				</fieldset>

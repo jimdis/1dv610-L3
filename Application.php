@@ -1,6 +1,7 @@
 <?php
 
 require_once 'Config.php';
+require_once 'view/partials/MessagesTable.php';
 require_once 'view/View.php';
 require_once 'view/LoginView.php';
 require_once 'view/RegisterView.php';
@@ -20,8 +21,8 @@ require_once 'model/Database.php';
 require_once 'model/UserDAL.php';
 require_once 'model/Username.php';
 require_once 'model/User.php';
-require_once 'model/Messages.php';
-require_once 'model/FormAction.php';
+require_once 'model/MessageStorage.php';
+require_once 'model/Message.php';
 
 
 class Application
