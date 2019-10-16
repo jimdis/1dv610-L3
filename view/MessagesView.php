@@ -5,6 +5,8 @@ namespace View;
 class MessagesView extends View
 {
     private static $submitMessage = __CLASS__ . '::submitMessage';
+    private static $updateMessage = __CLASS__ . '::updateMessage';
+    private static $updateMessageId = __CLASS__ . '::updateMessageId';
     private static $name = __CLASS__ . '::UserName';
     private static $messageContent = __CLASS__ . '::messageContent';
     private static $messageId = __CLASS__ . '::Message';
@@ -18,41 +20,14 @@ class MessagesView extends View
         return new \Model\Message($author, $content);
     }
 
-    // public function setMessages(array $messages)
-    // {
-    //     $this->messages = $messages;
-    // }
-
-    public function messageFormWasSubmitted(): bool
+    public function newMessageSubmitted(): bool
     {
         return isset($_POST[self::$submitMessage]);
     }
 
-    public function getCredentials(): \Model\Credentials
+    public function messageUpdateSubmitted(): bool
     {
-        if ($this->userHasCookies()) {
-            $username = $this->getCookieUsername();
-            $password = $this->getCookiePassword();
-        } else {
-            $username = $_POST[self::$name] ?? '';
-            $password = $_POST[self::$password] ?? '';
-        }
-        return new \Model\Credentials($username, $password);
-    }
-
-    public function getFormUsername(): string
-    {
-        return $_POST[self::$name] ?? '';
-    }
-
-    public function getFormPassword(): string
-    {
-        return $_POST[self::$password] ?? '';
-    }
-
-    public function logoutWasSubmitted(): bool
-    {
-        return isset($_POST[self::$logout]);
+        return isset($_POST[self::$updateMessage]);
     }
 
     public function setUsername(string $username): void
@@ -65,44 +40,16 @@ class MessagesView extends View
         $this->message = $message;
     }
 
-    public function keepLoggedIn(): bool
+    private function showEditMode(): bool
     {
-        return isset($_POST[self::$keep]);
+        return isset($_GET["edit"]);
     }
 
-    public function setCookies(): \Model\Token
+    private function editMessageId(): int
     {
-        $token = new \Model\Token();
-        $expiry = $token->getExpires();
-        $cookieUsername = $this->getCredentials()->getUsername();
-        $cookiePassword = $token->getContent();
-        setcookie(self::$cookieName, $cookieUsername, $expiry);
-        setcookie(self::$cookiePassword, $cookiePassword, $expiry);
-        return $token;
+        return $_GET["edit"];
     }
 
-    public function userHasCookies(): bool
-    {
-        return isset($_COOKIE[self::$cookieName]) && isset($_COOKIE[self::$cookiePassword]);
-    }
-
-    private function getCookieUsername(): string
-    {
-        return $_COOKIE[self::$cookieName] ?? '';
-    }
-
-    private function getCookiePassword(): string
-    {
-        return $_COOKIE[self::$cookiePassword] ?? '';
-    }
-
-    public function unsetCookies(): void
-    {
-        if ($this->userHasCookies()) {
-            setcookie(self::$cookieName, '', time() - 3600);
-            setcookie(self::$cookiePassword, '', time() - 3600);
-        }
-    }
 
     /**
      * Create HTTP response
@@ -119,7 +66,7 @@ class MessagesView extends View
 
     private function generateViewHTML(): string
     {
-        $form = $this->generateMessageFormHTML($this->message);
+        $form = $this->showEditMode() ? $this->generateMessageEditFormHTML($this->message) : $this->generateMessageFormHTML($this->message);
         $messageTable = \View\MessagesTable::generateMessagesTableHTML();
         $html = $form . '<br/><h2>Message Board</h2>' . $messageTable;
         return $html;
@@ -146,6 +93,38 @@ class MessagesView extends View
 					<textarea rows=6 cols=50" id="' . self::$messageContent . '" name="' . self::$messageContent . '">Type your message here..</textarea>
                     <br/>
                     <input type="submit" name="' . self::$submitMessage . '" value="Submit" />
+                    
+                    
+				</fieldset>
+            </form>
+		';
+    }
+
+    //TODO in all views: remove $message duplication
+    private function generateMessageEditFormHTML($message): string
+    {
+        $isLoggedIn = $this->storage->getIsAuthenticated();
+        if (!$isLoggedIn) {
+            throw new \Exception('You must be logged in to view this page');
+        }
+        //TODO: Forsätt här - läs in message från storage baserat på query.
+        $username = "<strong>$this->username</strong>";
+        return '
+        <a href=".">Account</a><br /><br />
+            <form method="post" action=""?messages"">
+				<fieldset>
+					<legend>Edit message</legend>
+					<p id="' . self::$messageId . '">' . $message . '</p>
+                    
+                    <label for="' . self::$name . '">Username :</label>
+                    ' . $username . '
+                    <input hidden type="text" id="' . self::$name . '" name="' . self::$name . '" value="' . $this->username . '" />
+                    <input hidden type="text" id="' . self::$updateMessageId . '" name="' . self::$updateMessageId . '" value="' . $this->username . '" />
+                    <br/>
+					<label for="' . self::$messageContent . '">Your message :</label><br/>
+					<textarea rows=6 cols=50" id="' . self::$messageContent . '" name="' . self::$messageContent . '">Type your message here..</textarea>
+                    <br/>
+                    <input type="submit" name="' . self::$updateMessage . '" value="Update" />
                     
                     
 				</fieldset>

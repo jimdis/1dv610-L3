@@ -23,17 +23,19 @@ class MessagesController extends Controller
             $username = $this->storage->getUser()->getUsername();
             $this->view->setUsername($username);
         }
-        $this->storeNewMessage();
+        $this->storeMessage();
         // $messages = $this->getMessages();
         // $this->view->setMessages($messages);
     }
 
-    private function storeNewMessage()
+    private function storeMessage()
     {
-        if ($this->view->messageFormWasSubmitted()) {
+        if ($this->view->newMessageSubmitted()) {
             $message = $this->view->getNewMessage();
             $this->validateMessageAuthor($message);
-
+            \Model\MessageStorage::storeNewMessage($message);
+        } else if ($this->view->messageUpdateSubmitted()) {
+            $message = $this->view->getNewMessage();
             \Model\MessageStorage::storeNewMessage($message);
         }
     }

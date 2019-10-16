@@ -7,8 +7,9 @@ class Message
     private $author;
     private $content;
     private $isEditable = false;
+    private $id;
 
-    public function __construct(string $author, string $content)
+    public function __construct(string $author, string $content, $id = null)
     {
         if (strlen($author) == 0) {
             throw new \Exception('Please enter a username');
@@ -18,25 +19,16 @@ class Message
         }
         $this->author = $author;
         $this->content = $content;
+        $this->id = $id;
     }
 
-    public function getAuthor(): string
+    public function __get($name)
     {
-        return $this->author;
-    }
-
-    public function getContent(): string
-    {
-        return $this->content;
+        return $this->$name;
     }
 
     public function setIsEditable(bool $bool): void
     {
         $this->isEditable = $bool;
-    }
-
-    public function getIsEditable(): bool
-    {
-        return $this->isEditable;
     }
 }
