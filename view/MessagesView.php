@@ -17,7 +17,8 @@ class MessagesView extends View
     {
         $author = $_POST[self::$name] ?? '';
         $content = $_POST[self::$messageContent] ?? '';
-        return new \Model\Message($author, $content);
+        $id = $_POST[self::$updateMessageId] ?? null;
+        return new \Model\Message($author, $content, $id);
     }
 
     public function newMessageSubmitted(): bool
@@ -45,7 +46,7 @@ class MessagesView extends View
         return isset($_GET["edit"]);
     }
 
-    private function editMessageId(): int
+    private function getMessageId(): int
     {
         return $_GET["edit"];
     }
@@ -109,6 +110,8 @@ class MessagesView extends View
         }
         //TODO: Forsätt här - läs in message från storage baserat på query.
         $username = "<strong>$this->username</strong>";
+        $id = $this->getMessageId();
+        $msg = \Model\MessageStorage::getMessageById($id);
         return '
         <a href=".">Account</a><br /><br />
             <form method="post" action=""?messages"">
@@ -119,10 +122,10 @@ class MessagesView extends View
                     <label for="' . self::$name . '">Username :</label>
                     ' . $username . '
                     <input hidden type="text" id="' . self::$name . '" name="' . self::$name . '" value="' . $this->username . '" />
-                    <input hidden type="text" id="' . self::$updateMessageId . '" name="' . self::$updateMessageId . '" value="' . $this->username . '" />
+                    <input hidden type="text" id="' . self::$updateMessageId . '" name="' . self::$updateMessageId . '" value="' . $msg->id . '" />
                     <br/>
 					<label for="' . self::$messageContent . '">Your message :</label><br/>
-					<textarea rows=6 cols=50" id="' . self::$messageContent . '" name="' . self::$messageContent . '">Type your message here..</textarea>
+					<textarea rows=6 cols=50" id="' . self::$messageContent . '" name="' . self::$messageContent . '">' . $msg->content . '</textarea>
                     <br/>
                     <input type="submit" name="' . self::$updateMessage . '" value="Update" />
                     

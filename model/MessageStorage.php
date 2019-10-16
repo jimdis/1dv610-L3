@@ -21,13 +21,19 @@ class MessageStorage
 
     public static function getMessageById(int $id): \Model\Message
     {
-        $message = new \Model\Message('Username', 'Hello World!', $id);
+        $message = new \Model\Message('Username', "Hello World by id!. My id is $id", $id);
         return $message;
     }
 
     public static function storeNewMessage(\Model\Message $message)
     {
         array_push(self::$messages, $message);
+    }
+
+    public static function updateMessage(int $id)
+    {
+        echo "UPDATED! $id";
+        //TO BE IMPLEMENTED;
     }
 
     //TODO: A bit inverted logic..

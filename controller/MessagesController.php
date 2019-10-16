@@ -36,9 +36,11 @@ class MessagesController extends Controller
             \Model\MessageStorage::storeNewMessage($message);
         } else if ($this->view->messageUpdateSubmitted()) {
             $message = $this->view->getNewMessage();
-            \Model\MessageStorage::storeNewMessage($message);
+            $this->validateMessageAuthor($message);
+            \Model\MessageStorage::updateMessage($message->id);
         }
     }
+
 
     private function validateMessageAuthor(\Model\Message $message)
     {
