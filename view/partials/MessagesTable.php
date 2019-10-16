@@ -20,8 +20,7 @@ class MessagesTable
         <tbody>';
         foreach ($messages as $message) {
             $id = $message->id;
-            $editButton = $username == null ? '' : '
-            <td><a href="?messages&edit=' . $id . '">Edit</a></td>';
+            $editButton = $username == null ? '' : '<td><a href="?messages&edit=' . $id . '">Edit</a></td>';
             $author = $message->author;
             $content = $message->content;
             $messagesHTML .= '
