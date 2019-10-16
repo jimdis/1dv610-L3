@@ -159,8 +159,7 @@ class LoginView extends View
         <form  method="post" >
             <p id="' . self::$messageId . '">' . $message . '</p>
             <input type="submit" name="' . self::$logout . '" value="logout"/>
-        </form>
-    ';
+        </form>';
         $messageTable = \View\MessagesTable::generateMessagesTableHTML($this->storage->getUser()->getUsername());
         $html = $form . '
         <br/>

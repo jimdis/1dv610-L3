@@ -20,7 +20,7 @@ class MessagesTable
         <tbody>';
         foreach ($messages as $message) {
             $id = $message->id;
-            $editButton = $username == null ? '' : '<td><a href="?messages&edit=' . $id . '">Edit</a></td>';
+            $editButton = $username == null ? '' : '<td><a href="http://dn.se">Edit</a></td>';
             $author = $message->author;
             $content = $message->content;
             $messagesHTML .= '
@@ -30,9 +30,10 @@ class MessagesTable
             '    . $editButton . '
             </tr>';
         }
-        return '<table>'
+        return '
+        <table>'
             . $messagesHTML . '
-            </tbody>
-            </table>';
+        </tbody>
+        </table>';
     }
 }
