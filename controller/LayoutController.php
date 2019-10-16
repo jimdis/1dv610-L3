@@ -10,7 +10,7 @@ class LayoutController extends Controller
     private $header = 'Assignment 3';
     private $loginController;
     private $registerController;
-    private $messagesController;
+    private $messageController;
 
     public function __construct(\View\LayoutView $view, \Model\UserStorage $storage)
     {
@@ -19,17 +19,17 @@ class LayoutController extends Controller
         $this->view->setFooter($dtv->show());
         $loginView = new \View\LoginView($this->storage);
         $registerView = new \View\RegisterView($this->storage);
-        $messagesView = new \View\MessagesView($this->storage);
+        $messageView = new \View\MessageView($this->storage);
         $this->loginController = new \Controller\LoginController($loginView, $this->storage);
         $this->registerController = new \Controller\RegisterController($registerView, $this->storage);
-        $this->messagesController = new \Controller\MessagesController($messagesView, $this->storage);
+        $this->messageController = new \Controller\MessageController($messageView, $this->storage);
     }
 
     public function updateState(): void
     {
         $this->loginController->updateState();
         $this->registerController->updateState();
-        $this->messagesController->updateState();
+        $this->messageController->updateState();
         $this->updateView();
     }
 
@@ -53,7 +53,7 @@ class LayoutController extends Controller
         if ($query == self::$registerQuery && !$successfulRegister) {
             $this->view->setContainer($this->registerController->getViewResponse());
         } else if ($query == self::$messagesQuery) {
-            $this->view->setContainer($this->messagesController->getViewResponse());
+            $this->view->setContainer($this->messageController->getViewResponse());
         } else {
             $this->view->setContainer($this->loginController->getViewResponse());
         }

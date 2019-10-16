@@ -6,7 +6,7 @@ class Message
 {
     private $author;
     private $content;
-    private $isEditable = false;
+    private $isVerified = false;
     private $id;
 
     public function __construct(string $author, string $content, $id = null)
@@ -27,8 +27,8 @@ class Message
         return $this->$name;
     }
 
-    public function setIsEditable(bool $bool): void
+    public function setIsVerified(bool $bool): void
     {
-        $this->isEditable = $bool;
+        $this->isVerified = $bool;
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Controller;
 
-class MessagesController extends Controller
+class MessageController extends Controller
 {
     private $messages = [];
 
@@ -33,11 +33,11 @@ class MessagesController extends Controller
         if ($this->view->newMessageSubmitted()) {
             $message = $this->view->getNewMessage();
             $this->validateMessageAuthor($message);
-            \Model\MessageStorage::storeNewMessage($message);
+            \Model\MessageStorage::storeMessage($message);
         } else if ($this->view->messageUpdateSubmitted()) {
             $message = $this->view->getNewMessage();
             $this->validateMessageAuthor($message);
-            \Model\MessageStorage::updateMessage($message->id);
+            \Model\MessageStorage::updateMessage($message);
         }
     }
 
@@ -48,7 +48,7 @@ class MessagesController extends Controller
             $author = $message->getAuthor();
             \Model\MessageStorage::validateAuthor($author);
         } else {
-            $message->setIsEditable(true);
+            $message->setIsVerified(true);
         }
     }
 }

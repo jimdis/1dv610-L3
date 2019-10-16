@@ -2,10 +2,10 @@
 
 namespace View;
 
-class MessagesTable
+class MessageTable
 {
     //Todo: handle empty list..
-    public static function generateMessagesTableHTML(string $username = null): string
+    public static function generateMessageTableHTML(string $username = null): string
     {
         $messages = $username == null ? \Model\MessageStorage::getAllMessages() : \Model\MessageStorage::getUserMessages($username);
         $editColumn = $username == null ? '' : '<th>Edit</th>';
@@ -24,7 +24,7 @@ class MessagesTable
                 <form action="">
                     <input hidden name="messages"/>    
                     <input hidden name="edit" value="' . $id . '"/>
-                    <button type="submit">Update</button>
+                    <button type="submit">Edit</button>
                 </form>
             </td>';
             $author = $message->author;

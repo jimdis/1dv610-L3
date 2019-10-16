@@ -2,7 +2,7 @@
 
 namespace View;
 
-class MessagesView extends View
+class MessageView extends View
 {
     private static $submitMessage = __CLASS__ . '::submitMessage';
     private static $updateMessage = __CLASS__ . '::updateMessage';
@@ -68,7 +68,7 @@ class MessagesView extends View
     private function generateViewHTML(): string
     {
         $form = $this->showEditMode() ? $this->generateMessageEditFormHTML($this->message) : $this->generateMessageFormHTML($this->message);
-        $messageTable = \View\MessagesTable::generateMessagesTableHTML();
+        $messageTable = \View\MessageTable::generateMessageTableHTML();
         $html = $form . '<br/><h2>Message Board</h2>' . $messageTable;
         return $html;
     }

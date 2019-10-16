@@ -8,32 +8,35 @@ class MessageStorage
 
     public static function getAllMessages(): array
     {
-        array_push(self::$messages, new \Model\Message('Jim', 'Hello World!')); // TODO: Testing only - remove
-        return self::$messages;
+        $messageDAL = new \Model\MessageDAL();
+        $messages = $messageDAL->getAllMessages();
+        return $messages;
     }
 
     public static function getUserMessages(string $username): array
     {
-        $message = new \Model\Message('Username', 'Hello World!', 2);
-        array_push(self::$messages, $message);
-        return self::$messages;
+        $messageDAL = new \Model\MessageDAL();
+        $messages = $messageDAL->getUserMessages($username);
+        return $messages;
     }
 
     public static function getMessageById(int $id): \Model\Message
     {
-        $message = new \Model\Message('Username', "Hello World by id!. My id is $id", $id);
+        $messageDAL = new \Model\MessageDAL();
+        $message = $messageDAL->getMessageByID($id);
         return $message;
     }
 
-    public static function storeNewMessage(\Model\Message $message)
+    public static function storeMessage(\Model\Message $message)
     {
-        array_push(self::$messages, $message);
+        $messageDAL = new \Model\MessageDAL();
+        $messageDAL->storeMessage($message);
     }
 
-    public static function updateMessage(int $id)
+    public static function updateMessage(\Model\Message $newMessage)
     {
-        echo "UPDATED! $id";
-        //TO BE IMPLEMENTED;
+        $messageDAL = new \Model\MessageDAL();
+        $messageDAL->updateMessage($newMessage);
     }
 
     //TODO: A bit inverted logic..
