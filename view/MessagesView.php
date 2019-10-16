@@ -81,7 +81,7 @@ class MessagesView extends View
         $hidden = $this->username != null ? 'hidden' : '';
         return '
         <a href=".">' . $linkText . '</a><br /><br />
-            <form method="post" action=""?messages"">
+            <form method="post" action="?messages">
 				<fieldset>
 					<legend>Write a new message</legend>
 					<p id="' . self::$messageId . '">' . $message . '</p>
@@ -91,7 +91,7 @@ class MessagesView extends View
 					<input ' . $hidden . ' type="text" id="' . self::$name . '" name="' . self::$name . '" value="' . $this->username . '" />
                     <br/>
 					<label for="' . self::$messageContent . '">Your message :</label><br/>
-					<textarea rows=6 cols=50" id="' . self::$messageContent . '" name="' . self::$messageContent . '">Type your message here..</textarea>
+					<textarea rows=6 cols=50 id="' . self::$messageContent . '" name="' . self::$messageContent . '">Type your message here..</textarea>
                     <br/>
                     <input type="submit" name="' . self::$submitMessage . '" value="Submit" />
                     
