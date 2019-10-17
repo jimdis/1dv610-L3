@@ -18,19 +18,4 @@ abstract class Controller
     {
         return $this->view->response();
     }
-
-    protected function getUsername(): string
-    {
-        return $this->view->getFormUsername();
-    }
-
-    protected function getPassword(): string
-    {
-        return $this->view->getFormPassword();
-    }
-
-    protected function userIsAuthenticated(): bool
-    {
-        return $this->storage->getUser()->getIsAuthenticated();
-    }
 }

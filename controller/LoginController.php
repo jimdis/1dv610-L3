@@ -29,7 +29,7 @@ class LoginController extends Controller
 
     private function attemptLoginWithCookies(): void
     {
-        if ($this->userIsAuthenticated()) {
+        if ($this->storage->getUserIsAuthenticated()) {
             return;
         }
         if ($this->view->userHasCookies()) {
@@ -41,7 +41,7 @@ class LoginController extends Controller
 
     private function attemptLoginWithLoginForm(): void
     {
-        if ($this->userIsAuthenticated()) {
+        if ($this->storage->getUserIsAuthenticated()) {
             return;
         }
         if ($this->view->loginFormWasSubmitted()) {
@@ -56,7 +56,7 @@ class LoginController extends Controller
 
     private function attemptLogout(): void
     {
-        if ($this->userIsAuthenticated() && $this->view->logoutWasSubmitted()) {
+        if ($this->storage->getUserIsAuthenticated() && $this->view->logoutWasSubmitted()) {
             // $this->isLoggedIn = false;
             // \Model\UserStorage::destroySession();
             $this->storage->logout();

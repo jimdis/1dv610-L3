@@ -10,9 +10,4 @@ abstract class View
     {
         $this->storage = $storage;
     }
-
-    protected function userIsAuthenticated(): bool
-    {
-        return $this->storage->getUser()->getIsAuthenticated();
-    }
 }

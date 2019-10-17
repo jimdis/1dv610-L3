@@ -76,6 +76,11 @@ class UserStorage
         return $this->user;
     }
 
+    public function getUserIsAuthenticated(): bool
+    {
+        return $this->user->getIsAuthenticated();
+    }
+
     private function validateLoginCredentials(): void
     {
         if (strlen($this->user->getUsername()) == 0) throw new \Exception('Username is missing');

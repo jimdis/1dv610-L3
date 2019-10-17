@@ -40,8 +40,12 @@ class Application
 
     public function run()
     {
-        $this->changeState();
-        $this->generateOutput();
+        try {
+            $this->changeState();
+            $this->generateOutput();
+        } catch (\Exception $e) {
+            $this->handleException($e);
+        }
     }
 
     private function changeState()
@@ -53,6 +57,16 @@ class Application
     {
         $title = 'Login example'; // TODO: fixa till en dynamisk title
         $body = $this->view->getBody();
+        $pageView = new \View\HTMLPageView($title, $body);
+        $pageView->echoHTML();
+    }
+
+    private function handleException(\Exception $e)
+    {
+        $title = 'An error occured';
+        $body = '
+                <p>Ooops.. An error occured. Sorry! Error info: ' . $e->getMessage() . '</p>
+                <a href="?">Go back!</a>';
         $pageView = new \View\HTMLPageView($title, $body);
         $pageView->echoHTML();
     }

@@ -19,7 +19,7 @@ class MessageController extends Controller
 
     private function updateView()
     {
-        if ($this->userIsAuthenticated()) {
+        if ($this->storage->getUserIsAuthenticated()) {
             $username = $this->storage->getUser()->getUsername();
             $this->view->setUsername($username);
         }
@@ -44,7 +44,7 @@ class MessageController extends Controller
 
     private function validateMessageAuthor(\Model\Message $message)
     {
-        if (!$this->userIsAuthenticated()) {
+        if (!$this->storage->getUserIsAuthenticated()) {
             $author = $message->getAuthor();
             \Model\MessageStorage::validateAuthor($author);
         } else {

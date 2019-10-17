@@ -14,11 +14,6 @@ class LayoutView extends View
         return $query[0] ?? '';
     }
 
-    // public function setIsLoggedIn(bool $isLoggedIn): void
-    // {
-    //     $this->isLoggedIn = $isLoggedIn;
-    // }
-
     public function setHeader(string $header): void
     {
         $this->header = $header;
@@ -46,7 +41,7 @@ class LayoutView extends View
 
     private function renderIsAuthenticated(): string
     {
-        if ($this->userIsAuthenticated()) {
+        if ($this->storage->getUserIsAuthenticated()) {
             return '<h2>Logged in</h2>';
         } else {
             return '<h2>Not logged in</h2>';
