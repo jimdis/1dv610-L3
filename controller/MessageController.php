@@ -45,7 +45,7 @@ class MessageController extends Controller
     private function validateMessageAuthor(\Model\Message $message)
     {
         if (!$this->storage->getUserIsAuthenticated()) {
-            $author = $message->getAuthor();
+            $author = $message->author;
             \Model\MessageStorage::validateAuthor($author);
         } else {
             $message->setIsVerified(true);

@@ -14,6 +14,7 @@ require_once 'controller/LayoutController.php';
 require_once 'controller/LoginController.php';
 require_once 'controller/RegisterController.php';
 require_once 'controller/MessageController.php';
+require_once 'model/SanitizeInput.php';
 require_once 'model/Credentials.php';
 require_once 'model/Token.php';
 require_once 'model/UserStorage.php';

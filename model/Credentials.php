@@ -6,7 +6,6 @@ class Credentials
 {
     private $username;
     private $password;
-    private $tempPassword;
 
     public function __construct(string $username, string $password)
     {

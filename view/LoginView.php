@@ -32,33 +32,9 @@ class LoginView extends View
         return new \Model\Credentials($username, $password);
     }
 
-    public function getFormUsername(): string
-    {
-        return $_POST[self::$name] ?? '';
-    }
-
-    public function getFormPassword(): string
-    {
-        return $_POST[self::$password] ?? '';
-    }
-
     public function logoutWasSubmitted(): bool
     {
         return isset($_POST[self::$logout]);
-    }
-
-    // private function getUserNameFiltered(): string
-    // {
-    //     if (isset($_POST[self::$name])) {
-    //         $username = $_POST[self::$name];
-    //         return \Model\User::applyFilter($username);
-    //     }
-    //     return '';
-    // }
-
-    public function setLoginUsername(string $username): void
-    {
-        $this->loginUsername = $username;
     }
 
     public function setMessage(string $message): void

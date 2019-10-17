@@ -17,8 +17,8 @@ class Message
         if (strlen($content) == 0) {
             throw new \Exception('Your message is empty!');
         }
-        $this->author = $author;
-        $this->content = $content;
+        $this->author = \Model\SanitizeInput::sanitize($author);
+        $this->content = \Model\SanitizeInput::sanitize($content);
         $this->id = $id;
     }
 

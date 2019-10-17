@@ -4,8 +4,6 @@ namespace Model;
 
 class MessageStorage
 {
-    private static $messages = [];
-
     public static function getAllMessages(): array
     {
         $messageDAL = new \Model\MessageDAL();

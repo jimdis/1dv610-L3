@@ -4,7 +4,7 @@ namespace Controller;
 
 class RegisterController extends Controller
 {
-    private $registerSuccess = false;
+    private $redirect = false;
 
     public function updateState(): void
     {
@@ -15,9 +15,9 @@ class RegisterController extends Controller
         }
     }
 
-    public function getRegisterSuccess(): bool
+    public function getRedirect(): bool
     {
-        return $this->registerSuccess;
+        return $this->redirect;
     }
 
     private function attemptRegisterNewUser(): void
@@ -25,7 +25,7 @@ class RegisterController extends Controller
         if ($this->view->userAttemptedRegistration()) {
             $credentials = $this->view->getFormCredentials();
             $this->storage->registerNewUser($credentials);
-            $this->registerSuccess = true;
+            $this->redirect = true;
         }
     }
 }

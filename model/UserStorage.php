@@ -59,15 +59,17 @@ class UserStorage
 
     public function registerNewUser(\Model\Credentials $credentials): void
     {
-        $this->user = new \Model\User($credentials->getUsername(), $credentials->getPassword());
-        $this->validateRegistrationCredentials();
         try {
+            $this->validateRegistrationCredentials($credentials);
+            $this->user = new \Model\User($credentials->getUsername(), $credentials->getPassword());
             $hashedPassword = password_hash($this->user->getPassword(), PASSWORD_DEFAULT);
             $this->user->setNewPassword($hashedPassword);
             $userDAL = new \Model\UserDAL();
             $userDAL->storeUser($this->user);
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
+        } finally {
+            $this->user = new \Model\User($credentials->getUsername(), $credentials->getPassword());
         }
     }
 
@@ -87,10 +89,10 @@ class UserStorage
         if (strlen($this->user->getPassword()) == 0) throw new \Exception('Password is missing');
     }
 
-    private function validateRegistrationCredentials(): void
+    private function validateRegistrationCredentials(\Model\Credentials $credentials): void
     {
-        $username = $this->user->getUsername();
-        $password = $this->user->getPassword();
+        $username = $credentials->getUsername();
+        $password = $credentials->getPassword();
         $errorMessage = '';
         if (strlen($username) < self::$minNameLength) {
             $errorMessage .= 'Username has too few characters, at least 3 characters.';

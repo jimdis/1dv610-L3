@@ -7,11 +7,11 @@ class LoginController extends Controller
     public function updateState(): void
     {
         try {
-            //TODO: rename these methods..
-            // $this->storage->sessionAuth();
-            $this->attemptLoginWithCookies();
-            $this->attemptLoginWithLoginForm();
-            $this->attemptLogout();
+            if ($this->storage->getUserIsAuthenticated()) {
+                $this->handleLogout();
+            } else {
+                $this->handleLogin();
+            }
         } catch (\Exception $e) {
             $this->view->setMessage($e->getMessage());
         }
@@ -22,55 +22,38 @@ class LoginController extends Controller
         $this->view->setMessage($message);
     }
 
-    public function updateLoginUsername(string $username)
-    {
-        $this->view->setLoginUsername($username);
-    }
 
-    private function attemptLoginWithCookies(): void
+    private function handleLogout(): void
     {
-        if ($this->storage->getUserIsAuthenticated()) {
-            return;
-        }
-        if ($this->view->userHasCookies()) {
-            $credentials = $this->view->getCredentials();
-            $this->storage->loginWithToken($credentials);
-            $this->view->setMessage('Welcome back with cookie');
-        }
-    }
-
-    private function attemptLoginWithLoginForm(): void
-    {
-        if ($this->storage->getUserIsAuthenticated()) {
-            return;
-        }
-        if ($this->view->loginFormWasSubmitted()) {
-            $username = $this->getUsername();
-            $credentials = $this->view->getCredentials();
-            // $this->view->setLoginUsername($username); //TODO: Få bort denna rad
-            $this->storage->login($credentials);
-            $this->view->setMessage('Welcome'); //TODO: Få bort denna rad
-            $this->setCookies();
-        }
-    }
-
-    private function attemptLogout(): void
-    {
-        if ($this->storage->getUserIsAuthenticated() && $this->view->logoutWasSubmitted()) {
-            // $this->isLoggedIn = false;
-            // \Model\UserStorage::destroySession();
+        if ($this->view->logoutWasSubmitted()) {
             $this->storage->logout();
             $this->view->unsetCookies();
             $this->view->setMessage('Bye bye!');
         }
     }
 
-    // private function saveSession(string $username): void
-    // {
-    //     if ($this->isLoggedIn) {
-    //         \Model\UserStorage::saveSession($username);
-    //     }
-    // }
+    private function handleLogin(): void
+    {
+        $credentials = $this->view->getCredentials();
+        if ($this->view->userHasCookies()) {
+            $this->handleCookies($credentials);
+        } else if ($this->view->loginFormWasSubmitted()) {
+            $this->handleLoginForm($credentials);
+        }
+    }
+
+    private function handleCookies(\Model\Credentials $credentials): void
+    {
+        $this->storage->loginWithToken($credentials);
+        $this->view->setMessage('Welcome back with cookie');
+    }
+
+    private function handleLoginForm(\Model\Credentials $credentials): void
+    {
+        $this->storage->login($credentials);
+        $this->view->setMessage('Welcome');
+        $this->setCookies();
+    }
 
     private function setCookies(): void
     {

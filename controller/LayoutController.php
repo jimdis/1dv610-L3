@@ -8,9 +8,10 @@ class LayoutController extends Controller
     private static $registerQuery = 'register';
     private static $messagesQuery = 'messages';
     private $header = 'Assignment 3';
-    private $loginController;
-    private $registerController;
-    private $messageController;
+    private $lc;
+    private $rc;
+    private $mc;
+    private $currentController;
 
     public function __construct(\View\LayoutView $view, \Model\UserStorage $storage)
     {
@@ -20,42 +21,36 @@ class LayoutController extends Controller
         $loginView = new \View\LoginView($this->storage);
         $registerView = new \View\RegisterView($this->storage);
         $messageView = new \View\MessageView($this->storage);
-        $this->loginController = new \Controller\LoginController($loginView, $this->storage);
-        $this->registerController = new \Controller\RegisterController($registerView, $this->storage);
-        $this->messageController = new \Controller\MessageController($messageView, $this->storage);
+        $this->lc = new \Controller\LoginController($loginView, $this->storage);
+        $this->rc = new \Controller\RegisterController($registerView, $this->storage);
+        $this->mc = new \Controller\MessageController($messageView, $this->storage);
     }
 
     public function updateState(): void
     {
-        $this->loginController->updateState();
-        $this->registerController->updateState();
-        $this->messageController->updateState();
+        $this->view->setHeader($this->header);
+        $this->selectController();
+        $this->currentController->updateState();
         $this->updateView();
+    }
+
+    private function selectController(): void
+    {
+        $query = $this->view->getQuery();
+        if ($query == self::$registerQuery) {
+            $this->currentController = $this->rc;
+        } else if ($query == self::$messagesQuery) {
+            $this->currentController = $this->mc;
+        } else $this->currentController = $this->lc;
     }
 
     private function updateView(): void
     {
-        $this->view->setHeader($this->header);
-        $this->selectContainer();
-    }
-
-    //TODO: Improve logic.. Does user have to be fetched this way? storage as instance?
-    private function selectContainer(): void
-    {
-        $query = $this->view->getQuery();
-        $successfulRegister = $this->registerController->getRegisterSuccess();
-
-        if ($successfulRegister) {
-            // $user = $this->storage->getUser();
-            $this->loginController->updateMessage('Registered new user.');
-            // $this->loginController->updateLoginUsername($user->getUsername());
+        if ($this->rc->getRedirect()) {
+            $this->currentController = $this->lc;
+            $this->lc->updateMessage('Registered new user.');
         }
-        if ($query == self::$registerQuery && !$successfulRegister) {
-            $this->view->setContainer($this->registerController->getViewResponse());
-        } else if ($query == self::$messagesQuery) {
-            $this->view->setContainer($this->messageController->getViewResponse());
-        } else {
-            $this->view->setContainer($this->loginController->getViewResponse());
-        }
+        $response = $this->currentController->getViewResponse();
+        $this->view->setContainer($response);
     }
 }

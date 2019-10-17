@@ -10,7 +10,7 @@ class User
 
     public function __construct(string $username, string $password)
     {
-        $this->username = $username;
+        $this->username = \Model\SanitizeInput::sanitize($username);
         $this->password = $password;
     }
 
