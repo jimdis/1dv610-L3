@@ -12,16 +12,6 @@ class RegisterView extends View
     private static $messageId = 'RegisterView::Message';
     private $message = '';
 
-    // public function getForm(): \Model\RegisterForm
-    // {
-    //     $action = $this->getFormAction();
-    //     $username = $this->getUsername();
-    //     $password = $this->getPassword();
-    //     $passwordRepeat = $this->getPasswordRepeat();
-    //     $form = new \Model\RegisterForm($action, $username, $password, $passwordRepeat);
-    //     return $form;
-    // }
-
     public function userAttemptedRegistration(): bool
     {
         if (isset($_POST[self::$register])) {
@@ -31,7 +21,6 @@ class RegisterView extends View
         }
     }
 
-    //TODO: same as in LoginView.. Create FormView parent?
     public function getFormCredentials(): \Model\Credentials
     {
         $username = $_POST[self::$name] ?? '';
@@ -54,11 +43,6 @@ class RegisterView extends View
             throw new \Exception('Passwords do not match.');
         }
     }
-
-    // private function getPasswordRepeat(): string
-    // {
-    //     return $_POST[self::$passwordRepeat] ?? '';
-    // }
 
     public function setMessage(string $message): void
     {

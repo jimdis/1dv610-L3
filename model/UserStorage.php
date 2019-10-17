@@ -65,7 +65,7 @@ class UserStorage
             $hashedPassword = password_hash($this->user->getPassword(), PASSWORD_DEFAULT);
             $this->user->setNewPassword($hashedPassword);
             $userDAL = new \Model\UserDAL();
-            $this->user = $userDAL->storeUser($this->user);
+            $userDAL->storeUser($this->user);
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
         }

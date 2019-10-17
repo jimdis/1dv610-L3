@@ -77,8 +77,8 @@ class MessageView extends View
     {
         $isLoggedIn = $this->userIsAuthenticated();
         $linkText = $isLoggedIn ? 'Account' : 'Go to login';
-        $username = $this->username != null ? "<strong>$this->username</strong>" : '';
-        $hidden = $this->username != null ? 'hidden' : '';
+        $username = "<strong>$this->username</strong>";
+        $hidden = $isLoggedIn ? 'hidden' : '';
         return '
         <a href=".">' . $linkText . '</a><br /><br />
             <form method="post" action="?messages">
