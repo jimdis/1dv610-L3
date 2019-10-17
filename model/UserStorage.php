@@ -68,8 +68,6 @@ class UserStorage
             $userDAL->storeUser($this->user);
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
-        } finally {
-            $this->user = new \Model\User($credentials->getUsername(), $credentials->getPassword());
         }
     }
 

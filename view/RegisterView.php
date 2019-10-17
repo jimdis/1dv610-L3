@@ -28,6 +28,13 @@ class RegisterView extends View
         return new \Model\Credentials($username, $password);
     }
 
+    private function getFormUsername(): string
+    {
+        return isset($_POST[self::$name])
+            ? \Model\SanitizeInput::sanitize($_POST[self::$name])
+            : '';
+    }
+
     private function getFormPassword(): string
     {
         $password = $_POST[self::$password] ?? '';
@@ -64,7 +71,7 @@ class RegisterView extends View
      */
     private function generateRegisterFormHTML($message)
     {
-        $username = $this->storage->getUser()->getUsername();
+        $username = $this->getFormUsername();
         return '
             <a href=".">Back to login</a><br /><br />
             <form method="post" action="">
