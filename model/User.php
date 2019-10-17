@@ -33,4 +33,9 @@ class User
     {
         $this->isAuthenticated = $bool;
     }
+
+    public function setNewPassword(string $newPassword)
+    {
+        $this->password = $newPassword;
+    }
 }

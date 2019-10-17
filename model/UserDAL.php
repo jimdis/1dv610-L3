@@ -40,14 +40,12 @@ class UserDAL extends Database
         }
     }
 
-    public function storeUser(\Model\Credentials $credentials): \Model\User
+    public function storeUser(\Model\User $user): void
     {
         $sql = "INSERT INTO user (username, password) VALUES (?, ?)";
         $query = $this->connect()->prepare($sql);
-        $success = $query->execute([$credentials->getUsername(), $credentials->getPassword()]);
-        if ($success) {
-            return new \Model\User($credentials->getUsername(), $credentials->getPassword());
-        } else {
+        $success = $query->execute([$user->getUsername(), $user->getPassword()]);
+        if (!$success) {
             $this->handlePDOError($query->errorInfo());
         }
     }

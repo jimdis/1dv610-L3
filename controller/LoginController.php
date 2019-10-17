@@ -47,7 +47,7 @@ class LoginController extends Controller
         if ($this->view->loginFormWasSubmitted()) {
             $username = $this->getUsername();
             $credentials = $this->view->getCredentials();
-            $this->view->setLoginUsername($username); //TODO: Få bort denna rad
+            // $this->view->setLoginUsername($username); //TODO: Få bort denna rad
             $this->storage->login($credentials);
             $this->view->setMessage('Welcome'); //TODO: Få bort denna rad
             $this->setCookies();

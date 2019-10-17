@@ -13,7 +13,6 @@ class UserStorage
     private static $SESSION_USERNAME = 'UserStorage::UserName';
     private static $SESSION_AGENT = 'HTTP_USER_AGENT';
 
-    private $credentials;
     private $user;
 
     public function __construct()
@@ -24,14 +23,14 @@ class UserStorage
     public function login(\Model\Credentials $credentials): void
     {
         try {
-            $this->credentials = $credentials;
+            $this->user = new User($credentials->getUsername(), $credentials->getPassword());
             $this->validateLoginCredentials();
             $userDAL = new \Model\UserDAL();
-            $user = $userDAL->getUser($this->credentials->getUsername());
-            $isCorrectPassword = password_verify($this->credentials->getPassword(), $user->getPassword());
+            $newUser = $userDAL->getUser($this->user->getUsername());
+            $isCorrectPassword = password_verify($this->user->getPassword(), $newUser->getPassword());
             if ($isCorrectPassword) {
-                $user->setIsAuthenticated(true);
-                $this->user = $user;
+                $newUser->setIsAuthenticated(true);
+                $this->user = $newUser;
                 $this->saveSession();
             } else throw new \Model\IncorrectCredentialsException();
         } catch (\Model\IncorrectCredentialsException $e) {
@@ -60,13 +59,13 @@ class UserStorage
 
     public function registerNewUser(\Model\Credentials $credentials): void
     {
-        $this->credentials = $credentials;
+        $this->user = new \Model\User($credentials->getUsername(), $credentials->getPassword());
         $this->validateRegistrationCredentials();
         try {
-            $hashedPassword = password_hash($this->credentials->getPassword(), PASSWORD_DEFAULT);
-            $this->credentials->setPassword($hashedPassword);
+            $hashedPassword = password_hash($this->user->getPassword(), PASSWORD_DEFAULT);
+            $this->user->setNewPassword($hashedPassword);
             $userDAL = new \Model\UserDAL();
-            $this->user = $userDAL->storeUser($this->credentials);
+            $this->user = $userDAL->storeUser($this->user);
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
         }
@@ -79,14 +78,14 @@ class UserStorage
 
     private function validateLoginCredentials(): void
     {
-        if (strlen($this->credentials->getUsername()) == 0) throw new \Exception('Username is missing');
-        if (strlen($this->credentials->getPassword()) == 0) throw new \Exception('Password is missing');
+        if (strlen($this->user->getUsername()) == 0) throw new \Exception('Username is missing');
+        if (strlen($this->user->getPassword()) == 0) throw new \Exception('Password is missing');
     }
 
     private function validateRegistrationCredentials(): void
     {
-        $username = $this->credentials->getUsername();
-        $password = $this->credentials->getPassword();
+        $username = $this->user->getUsername();
+        $password = $this->user->getPassword();
         $errorMessage = '';
         if (strlen($username) < self::$minNameLength) {
             $errorMessage .= 'Username has too few characters, at least 3 characters.';
