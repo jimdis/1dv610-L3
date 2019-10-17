@@ -28,4 +28,9 @@ abstract class Controller
     {
         return $this->view->getFormPassword();
     }
+
+    protected function userIsAuthenticated(): bool
+    {
+        return $this->storage->getUser()->getIsAuthenticated();
+    }
 }

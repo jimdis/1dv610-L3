@@ -75,7 +75,7 @@ class MessageView extends View
 
     private function generateMessageFormHTML($message): string
     {
-        $isLoggedIn = $this->storage->getIsAuthenticated();
+        $isLoggedIn = $this->userIsAuthenticated();
         $linkText = $isLoggedIn ? 'Account' : 'Go to login';
         $username = $this->username != null ? "<strong>$this->username</strong>" : '';
         $hidden = $this->username != null ? 'hidden' : '';
@@ -104,8 +104,7 @@ class MessageView extends View
     //TODO in all views: remove $message duplication
     private function generateMessageEditFormHTML($message): string
     {
-        $isLoggedIn = $this->storage->getIsAuthenticated();
-        if (!$isLoggedIn) {
+        if (!$this->userIsAuthenticated()) {
             throw new \Exception('You must be logged in to view this page');
         }
         //TODO: Forsätt här - läs in message från storage baserat på query.

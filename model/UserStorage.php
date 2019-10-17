@@ -15,23 +15,11 @@ class UserStorage
 
     private $credentials;
     private $user;
-    private $isAuthenticated = false;
 
-    // public static function loginUser(string $username, string $password): \Model\User
-    // {
-    //     try {
-    //         if (strlen($username) == 0) throw new \Exception('Username is missing');
-    //         if (strlen($password) == 0) throw new \Exception('Password is missing');
-    //         $userDAL = new \Model\UserDAL();
-    //         $user = $userDAL->getUser($username);
-    //         $isCorrectPassword = password_verify($password, $user->getPassword());
-    //         if ($isCorrectPassword) {
-    //             return $user;
-    //         } else throw new \Model\IncorrectCredentialsException();
-    //     } catch (\Model\IncorrectCredentialsException $e) {
-    //         throw new \Exception('Wrong name or password');
-    //     }
-    // }
+    public function __construct()
+    {
+        $this->loadUser();
+    }
 
     public function login(\Model\Credentials $credentials): void
     {
@@ -42,8 +30,8 @@ class UserStorage
             $user = $userDAL->getUser($this->credentials->getUsername());
             $isCorrectPassword = password_verify($this->credentials->getPassword(), $user->getPassword());
             if ($isCorrectPassword) {
+                $user->setIsAuthenticated(true);
                 $this->user = $user;
-                $this->isAuthenticated = true;
                 $this->saveSession();
             } else throw new \Model\IncorrectCredentialsException();
         } catch (\Model\IncorrectCredentialsException $e) {
@@ -55,32 +43,20 @@ class UserStorage
     {
         try {
             $userDAL = new \Model\UserDAL();
-            $this->user = $userDAL->getUserWithToken($credentials);
-            $this->isAuthenticated = true;
+            $user = $userDAL->getUserWithToken($credentials);
+            $user->setIsAuthenticated(true);
+            $this->user = $user;
             $this->saveSession();
         } catch (\Model\IncorrectCredentialsException $e) {
             throw new \Exception('Wrong information in cookies');
         }
     }
 
-    public function storeToken(\Model\Token $token)
+    public function storeToken(\Model\Token $token): void
     {
         $userDAL = new \Model\UserDAL();
         $userDAL->storeToken($token, $this->user->getUsername());
     }
-
-    // public static function registerNewUser(string $username, string $password)
-    // {
-    //     self::validateRegistrationCredentials($username, $password);
-    //     try {
-    //         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-    //         $userDAL = new \Model\UserDAL();
-    //         $user = $userDAL->register($username, $hashedPassword);
-    //         return $user;
-    //     } catch (\Exception $e) {
-    //         throw new \Exception($e->getMessage());
-    //     }
-    // }
 
     public function registerNewUser(\Model\Credentials $credentials): void
     {
@@ -94,11 +70,6 @@ class UserStorage
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
         }
-    }
-
-    public function getIsAuthenticated(): bool
-    {
-        return $this->isAuthenticated;
     }
 
     public function getUser(): \Model\User
@@ -135,17 +106,24 @@ class UserStorage
         }
     }
 
-    // fixa så nedan returnerar en User-instans. Gör abstrakt, ta ner isset etc till en egen metod.
-    // public function loadUser() : User
+    // public function sessionAuth(): void
     // {
-    //     $sessionUser = $this->loadUserFromSession();
-    //     $cookieUser = $this->loadUserFromCookies();
-    //     if ($sessionUser) return $sessionUser;
+    //     //TODO: verifiera password på något vis? Säkerhet?
+    //     if (
+    //         isset($_SESSION[self::$SESSION_AGENT]) &&
+    //         $_SESSION[self::$SESSION_AGENT] == md5($_SERVER[self::$SESSION_AGENT]) &&
+    //         isset($_SESSION[self::$SESSION_USERNAME])
+    //     ) {
+    //         $username = $_SESSION[self::$SESSION_USERNAME];
+    //         $userDAL = new \Model\UserDAL();
+    //         $user = $userDAL->getUser($username);
+    //         $this->user = $user;
+    //         $this->isAuthenticated = true;
+    //     }
     // }
 
-    public function sessionAuth(): void
+    private function loadUser(): void
     {
-        //TODO: verifiera password på något vis? Säkerhet?
         if (
             isset($_SESSION[self::$SESSION_AGENT]) &&
             $_SESSION[self::$SESSION_AGENT] == md5($_SERVER[self::$SESSION_AGENT]) &&
@@ -154,32 +132,12 @@ class UserStorage
             $username = $_SESSION[self::$SESSION_USERNAME];
             $userDAL = new \Model\UserDAL();
             $user = $userDAL->getUser($username);
+            $user->setIsAuthenticated(true);
             $this->user = $user;
-            $this->isAuthenticated = true;
+        } else {
+            $this->user = new \Model\User('', '');
         }
     }
-
-    // gör eventuellt om till att returnera en user, alt username..
-    // public static function validateSession(): bool
-    // {
-    //     if (
-    //         isset($_SESSION[self::$SESSION_AGENT]) &&
-    //         $_SESSION[self::$SESSION_AGENT] == md5($_SERVER[self::$SESSION_AGENT]) &&
-    //         isset($_SESSION[self::$SESSION_USERNAME])
-    //     ) {
-    //         return true;
-    //     } else {
-    //         return false;
-    //     }
-    // }
-
-
-
-    // public static function saveSession(string $username)
-    // {
-    //     $_SESSION[self::$SESSION_AGENT] = md5($_SERVER[self::$SESSION_AGENT]);
-    //     $_SESSION[self::$SESSION_USERNAME] = $username;
-    // }
 
     private function saveSession()
     {
@@ -187,16 +145,10 @@ class UserStorage
         $_SESSION[self::$SESSION_USERNAME] = $this->user->getUsername();
     }
 
-    // public static function destroySession()
-    // {
-    //     session_destroy();
-    // }
-
     public function logout()
     {
         session_destroy();
-        $this->user = null;
-        $this->isAuthenticated = false;
+        $this->user = new \Model\User('', '');
     }
 
     public static function validateCookies(string $username, string $password): bool

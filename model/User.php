@@ -6,6 +6,7 @@ class User
 {
     private $username;
     private $password;
+    private $isAuthenticated = false;
 
     public function __construct(string $username, string $password)
     {
@@ -21,5 +22,15 @@ class User
     public function getPassword(): string
     {
         return $this->password;
+    }
+
+    public function getIsAuthenticated(): bool
+    {
+        return $this->isAuthenticated;
+    }
+
+    public function setIsAuthenticated(bool $bool)
+    {
+        $this->isAuthenticated = $bool;
     }
 }

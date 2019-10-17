@@ -46,7 +46,7 @@ class LayoutView extends View
 
     private function renderIsAuthenticated(): string
     {
-        if ($this->storage->getIsAuthenticated()) {
+        if ($this->userIsAuthenticated()) {
             return '<h2>Logged in</h2>';
         } else {
             return '<h2>Not logged in</h2>';

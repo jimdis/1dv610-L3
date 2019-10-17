@@ -15,31 +15,6 @@ class LoginView extends View
     private $loginUsername = '';
     private $message = '';
 
-    // public function __construct(\Model\UserStorage $storage)
-    // {
-    //     $this->storage = $storage;
-    //     // $this->isLoggedIn = $this->user != null; // fixa
-    // }
-
-    // public function getLoginFormCredentials(): \Model\LoginCredentials
-    // {
-    //     $username = $this->getFormUsername();
-    //     $password = $this->getFormPassword();
-    //     $form = new \Model\LoginCredentials($username, $password);
-    //     return $form;
-    // }
-
-    // public function getFormAction(): string
-    // {
-    //     $action = \Model\FormAction::$none;
-    //     if (isset($_POST[self::$login])) {
-    //         $action = \Model\FormAction::$login;
-    //     } else if (isset($_POST[self::$logout])) {
-    //         $action = \Model\FormAction::$logout;
-    //     }
-    //     return $action;
-    // }
-
     public function loginFormWasSubmitted(): bool
     {
         return isset($_POST[self::$login]);
@@ -79,11 +54,6 @@ class LoginView extends View
     //         return \Model\User::applyFilter($username);
     //     }
     //     return '';
-    // }
-
-    // private function getFormUsername(): string
-    // {
-    //     return $this->getUsername() ?? $this->formUserName;
     // }
 
     public function setLoginUsername(string $username): void
@@ -144,7 +114,7 @@ class LoginView extends View
      */
     public function response(): string
     {
-        $response = $this->storage->getIsAuthenticated() ? $this->generateLoggedInView($this->message) : $this->generateLoginFormHTML($this->message);
+        $response = $this->userIsAuthenticated() ? $this->generateLoggedInView($this->message) : $this->generateLoginFormHTML($this->message);
         return $response;
     }
 
@@ -175,7 +145,9 @@ class LoginView extends View
      */
     private function generateLoginFormHTML($message): string
     {
+        $username = $this->storage->getUser()->getUsername();
         return '
+            <a href="?messages">Go to message board</a><br />
             <a href="?register">Register a new user</a><br /><br />    
             <form method="post" action=".">
 				<fieldset>
@@ -183,7 +155,7 @@ class LoginView extends View
 					<p id="' . self::$messageId . '">' . $message . '</p>
 
 					<label for="' . self::$name . '">Username :</label>
-					<input type="text" id="' . self::$name . '" name="' . self::$name . '" value="' . $this->loginUsername . '" />
+					<input type="text" id="' . self::$name . '" name="' . self::$name . '" value="' . $username . '" />
 
 					<label for="' . self::$password . '">Password :</label>
 					<input type="password" id="' . self::$password . '" name="' . self::$password . '" />
