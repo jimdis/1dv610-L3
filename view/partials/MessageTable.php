@@ -4,6 +4,19 @@ namespace View;
 
 class MessageTable
 {
+    private static $delete = __CLASS__ . '::deleteMessage';
+
+    public static function userWantsToDeleteMessage(): bool
+    {
+        return isset($_POST[self::$delete]);
+    }
+
+    public static function getMessageId(): int
+    {
+        return $_POST[self::$delete];
+    }
+
+
     public static function showAllMessages(): string
     {
 
@@ -49,6 +62,13 @@ class MessageTable
                     <button type="submit">Edit</button>
                 </form>
             </td>
+            <td>
+                <form method="post" action="?messages">
+                    <input hidden name="messages"/>    
+                    <input hidden name="' . self::$delete . '" value="' . $id . '"/>
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
             </tr>';
         }
         return '<table>
@@ -56,6 +76,7 @@ class MessageTable
         <tr>
         <th>Message</th>
         <th>Edit<th>
+        <th>Delete</th>
         </tr>
         </thead>
         <tbody>'

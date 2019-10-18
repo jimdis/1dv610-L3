@@ -104,6 +104,7 @@ Make sure message posting will happen if correct username and a message is fille
 
 ### Output:
 
+- Feedback: "Your message was submitted!" is shown.
 - The message appears at the bottom of the Message Board with the entered username and message.
 - A form for posting a message is shown.
 - The entered username is filled in as username.
@@ -158,6 +159,7 @@ Make sure message posting will happen if message is filled in.
 
 ### Output:
 
+- Feedback: "Your message was submitted!" is shown.
 - The message appears at the bottom of the Message Board with Admin as username and message and message.
 - A form for posting a message is shown.
 
@@ -208,6 +210,7 @@ Make sure we can access the page to edit our message.
 ### Output:
 
 - A form for writing new messages is shown (TC 5.7)
+- Feedback "Your message was updated!" is shown.
 - The relevant message has been updated and can be seen in the Message Board with the word "edited" at the end.
 
 ## Test case 6.3: Failed access to incorrect edit page as logged in user

@@ -11,7 +11,7 @@ class MessageView extends View
     private static $messageContent = __CLASS__ . '::messageContent';
     private static $messageId = __CLASS__ . '::Message';
     private static $editParam = 'edit';
-    private $username;
+    private $contentInput = '';
     private $isAuthorizedEditor = true;
 
     public function getNewMessage(): \Model\Message
@@ -19,6 +19,7 @@ class MessageView extends View
         $author = $_POST[self::$name] ?? '';
         $content = $_POST[self::$messageContent] ?? '';
         $id = $_POST[self::$updateMessageId] ?? null;
+        $this->contentInput = $this->getFormMessage(); //TODO: better solution??
         return new \Model\Message($author, $content, $id);
     }
 
@@ -32,16 +33,9 @@ class MessageView extends View
         return isset($_POST[self::$updateMessage]);
     }
 
-    private function getFormUsername(): string
+    public function getFormMessage(): string
     {
-        return isset($_POST[self::$name])
-            ? \Model\SanitizeInput::sanitize($_POST[self::$name])
-            : $this->storage->getUsername();
-    }
-
-    private function getFormMessage(): string
-    {
-        return isset($_POST[self::$messageContent]) && strlen($this->message) > 0
+        return isset($_POST[self::$messageContent])
             ? \Model\SanitizeInput::sanitize($_POST[self::$messageContent])
             : '';
     }
@@ -63,6 +57,11 @@ class MessageView extends View
     public function setIsAuthorizedEditor(bool $bool)
     {
         $this->isAuthorizedEditor = $bool;
+    }
+
+    public function setContentInput(string $string)
+    {
+        $this->contentInput = $string;
     }
 
     public function show(): string
@@ -90,7 +89,7 @@ class MessageView extends View
 					<input ' . $hidden . ' type="text" id="' . self::$name . '" name="' . self::$name . '" value="' . $this->getFormUsername() . '" />
                     <br/>
 					<label for="' . self::$messageContent . '">Your message :</label><br/>
-					<textarea rows=6 cols=50 id="' . self::$messageContent . '" name="' . self::$messageContent . '">' . $this->getFormMessage() . '</textarea>
+					<textarea rows=6 cols=50 id="' . self::$messageContent . '" name="' . self::$messageContent . '">' . $this->contentInput . '</textarea>
                     <br/>
                     <input type="submit" name="' . self::$submitMessage . '" value="Submit" />
                     
@@ -128,5 +127,12 @@ class MessageView extends View
 				</fieldset>
             </form>
 		';
+    }
+
+    private function getFormUsername(): string
+    {
+        return isset($_POST[self::$name])
+            ? \Model\SanitizeInput::sanitize($_POST[self::$name])
+            : $this->storage->getUsername();
     }
 }

@@ -80,6 +80,26 @@ class MessageDAL
         $query->execute([$message->author, $message->content, $message->isVerified == true ? 1 : 0]);
     }
 
+    public static function deleteMessage(int $id): void
+    {
+        $sql = "DELETE FROM message WHERE id = ?";
+        $query = self::connect()->prepare($sql);
+        $query->execute([$id]);
+        if ($query->rowCount() < 1) {
+            throw new \Exception('No records updated.');
+        }
+    }
+
+    public static function validateAuthor(string $username)
+    {
+        try {
+            \Model\UserDAL::getUser($username);
+            throw new \Exception('Username already exists. Pick another!');
+        } catch (\Model\IncorrectCredentialsException $e) {
+            return;
+        }
+    }
+
     private static function connect(): \PDO
     {
         $db = new \Model\Database();
