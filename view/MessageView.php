@@ -106,7 +106,7 @@ class MessageView extends View
         $username = '<strong>' . $this->storage->getUsername() . '</strong>';
         $linkText = $isLoggedIn ? 'Account' : 'Go to login';
         $id = $this->getMessageId();
-        $msg = \Model\MessageStorage::getMessageById($id);
+        $msg = \Model\MessageDAL::getMessageById($id);
         $formHTML = $this->isAuthorizedEditor
             ? '<label for="' . self::$name . '">Username :</label>
         ' . $username . '

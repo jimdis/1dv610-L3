@@ -28,10 +28,11 @@ class MessageController extends Controller
         if ($this->view->newMessageSubmitted()) {
             $this->message = $this->view->getNewMessage();
             $this->validateMessageAuthor();
-            \Model\MessageStorage::storeMessage($this->message);
+            \Model\MessageDAL::storeMessage($this->message);
         } else if ($this->view->messageUpdateSubmitted()) {
             $this->message = $this->view->getNewMessage();
             $this->validateMessageUpdate();
+            \Model\MessageDAL::updateMessage($this->message);
         }
     }
 
@@ -40,7 +41,7 @@ class MessageController extends Controller
     {
         if (!$this->storage->getUserIsAuthenticated()) {
             $author = $this->message->author;
-            \Model\MessageStorage::validateAuthor($author);
+            \Model\MessageDAL::validateAuthor($author);
         } else {
             $this->message->setIsVerified(true);
         }
@@ -48,7 +49,7 @@ class MessageController extends Controller
 
     private function validateMessageUpdate(): void
     {
-        $oldMessage = \Model\MessageStorage::getMessageById($this->view->getMessageId());
+        $oldMessage = \Model\MessageDAL::getMessageById($this->view->getMessageId());
         if ($oldMessage->author != $this->storage->getUsername()) {
             $this->view->setIsAuthorizedEditor(false);
             throw new \Exception('You cannot edit other people\'s messages!');

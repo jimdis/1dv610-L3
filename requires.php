@@ -22,5 +22,4 @@ require_once 'model/UserDAL.php';
 require_once 'model/Username.php';
 require_once 'model/User.php';
 require_once 'model/MessageDAL.php';
-require_once 'model/MessageStorage.php';
 require_once 'model/Message.php';

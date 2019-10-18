@@ -9,7 +9,7 @@ class Database
     private $password;
     private $dbname;
 
-    protected function connect(): \PDO
+    public function connect(): \PDO
     {
         $this->host = \Config::$DB_HOST;
         $this->dbname = \Config::$DB_NAME;

@@ -7,7 +7,7 @@ class MessageTable
     public static function showAllMessages(): string
     {
 
-        $messages = \Model\MessageStorage::getAllMessages();
+        $messages = \Model\MessageDAL::getAllMessages();
         $tableBody = '
         <thead>
             <tr>
@@ -35,7 +35,7 @@ class MessageTable
     public static function showUserMessages(string $username): string
     {
         $tableBody = '';
-        $messages = \Model\MessageStorage::getUserMessages($username);
+        $messages = \Model\MessageDAL::getUserMessages($username);
         foreach ($messages as $message) {
             $id = $message->id;
             $content = $message->content;
