@@ -62,6 +62,7 @@ class Application
         if ($this->controller->redirectToLogin()) {
             $this->view = new \View\LoginView($this->storage);
             $this->controller = new \Controller\LoginController($this->view, $this->storage);
+            $this->controller->updateMessage('Registered new user.');
         }
     }
 
