@@ -32,9 +32,18 @@ class MessageView extends View
         return isset($_POST[self::$updateMessage]);
     }
 
-    public function setUsername(string $username): void
+    private function getFormUsername(): string
     {
-        $this->username = $username;
+        return isset($_POST[self::$name])
+            ? \Model\SanitizeInput::sanitize($_POST[self::$name])
+            : $this->storage->getUsername();
+    }
+
+    private function getFormMessage(): string
+    {
+        return isset($_POST[self::$messageContent]) && strlen($this->message) > 0
+            ? \Model\SanitizeInput::sanitize($_POST[self::$messageContent])
+            : '';
     }
 
     public function showEditMode(): bool
@@ -56,7 +65,6 @@ class MessageView extends View
         $this->isAuthorizedEditor = $bool;
     }
 
-
     public function show(): string
     {
         $form = $this->showEditMode() ? $this->generateMessageEditFormHTML($this->message) : $this->generateMessageFormHTML($this->message);
@@ -68,7 +76,7 @@ class MessageView extends View
     {
         $isLoggedIn = $this->storage->getUserIsAuthenticated();
         $linkText = $isLoggedIn ? 'Account' : 'Go to login';
-        $username = "<strong>$this->username</strong>";
+        $username = $isLoggedIn ? '<strong>' . $this->storage->getUsername() . '</strong>' : '';
         $hidden = $isLoggedIn ? 'hidden' : '';
         return '
         <a href=".">' . $linkText . '</a><br /><br />
@@ -79,10 +87,10 @@ class MessageView extends View
                     
                     <label for="' . self::$name . '">Username :</label>
                     ' . $username . '
-					<input ' . $hidden . ' type="text" id="' . self::$name . '" name="' . self::$name . '" value="' . $this->username . '" />
+					<input ' . $hidden . ' type="text" id="' . self::$name . '" name="' . self::$name . '" value="' . $this->getFormUsername() . '" />
                     <br/>
 					<label for="' . self::$messageContent . '">Your message :</label><br/>
-					<textarea rows=6 cols=50 id="' . self::$messageContent . '" name="' . self::$messageContent . '">Type your message here..</textarea>
+					<textarea rows=6 cols=50 id="' . self::$messageContent . '" name="' . self::$messageContent . '">' . $this->getFormMessage() . '</textarea>
                     <br/>
                     <input type="submit" name="' . self::$submitMessage . '" value="Submit" />
                     
@@ -94,13 +102,15 @@ class MessageView extends View
 
     private function generateMessageEditFormHTML(): string
     {
-        $username = "<strong>$this->username</strong>";
+        $isLoggedIn = $this->storage->getUserIsAuthenticated();
+        $username = '<strong>' . $this->storage->getUsername() . '</strong>';
+        $linkText = $isLoggedIn ? 'Account' : 'Go to login';
         $id = $this->getMessageId();
         $msg = \Model\MessageStorage::getMessageById($id);
         $formHTML = $this->isAuthorizedEditor
             ? '<label for="' . self::$name . '">Username :</label>
         ' . $username . '
-        <input hidden type="text" id="' . self::$name . '" name="' . self::$name . '" value="' . $this->username . '" />
+        <input hidden type="text" id="' . self::$name . '" name="' . self::$name . '" value="' . $this->storage->getUsername() . '" />
         <input hidden type="text" id="' . self::$updateMessageId . '" name="' . self::$updateMessageId . '" value="' . $msg->id . '" />
         <br/>
         <label for="' . self::$messageContent . '">Your message :</label><br/>
@@ -109,7 +119,7 @@ class MessageView extends View
         <input type="submit" name="' . self::$updateMessage . '" value="Update" />'
             : '';
         return '
-        <a href=".">Account</a><br /><br />
+        <a href=".">' . $linkText . '</a><br /><br />
             <form method="post" action=""?messages"">
 				<fieldset>
 					<legend>Edit message</legend>
