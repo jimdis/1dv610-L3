@@ -1,33 +1,6 @@
 <?php
 
-require_once 'Config.php';
-require_once 'view/View.php';
-require_once 'view/partials/MessageTable.php';
-require_once 'view/partials/StatusBar.php';
-require_once 'view/LoginView.php';
-require_once 'view/RegisterView.php';
-require_once 'view/DateTimeView.php';
-require_once 'view/MessageView.php';
-// require_once 'view/LayoutView.php';
-require_once 'view/HTMLPageView.php';
-require_once 'controller/Controller.php';
-// require_once 'controller/LayoutController.php';
-require_once 'controller/LoginController.php';
-require_once 'controller/RegisterController.php';
-require_once 'controller/MessageController.php';
-require_once 'model/Routes.php';
-require_once 'model/SanitizeInput.php';
-require_once 'model/Credentials.php';
-require_once 'model/Token.php';
-require_once 'model/UserStorage.php';
-require_once 'model/Database.php';
-require_once 'model/UserDAL.php';
-require_once 'model/Username.php';
-require_once 'model/User.php';
-require_once 'model/MessageDAL.php';
-require_once 'model/MessageStorage.php';
-require_once 'model/Message.php';
-
+require_once 'requires.php';
 
 class Application
 {
@@ -38,10 +11,10 @@ class Application
 
     public function __construct()
     {
-        $this->storage = new \Model\UserStorage();
         $routes = new \Model\Routes();
         $controller = $routes->getController();
         $view = $routes->getView();
+        $this->storage = new \Model\UserStorage();
         $this->view = new $view($this->storage);
         $this->controller = new $controller($this->view, $this->storage);
     }
@@ -62,17 +35,17 @@ class Application
         if ($this->controller->redirectToLogin()) {
             $this->view = new \View\LoginView($this->storage);
             $this->controller = new \Controller\LoginController($this->view, $this->storage);
-            $this->controller->updateMessage('Registered new user.');
+            $this->view->setMessage('Registered new user.');
         }
     }
 
     private function generateOutput()
     {
-        $title = 'Login example'; // TODO: fixa till en dynamisk title
+        $title = '1337 PHP Software';
         $statusBar = new \View\StatusBar($this->storage);
         $footer = new \View\DateTimeView();
         $container = '
-                <div class="container">' . $this->controller->getViewResponse() . '
+                <div class="container">' . $this->controller->getViewHTML() . '
                 </div>
                 ';
         $body = $statusBar->show() . $container . $footer->show();
@@ -82,11 +55,11 @@ class Application
 
     private function handleException(\Exception $e)
     {
-        $title = 'An error occured';
-        $body = '
-                <p>Ooops.. An error occured. Sorry! Error info: ' . $e->getMessage() . '</p>
-                <a href="?">Go back!</a>';
-        $pageView = new \View\HTMLPageView($title, $body);
-        $pageView->echoHTML();
+        if (isset($this->view)) {
+            $this->view->setMessage($e->getMessage());
+            $this->generateOutput();
+        } else {
+            echo 'Oops.. something went wrong.. Sorry! Error info: ' . $e->getMessage();
+        }
     }
 }

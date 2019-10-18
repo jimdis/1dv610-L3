@@ -2,9 +2,9 @@
 
 namespace View;
 
-class MessageTable extends View
+class MessageTable
 {
-    public function showAllMessages(): string
+    public static function showAllMessages(): string
     {
 
         $messages = \Model\MessageStorage::getAllMessages();
@@ -32,9 +32,8 @@ class MessageTable extends View
         </table>';
     }
 
-    public function showUserMessages(): string
+    public static function showUserMessages(string $username): string
     {
-        $username = $this->storage->getUsername();
         $tableBody = '';
         $messages = \Model\MessageStorage::getUserMessages($username);
         foreach ($messages as $message) {

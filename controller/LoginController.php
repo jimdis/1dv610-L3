@@ -6,22 +6,12 @@ class LoginController extends Controller
 {
     public function updateState(): void
     {
-        try {
-            if ($this->storage->getUserIsAuthenticated()) {
-                $this->handleLogout();
-            } else {
-                $this->handleLogin();
-            }
-        } catch (\Exception $e) {
-            $this->view->setMessage($e->getMessage());
+        if ($this->storage->getUserIsAuthenticated()) {
+            $this->handleLogout();
+        } else {
+            $this->handleLogin();
         }
     }
-
-    public function updateMessage(string $message): void
-    {
-        $this->view->setMessage($message);
-    }
-
 
     private function handleLogout(): void
     {

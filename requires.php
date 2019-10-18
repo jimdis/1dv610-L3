@@ -1,0 +1,26 @@
+<?php
+require_once 'Config.php';
+require_once 'view/View.php';
+require_once 'view/partials/MessageTable.php';
+require_once 'view/partials/StatusBar.php';
+require_once 'view/LoginView.php';
+require_once 'view/RegisterView.php';
+require_once 'view/DateTimeView.php';
+require_once 'view/MessageView.php';
+require_once 'view/HTMLPageView.php';
+require_once 'controller/Controller.php';
+require_once 'controller/LoginController.php';
+require_once 'controller/RegisterController.php';
+require_once 'controller/MessageController.php';
+require_once 'model/Routes.php';
+require_once 'model/SanitizeInput.php';
+require_once 'model/Credentials.php';
+require_once 'model/Token.php';
+require_once 'model/UserStorage.php';
+require_once 'model/Database.php';
+require_once 'model/UserDAL.php';
+require_once 'model/Username.php';
+require_once 'model/User.php';
+require_once 'model/MessageDAL.php';
+require_once 'model/MessageStorage.php';
+require_once 'model/Message.php';

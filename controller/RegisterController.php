@@ -7,11 +7,7 @@ class RegisterController extends Controller
 
     public function updateState(): void
     {
-        try {
-            $this->attemptRegisterNewUser();
-        } catch (\Exception $e) {
-            $this->view->setMessage($e->getMessage());
-        }
+        $this->attemptRegisterNewUser();
     }
 
     private function attemptRegisterNewUser(): void

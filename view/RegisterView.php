@@ -10,15 +10,10 @@ class RegisterView extends View
     public static $passwordRepeat = 'RegisterView::PasswordRepeat';
     public static $showLoginView = 'RegistrationView::showLoginView';
     private static $messageId = 'RegisterView::Message';
-    private $message = '';
 
     public function userAttemptedRegistration(): bool
     {
-        if (isset($_POST[self::$register])) {
-            return true;
-        } else {
-            return false;
-        }
+        return isset($_POST[self::$register]);
     }
 
     public function getFormCredentials(): \Model\Credentials
@@ -26,6 +21,31 @@ class RegisterView extends View
         $username = $_POST[self::$name] ?? '';
         $password = $this->getFormPassword();
         return new \Model\Credentials($username, $password);
+    }
+
+    public function show(): string
+    {
+        return '
+            <a href=".">Back to login</a><br /><br />
+            <form method="post" action="">
+				<fieldset>
+					<legend>Register a new user - Write username and password</legend>
+					<p id="' . self::$messageId . '">' . $this->message . '</p>
+
+					<label for="' . self::$name . '">Username :</label>
+					<input type="text" id="' . self::$name . '" name="' . self::$name . '" value="' . $this->getFormUsername() . '" />
+
+					<label for="' . self::$password . '">Password :</label>
+                    <input type="password" id="' . self::$password . '" name="' . self::$password . '" />
+                    
+                    <label for="' . self::$passwordRepeat . '">Repeat password :</label>
+					<input type="password" id="' . self::$passwordRepeat . '" name="' . self::$passwordRepeat . '" />
+
+                    <input type="submit" name="' . self::$register . '" value="register" />
+                    
+				</fieldset>
+            </form>
+        ';
     }
 
     private function getFormUsername(): string
@@ -44,54 +64,5 @@ class RegisterView extends View
         } else {
             throw new \Exception('Passwords do not match.');
         }
-    }
-
-    public function setMessage(string $message): void
-    {
-        $this->message = $message;
-    }
-
-    /**
-     * Create HTTP response
-     *
-     * Should be called after a login attempt has been determined
-     *
-     * @return  void BUT writes to standard output and cookies!
-     */
-    public function response()
-    {
-
-        return $this->generateRegisterFormHTML($this->message);
-    }
-
-    /**
-     * Generate HTML code on the output buffer for the logout button
-     * @param $message, String output message
-     * @return  void, BUT writes to standard output!
-     */
-    private function generateRegisterFormHTML($message)
-    {
-        $username = $this->getFormUsername();
-        return '
-            <a href=".">Back to login</a><br /><br />
-            <form method="post" action="">
-				<fieldset>
-					<legend>Register a new user - Write username and password</legend>
-					<p id="' . self::$messageId . '">' . $message . '</p>
-
-					<label for="' . self::$name . '">Username :</label>
-					<input type="text" id="' . self::$name . '" name="' . self::$name . '" value="' . $username . '" />
-
-					<label for="' . self::$password . '">Password :</label>
-                    <input type="password" id="' . self::$password . '" name="' . self::$password . '" />
-                    
-                    <label for="' . self::$passwordRepeat . '">Repeat password :</label>
-					<input type="password" id="' . self::$passwordRepeat . '" name="' . self::$passwordRepeat . '" />
-
-                    <input type="submit" name="' . self::$register . '" value="register" />
-                    
-				</fieldset>
-            </form>
-        ';
     }
 }

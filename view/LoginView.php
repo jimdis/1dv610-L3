@@ -12,7 +12,6 @@ class LoginView extends View
     private static $cookiePassword = 'LoginView::CookiePassword';
     private static $keep = 'LoginView::KeepMeLoggedIn';
     private static $messageId = 'LoginView::Message';
-    private $message = '';
 
     public function loginFormWasSubmitted(): bool
     {
@@ -36,11 +35,6 @@ class LoginView extends View
         return isset($_POST[self::$logout]);
     }
 
-    public function setMessage(string $message): void
-    {
-        $this->message = $message;
-    }
-
     public function keepLoggedIn(): bool
     {
         return isset($_POST[self::$keep]);
@@ -62,16 +56,6 @@ class LoginView extends View
         return isset($_COOKIE[self::$cookieName]) && isset($_COOKIE[self::$cookiePassword]);
     }
 
-    private function getCookieUsername(): string
-    {
-        return $_COOKIE[self::$cookieName] ?? '';
-    }
-
-    private function getCookiePassword(): string
-    {
-        return $_COOKIE[self::$cookiePassword] ?? '';
-    }
-
     public function unsetCookies(): void
     {
         if ($this->userHasCookies()) {
@@ -80,48 +64,30 @@ class LoginView extends View
         }
     }
 
-    /**
-     * Create HTTP response
-     *
-     * Should be called after a login attempt has been determined
-     *
-     * @return  void BUT writes to standard output and cookies!
-     */
-    public function response(): string
+    public function show(): string
     {
         $isAuthenticated = $this->storage->getUserIsAuthenticated();
-        $response =  $isAuthenticated
-            ? $this->generateLoggedInView($this->message)
-            : $this->generateLoginFormHTML($this->message);
-        return $response;
-    }
-
-    /**
-     * Generate HTML code on the output buffer for the logout button
-     * @param $message, String output message
-     * @return  void, BUT writes to standard output!
-     */
-    private function generateLoggedInView($message): string
-    {
-        $form = '<a href="?messages">Go to message board</a><br />
-                <form  method="post" >
-                    <p id="' . self::$messageId . '">' . $message . '</p>
-                    <input type="submit" name="' . self::$logout . '" value="logout"/>
-                </form>';
-        $messageTable = new \View\MessageTable($this->storage);
-        $html = $form . '
-                <br/>
-                <h2>Your messages</h2>
-                ' . $messageTable->showUserMessages();
+        $html =  $isAuthenticated
+            ? $this->generateLoggedInHTML()
+            : $this->generateLoginFormHTML();
         return $html;
     }
 
-    /**
-     * Generate HTML code on the output buffer for the logout button
-     * @param $message, String output message
-     * @return  void, BUT writes to standard output!
-     */
-    private function generateLoginFormHTML($message): string
+    private function generateLoggedInHTML(): string
+    {
+        $form = '<a href="?messages">Go to message board</a><br />
+                <form  method="post" >
+                    <p id="' . self::$messageId . '">' . $this->message . '</p>
+                    <input type="submit" name="' . self::$logout . '" value="logout"/>
+                </form>';
+        $html = $form . '
+                <br/>
+                <h2>Your messages</h2>
+                ' . \View\MessageTable::showUserMessages($this->storage->getUsername());
+        return $html;
+    }
+
+    private function generateLoginFormHTML(): string
     {
         $username = $this->storage->getUsername();
         return '<a href="?messages">Go to message board</a><br />
@@ -129,7 +95,7 @@ class LoginView extends View
                 <form method="post" action=".">
                     <fieldset>
                         <legend>Login - enter Username and password</legend>
-                        <p id="' . self::$messageId . '">' . $message . '</p>
+                        <p id="' . self::$messageId . '">' . $this->message . '</p>
 
                         <label for="' . self::$name . '">Username :</label>
                         <input type="text" id="' . self::$name . '" name="' . self::$name . '" value="' . $username . '" />
@@ -143,5 +109,15 @@ class LoginView extends View
                         <input type="submit" name="' . self::$login . '" value="login" />
                     </fieldset>
                 </form>';
+    }
+
+    private function getCookieUsername(): string
+    {
+        return $_COOKIE[self::$cookieName] ?? '';
+    }
+
+    private function getCookiePassword(): string
+    {
+        return $_COOKIE[self::$cookiePassword] ?? '';
     }
 }

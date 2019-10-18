@@ -4,28 +4,13 @@ namespace Controller;
 
 class MessageController extends Controller
 {
-    private $messages = [];
-
     public function updateState(): void
-    {
-        try {
-            //TODO: Remove below
-            array_push($this->messages, new \Model\Message('jim', 'Hello World!'));
-            $this->updateView();
-        } catch (\Exception $e) {
-            $this->view->setMessage($e->getMessage());
-        }
-    }
-
-    private function updateView()
     {
         if ($this->storage->getUserIsAuthenticated()) {
             $username = $this->storage->getUsername();
             $this->view->setUsername($username);
         }
         $this->storeMessage();
-        // $messages = $this->getMessages();
-        // $this->view->setMessages($messages);
     }
 
     private function storeMessage()

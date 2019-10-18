@@ -15,13 +15,15 @@ abstract class Controller
         $this->storage = $storage;
     }
 
-    public function getViewResponse(): string
+    public function getViewHTML(): string
     {
-        return $this->view->response();
+        return $this->view->show();
     }
 
     public function redirectToLogin(): bool
     {
         return $this->redirect;
     }
+
+    protected abstract function updateState();
 }

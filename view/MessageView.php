@@ -12,7 +12,6 @@ class MessageView extends View
     private static $messageId = __CLASS__ . '::Message';
     private static $editParam = 'edit';
     private $username;
-    private $message = '';
 
     public function getNewMessage(): \Model\Message
     {
@@ -37,11 +36,6 @@ class MessageView extends View
         $this->username = $username;
     }
 
-    public function setMessage(string $message): void
-    {
-        $this->message = $message;
-    }
-
     private function showEditMode(): bool
     {
         if (isset($_POST[self::$updateMessage])) {
@@ -57,17 +51,10 @@ class MessageView extends View
     }
 
 
-    public function response(): string
-    {
-        $response = $this->generateViewHTML();
-        return $response;
-    }
-
-    private function generateViewHTML(): string
+    public function show(): string
     {
         $form = $this->showEditMode() ? $this->generateMessageEditFormHTML($this->message) : $this->generateMessageFormHTML($this->message);
-        $messageTable = new \View\MessageTable($this->storage);
-        $html = $form . '<br/><h2>Message Board</h2>' . $messageTable->showAllMessages();
+        $html = $form . '<br/><h2>Message Board</h2>' . \View\MessageTable::showAllMessages();
         return $html;
     }
 
