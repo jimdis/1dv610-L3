@@ -2,13 +2,12 @@
 
 namespace Model;
 
-class UserDAL extends Database
+class UserDAL
 {
-    //TODO: bättre felhantering?
-    public function getUser(string $username): \Model\User
+    public static function getUser(string $username): \Model\User
     {
         $sql = "SELECT username, password FROM user WHERE username = ?";
-        $query = $this->connect()->prepare($sql);
+        $query = self::connect()->prepare($sql);
         $query->execute([$username]);
         $foundUser = $query->fetch(\PDO::FETCH_ASSOC);
         if ($foundUser) {
@@ -19,7 +18,7 @@ class UserDAL extends Database
         }
     }
 
-    public function getUserWithToken(\Model\Credentials $credentials): \Model\User
+    public static function getUserWithToken(\Model\Credentials $credentials): \Model\User
     {
         $date = $this->getFormattedDate(time());
         $sql = "SELECT user.username, user.password FROM user 
@@ -29,7 +28,7 @@ class UserDAL extends Database
                 AND tokens.expires > ? 
                 AND user.username = ?
                 AND user.id = tokens.userid)";
-        $query = $this->connect()->prepare($sql);
+        $query = self::connect()->prepare($sql);
         $query->execute([$credentials->getPassword(), $date, $credentials->getUsername()]);
         $foundUser = $query->fetch(\PDO::FETCH_ASSOC);
         if ($foundUser) {
@@ -40,32 +39,32 @@ class UserDAL extends Database
         }
     }
 
-    public function storeUser(\Model\User $user): void
+    public static function storeUser(\Model\User $user): void
     {
         $sql = "INSERT INTO user (username, password) VALUES (?, ?)";
-        $query = $this->connect()->prepare($sql);
+        $query = self::connect()->prepare($sql);
         $success = $query->execute([$user->getUsername(), $user->getPassword()]);
         if (!$success) {
             $this->handlePDOError($query->errorInfo());
         }
     }
 
-    public function storeToken(\Model\Token $token, string $username)
+    public static function storeToken(\Model\Token $token, string $username)
     {
         $expires = $this->getFormattedDate($token->getExpires());
         $userId = $this->getUserId($username);
         $sql = "INSERT INTO tokens (userid, content, expires) VALUES (?, ?, ?)";
-        $query = $this->connect()->prepare($sql);
+        $query = self::connect()->prepare($sql);
         $success = $query->execute([$userId, $token->getContent(), $expires]);
         if (!$success) {
             $this->handlePDOError($query->errorInfo());
         }
     }
 
-    private function getUserId(string $username)
+    private static function getUserId(string $username)
     {
         $sql = "SELECT id FROM user WHERE username = ?";
-        $query = $this->connect()->prepare($sql);
+        $query = self::connect()->prepare($sql);
         $query->execute([$username]);
         $foundUser = $query->fetch(\PDO::FETCH_ASSOC);
         if ($foundUser) {
@@ -75,8 +74,7 @@ class UserDAL extends Database
         }
     }
 
-    //TODO: custom exception, handle error message in UserStorage?
-    private function handlePDOError(array $errorInfo)
+    private static function handlePDOError(array $errorInfo)
     {
         $errorCode = $errorInfo[0];
         $errorMessage = $errorInfo[2];
@@ -87,8 +85,14 @@ class UserDAL extends Database
         }
     }
 
-    private function getFormattedDate(int $timestamp): string
+    private static function getFormattedDate(int $timestamp): string
     {
         return date('Y-m-d H:i:s', $timestamp);
+    }
+
+    private static function connect(): \PDO
+    {
+        $db = new \Model\Database();
+        return $db->connect();
     }
 }
