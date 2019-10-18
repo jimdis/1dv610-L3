@@ -20,7 +20,7 @@ class UserDAL
 
     public static function getUserWithToken(\Model\Credentials $credentials): \Model\User
     {
-        $date = $this->getFormattedDate(time());
+        $date = self::getFormattedDate(time());
         $sql = "SELECT user.username, user.password FROM user 
                 WHERE EXISTS 
                 (SELECT userid FROM tokens 
@@ -45,19 +45,19 @@ class UserDAL
         $query = self::connect()->prepare($sql);
         $success = $query->execute([$user->getUsername(), $user->getPassword()]);
         if (!$success) {
-            $this->handlePDOError($query->errorInfo());
+            self::handlePDOError($query->errorInfo());
         }
     }
 
     public static function storeToken(\Model\Token $token, string $username)
     {
-        $expires = $this->getFormattedDate($token->getExpires());
-        $userId = $this->getUserId($username);
+        $expires = self::getFormattedDate($token->getExpires());
+        $userId = self::getUserId($username);
         $sql = "INSERT INTO tokens (userid, content, expires) VALUES (?, ?, ?)";
         $query = self::connect()->prepare($sql);
         $success = $query->execute([$userId, $token->getContent(), $expires]);
         if (!$success) {
-            $this->handlePDOError($query->errorInfo());
+            self::handlePDOError($query->errorInfo());
         }
     }
 
