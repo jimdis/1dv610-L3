@@ -4,36 +4,54 @@ namespace Controller;
 
 class MessageController extends Controller
 {
+    private $message;
+
     public function updateState(): void
+    {
+        $this->updateView();
+        $this->storeMessage();
+    }
+
+    private function updateView(): void
     {
         if ($this->storage->getUserIsAuthenticated()) {
             $username = $this->storage->getUsername();
             $this->view->setUsername($username);
         }
-        $this->storeMessage();
+        if ($this->view->showEditMode()) {
+            $this->validateMessageUpdate();
+        }
     }
 
     private function storeMessage()
     {
         if ($this->view->newMessageSubmitted()) {
-            $message = $this->view->getNewMessage();
-            $this->validateMessageAuthor($message);
-            \Model\MessageStorage::storeMessage($message);
+            $this->message = $this->view->getNewMessage();
+            $this->validateMessageAuthor();
+            \Model\MessageStorage::storeMessage($this->message);
         } else if ($this->view->messageUpdateSubmitted()) {
-            $message = $this->view->getNewMessage();
-            $this->validateMessageAuthor($message);
-            \Model\MessageStorage::updateMessage($message);
+            $this->message = $this->view->getNewMessage();
+            $this->validateMessageUpdate();
         }
     }
 
 
-    private function validateMessageAuthor(\Model\Message $message)
+    private function validateMessageAuthor(): void
     {
         if (!$this->storage->getUserIsAuthenticated()) {
-            $author = $message->author;
+            $author = $this->message->author;
             \Model\MessageStorage::validateAuthor($author);
         } else {
-            $message->setIsVerified(true);
+            $this->message->setIsVerified(true);
+        }
+    }
+
+    private function validateMessageUpdate(): void
+    {
+        $oldMessage = \Model\MessageStorage::getMessageById($this->view->getMessageId());
+        if ($oldMessage->author != $this->storage->getUsername()) {
+            $this->view->setIsAuthorizedEditor(false);
+            throw new \Exception('You cannot edit other people\'s messages!');
         }
     }
 }
