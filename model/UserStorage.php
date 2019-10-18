@@ -71,9 +71,14 @@ class UserStorage
         }
     }
 
-    public function getUser(): \Model\User
+    // public function getUser(): \Model\User
+    // {
+    //     return $this->user;
+    // }
+
+    public function getUsername(): string
     {
-        return $this->user;
+        return $this->user->getUsername();
     }
 
     public function getUserIsAuthenticated(): bool

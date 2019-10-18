@@ -2,43 +2,65 @@
 
 namespace View;
 
-class MessageTable
+class MessageTable extends View
 {
-    //Todo: handle empty list..
-    public static function generateMessageTableHTML(string $username = null): string
+    public function showAllMessages(): string
     {
-        $messages = $username == null ? \Model\MessageStorage::getAllMessages() : \Model\MessageStorage::getUserMessages($username);
-        $editColumn = $username == null ? '' : '<th>Edit</th>';
-        $messagesHTML = '
+
+        $messages = \Model\MessageStorage::getAllMessages();
+        $tableBody = '
         <thead>
             <tr>
             <th>Author</th>
             <th>Message</th>
-            ' . $editColumn . '
             </tr>
         </thead>
         <tbody>';
         foreach ($messages as $message) {
+            $author = $message->author;
+            $content = $message->content;
+            $tableBody .= '
+            <tr>
+            <td>' . $author . '</td>
+            <td>' . $content . '</td>
+            </tr>';
+        }
+        return '
+        <table>'
+            . $tableBody . '
+        </tbody>
+        </table>';
+    }
+
+    public function showUserMessages(): string
+    {
+        $username = $this->storage->getUsername();
+        $tableBody = '';
+        $messages = \Model\MessageStorage::getUserMessages($username);
+        foreach ($messages as $message) {
             $id = $message->id;
-            $editButton = $username == null ? '' : '<td>
+            $content = $message->content;
+            $tableBody .= '
+            <tr>
+            <td>' . $content . '</td>
+            <td>
                 <form action="">
                     <input hidden name="messages"/>    
                     <input hidden name="edit" value="' . $id . '"/>
                     <button type="submit">Edit</button>
                 </form>
-            </td>';
-            $author = $message->author;
-            $content = $message->content;
-            $messagesHTML .= '
-            <tr>
-            <td>' . $author . '</td>
-            <td>' . $content . '</td>
-            '    . $editButton . '
+            </td>
             </tr>';
         }
-        return '
-        <table>'
-            . $messagesHTML . '
+        return '<table>
+        <thead>
+        <tr>
+        <th>Message</th>
+        <th>Edit<th>
+        </tr>
+        </thead>
+        <tbody>'
+            . $tableBody . '
         </tbody>
         </table>';
     }

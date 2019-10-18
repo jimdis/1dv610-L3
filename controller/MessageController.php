@@ -20,7 +20,7 @@ class MessageController extends Controller
     private function updateView()
     {
         if ($this->storage->getUserIsAuthenticated()) {
-            $username = $this->storage->getUser()->getUsername();
+            $username = $this->storage->getUsername();
             $this->view->setUsername($username);
         }
         $this->storeMessage();

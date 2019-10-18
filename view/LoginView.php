@@ -12,7 +12,6 @@ class LoginView extends View
     private static $cookiePassword = 'LoginView::CookiePassword';
     private static $keep = 'LoginView::KeepMeLoggedIn';
     private static $messageId = 'LoginView::Message';
-    private $loginUsername = '';
     private $message = '';
 
     public function loginFormWasSubmitted(): bool
@@ -104,16 +103,16 @@ class LoginView extends View
      */
     private function generateLoggedInView($message): string
     {
-        $form = '
-        <form  method="post" >
-            <p id="' . self::$messageId . '">' . $message . '</p>
-            <input type="submit" name="' . self::$logout . '" value="logout"/>
-        </form>';
-        $messageTable = \View\MessageTable::generateMessageTableHTML($this->storage->getUser()->getUsername());
+        $form = '<a href="?messages">Go to message board</a><br />
+                <form  method="post" >
+                    <p id="' . self::$messageId . '">' . $message . '</p>
+                    <input type="submit" name="' . self::$logout . '" value="logout"/>
+                </form>';
+        $messageTable = new \View\MessageTable($this->storage);
         $html = $form . '
-        <br/>
-        <h2>Your messages</h2>
-        ' . $messageTable;
+                <br/>
+                <h2>Your messages</h2>
+                ' . $messageTable->showUserMessages();
         return $html;
     }
 
@@ -124,29 +123,25 @@ class LoginView extends View
      */
     private function generateLoginFormHTML($message): string
     {
-        $username = $this->storage->getUser()->getUsername();
-        return '
-            <a href="?messages">Go to message board</a><br />
-            <a href="?register">Register a new user</a><br /><br />    
-            <form method="post" action=".">
-				<fieldset>
-					<legend>Login - enter Username and password</legend>
-					<p id="' . self::$messageId . '">' . $message . '</p>
+        $username = $this->storage->getUsername();
+        return '<a href="?messages">Go to message board</a><br />
+                <a href="?register">Register a new user</a><br /><br />    
+                <form method="post" action=".">
+                    <fieldset>
+                        <legend>Login - enter Username and password</legend>
+                        <p id="' . self::$messageId . '">' . $message . '</p>
 
-					<label for="' . self::$name . '">Username :</label>
-					<input type="text" id="' . self::$name . '" name="' . self::$name . '" value="' . $username . '" />
+                        <label for="' . self::$name . '">Username :</label>
+                        <input type="text" id="' . self::$name . '" name="' . self::$name . '" value="' . $username . '" />
 
-					<label for="' . self::$password . '">Password :</label>
-					<input type="password" id="' . self::$password . '" name="' . self::$password . '" />
+                        <label for="' . self::$password . '">Password :</label>
+                        <input type="password" id="' . self::$password . '" name="' . self::$password . '" />
 
-					<label for="' . self::$keep . '">Keep me logged in  :</label>
-					<input type="checkbox" id="' . self::$keep . '" name="' . self::$keep . '" />
+                        <label for="' . self::$keep . '">Keep me logged in  :</label>
+                        <input type="checkbox" id="' . self::$keep . '" name="' . self::$keep . '" />
 
-                    <input type="submit" name="' . self::$login . '" value="login" />
-                    
-                    
-				</fieldset>
-            </form>
-		';
+                        <input type="submit" name="' . self::$login . '" value="login" />
+                    </fieldset>
+                </form>';
     }
 }

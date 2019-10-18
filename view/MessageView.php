@@ -10,6 +10,7 @@ class MessageView extends View
     private static $name = __CLASS__ . '::UserName';
     private static $messageContent = __CLASS__ . '::messageContent';
     private static $messageId = __CLASS__ . '::Message';
+    private static $editParam = 'edit';
     private $username;
     private $message = '';
 
@@ -43,22 +44,19 @@ class MessageView extends View
 
     private function showEditMode(): bool
     {
-        return isset($_GET["edit"]);
+        if (isset($_POST[self::$updateMessage])) {
+            return false;
+        } else if (isset($_GET[self::$editParam])) {
+            return true;
+        } else return false;
     }
 
     private function getMessageId(): int
     {
-        return $_GET["edit"];
+        return $_GET[self::$editParam];
     }
 
 
-    /**
-     * Create HTTP response
-     *
-     * Should be called after a login attempt has been determined
-     *
-     * @return  void BUT writes to standard output and cookies!
-     */
     public function response(): string
     {
         $response = $this->generateViewHTML();
@@ -68,8 +66,8 @@ class MessageView extends View
     private function generateViewHTML(): string
     {
         $form = $this->showEditMode() ? $this->generateMessageEditFormHTML($this->message) : $this->generateMessageFormHTML($this->message);
-        $messageTable = \View\MessageTable::generateMessageTableHTML();
-        $html = $form . '<br/><h2>Message Board</h2>' . $messageTable;
+        $messageTable = new \View\MessageTable($this->storage);
+        $html = $form . '<br/><h2>Message Board</h2>' . $messageTable->showAllMessages();
         return $html;
     }
 

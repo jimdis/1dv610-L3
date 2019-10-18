@@ -4,7 +4,6 @@ namespace Controller;
 
 class RegisterController extends Controller
 {
-    private $redirect = false;
 
     public function updateState(): void
     {
@@ -13,11 +12,6 @@ class RegisterController extends Controller
         } catch (\Exception $e) {
             $this->view->setMessage($e->getMessage());
         }
-    }
-
-    public function getRedirect(): bool
-    {
-        return $this->redirect;
     }
 
     private function attemptRegisterNewUser(): void
