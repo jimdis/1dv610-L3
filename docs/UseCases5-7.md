@@ -35,8 +35,21 @@ A user is authenticated. Ex. UC1, UC3.
 ### Main scenario
 
 1. Starts when a logged in user wants to edit a message.
-2. The system present all of the user's messages with an option to edit a message.
+2. The system presents all of the user's messages with an option to edit a message.
 3. User tells the system he wants to edit a message.
 4. The system shows the message and allows the user to update it.
 5. User updates message.
 6. System shows the updated message along with all other messages on the message board.
+
+## UC7 Deleting a message
+
+### Preconditions
+
+A user is authenticated. Ex. UC1, UC3.
+
+### Main scenario
+
+1. Starts when a logged in user wants to delete a message.
+2. The system presents all of the user's messages with an option to delete a message.
+3. User tells the system he wants to delete a message.
+4. System confirms the removal and shows a list of all remaining messages.

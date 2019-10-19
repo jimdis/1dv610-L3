@@ -89,6 +89,7 @@ Make sure message posting cannot happen with an existing username.
 - A form for login is shown.
 - A form for posting a message is shown.
 - "message" is filled in as message.
+- "Admin" is filled in as username
 
 ---
 
@@ -105,7 +106,7 @@ Make sure message posting will happen if correct username and a message is fille
 ### Output:
 
 - Feedback: "Your message was submitted!" is shown.
-- The message appears at the bottom of the Message Board with the entered username and message.
+- The message appears at the top of the Message Board with the entered username as Author and "message" as Message, with the correct date.
 - A form for posting a message is shown.
 - The entered username is filled in as username.
 
@@ -160,7 +161,7 @@ Make sure message posting will happen if message is filled in.
 ### Output:
 
 - Feedback: "Your message was submitted!" is shown.
-- The message appears at the bottom of the Message Board with Admin as username and message and message.
+- The message appears at the top of the Message Board with "Admin" as Author, "message" as Message and the correct date as Date.
 - A form for posting a message is shown.
 
 ## Test case 6.1: View list of user's messages
@@ -169,13 +170,14 @@ Make sure we see a list of all our messages as logged in users.
 
 ### Input:
 
-- Testcase 1.7
+- Testcase 5.9, then follow "Account" link.
 
 ### Output:
 
 - The text "Logged in", is shown.
 - A link "Go to message board" is shown.
 - A table of messages with columns "Message" and "Edit" is shown.
+- The message posted in TC 5.9 is shown.
 
 ---
 
@@ -185,7 +187,7 @@ Make sure we can access the page to edit our message.
 
 ### Input:
 
-- Testcase 1.7
+- Testcase 6.1
 - Click the "Edit"-button next to a message.
 
 ### Output:
@@ -199,55 +201,37 @@ Make sure we can access the page to edit our message.
 
 ## Test case 6.2: Edit a message
 
-Make sure we can access the page to edit our message.
+Make sure we can edit our message.
 
 ### Input:
 
 - Testcase 6.2
 - Add the word "edited" to the end of the message in the message field.
-- Click the "Submit" button.
+- Click the "Update" button.
 
 ### Output:
 
 - A form for writing new messages is shown (TC 5.7)
 - Feedback "Your message was updated!" is shown.
-- The relevant message has been updated and can be seen in the Message Board with the word "edited" at the end.
+- The relevant message has been updated and can be seen at the top of the Message Board with the word "edited" at the end and the current time as Date.
 
-## Test case 6.3: Failed access to incorrect edit page as logged in user
+## Test case 6.3: Failed access to edit page of other users' messages
 
 Make sure we cannot access the edit page of other users' messages.
 
 ### Input:
 
-- Testcase 6.1
-- Try accessing ?messages&edit=6 as a GET-request.
+- TC 6.1 - view POST Request
+- Copy POST request but change MessageId to 6.
+- Send tampered POST request.
 
 ### Output:
 
-- The text "Logged in", is shown.
-- A link "Account" is shown.
 - Feedback "You cannot edit other people's messages!" is shown.
 
 ---
 
-## Test case 6.4: Failed access to any edit page as unauthorized user
-
-Make sure we cannot access any message edit page when not logged in.
-
-### Input:
-
-- Testcase 5.1
-- Try accessing ?messages&edit=1 as a GET-request.
-
-### Output:
-
-- The text "Not logged in", is shown.
-- A link "Go to login" is shown.
-- Feedback "You cannot edit other people's messages!" is shown.
-
----
-
-## Test case 6.5: Failed submit when editing other users' messages.
+## Test case 6.4: Failed submit when trying editing other users' messages
 
 Make sure we cannot send POST requests to edit other users' messages.
 
@@ -259,4 +243,36 @@ Make sure we cannot send POST requests to edit other users' messages.
 
 ### Output:
 
-- Feedback "You cannot edit other people's messages!" is shown (TC 6.3).
+- Feedback "You cannot edit other people's messages!" is shown.
+
+---
+
+## Test case 7.1: Delete a message
+
+Make sure we can delete our own messages.
+
+### Input:
+
+- Testcase 6.1
+- Click the "Delete"-button next to a message.
+
+### Output:
+
+- Feedback "Your message was removed!" is shown.
+- A form for posting a message is shown.
+
+---
+
+## Test case 7.2: Unauthorized delete of other users' messages
+
+Make sure we can't delete other users' messages.
+
+### Input:
+
+- TC 7.1 - view POST Request
+- Copy POST request but change MessageId to 6.
+- Send tampered POST request.
+
+### Output:
+
+- Feedback "You cannot edit other people's messages!" is shown.
