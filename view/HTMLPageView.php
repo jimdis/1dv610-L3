@@ -92,7 +92,9 @@ class HTMLPageView
 			<head>
 				<meta charset='$this->charset'>
                 <title>$this->title</title>
-                <style>$this->style</style>
+                <style>" . '
+                ' . $this->style . '
+                ' . "</style>
 			</head>
 			<body>
 				$this->bodyHTML
