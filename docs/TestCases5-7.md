@@ -179,6 +179,42 @@ Make sure message posting in other users' names cannot happen by manipulating PO
 
 - Feedback "You can only save messages under your real username" is shown.
 
+---
+
+## Test case 5.11: Failed submit with too long message
+
+Make sure messages cannot exceed 1000 characters.
+
+### Input:
+
+- Testcase 5.7
+- Enter a long message > 1000 characters like lorem ipsum.
+- Press "Submit" button
+
+### Output:
+
+- Feedback "Your message exceeds maximum length (1000 characters)!" is shown.
+- The entered message is filled in as message.
+
+---
+
+## Test case 5.12: Messages are sanitized
+
+Make sure messages cannot contain tags like `<script>`
+
+### Input:
+
+- Testcase 5.7
+- Enter a malicious message like `<script>alert(hacked!!11)</script>`.
+- Press "Submit" button
+
+### Output:
+
+- Feedback: "Your message was submitted!" is shown.
+- The message is saved and shown without the script tags.
+
+---
+
 ## Test case 6.1: View list of user's messages
 
 Make sure we see a list of all our messages as logged in users.
