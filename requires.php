@@ -1,5 +1,4 @@
 <?php
-require_once 'Config.php';
 require_once 'view/View.php';
 require_once 'view/partials/MessageTable.php';
 require_once 'view/partials/StatusBar.php';
