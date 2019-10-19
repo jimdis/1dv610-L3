@@ -42,15 +42,15 @@ class Application
     private function generateOutput()
     {
         $title = '1337 PHP Software';
-        $css = file_get_contents('styles/styles.css');
+        $style = file_get_contents('styles/styles.css');
         $statusBar = new \View\StatusBar($this->storage);
         $footer = new \View\DateTimeView();
         $container = '
                 <div class="container">' . $this->controller->getViewHTML() . '
                 </div>
                 ';
-        $body = '<style>' . $css . '</style>' . $statusBar->show() . $container . $footer->show();
-        $pageView = new \View\HTMLPageView($title, $body);
+        $body = $statusBar->show() . $container . $footer->show();
+        $pageView = new \View\HTMLPageView($title, $style, $body);
         $pageView->echoHTML();
     }
 

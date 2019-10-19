@@ -85,7 +85,7 @@ class MessageView extends View
         $hidden = $isLoggedIn ? 'hidden' : '';
         return '
         <a href=".">' . $linkText . '</a><br /><br />
-            <form method="post" action="">
+            <form method="post" action=".">
 				<fieldset>
 					<legend>Write a new message</legend>
 					<p id="' . self::$feedbackMessageId . '">' . $this->message . '</p>
@@ -121,7 +121,7 @@ class MessageView extends View
             : '';
         return '
         <a href=".">' . $linkText . '</a><br /><br />
-            <form method="post" action="">
+            <form method="post" action=".">
 				<fieldset>
 					<legend>Edit message</legend>
                     <p id="' . self::$feedbackMessageId . '">' . $this->message . '</p>'

@@ -38,6 +38,8 @@ class HTMLPageView
      */
     private $charset = 'utf-8';
 
+    private $style;
+
     /**
      * Constructs a new HTMLPageView object
      *
@@ -47,9 +49,10 @@ class HTMLPageView
      * @throws Exception if title is of zero length
      * 
      * @param String $title Document title.
+     * @param String $style CSS markup to apply to document.
      * @param String $body HTML document body
      */
-    public function __construct(string $title, string $body)
+    public function __construct(string $title, string $style, string $body)
     {
 
         //Make sure the title is set
@@ -57,6 +60,7 @@ class HTMLPageView
             throw new \Exception("HTML title must be longer than 0 characters");
 
         $this->title = $title;
+        $this->style = $style;
         $this->bodyHTML = $body;
     }
 
@@ -83,11 +87,12 @@ class HTMLPageView
     public function echoHTML()
     {
         echo " 
-		<!DOCTYPE html>
+		<!DOCTYPE html lang=\"en\">
 		<html>
 			<head>
 				<meta charset='$this->charset'>
-				<title>$this->title</title>
+                <title>$this->title</title>
+                <style>$this->style</style>
 			</head>
 			<body>
 				$this->bodyHTML

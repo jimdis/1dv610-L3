@@ -15,7 +15,7 @@ Normal navigation to page, page is shown with Message Board.
 - A link "Go to login" is shown.
 - A form for posting to the message board is shown.
 - The text "Message Board" is shown.
-- A table with messages is show with columns "Date", "Author" and "Message".
+- A table with messages is shown with columns "Date", "Author" and "Message".
 - Today's date is shown at the bottom of the page.
 
 ---
@@ -86,10 +86,9 @@ Make sure message posting cannot happen with an existing username.
 ### Output:
 
 - Feedback: "Username already exists. Pick another!" is shown
-- A form for login is shown.
 - A form for posting a message is shown.
+- "Admin" is filled in as username.
 - "message" is filled in as message.
-- "Admin" is filled in as username
 
 ---
 
@@ -192,7 +191,7 @@ Make sure we see a list of all our messages as logged in users.
 
 - The text "Logged in", is shown.
 - A link "Go to message board" is shown.
-- A table of messages with columns "Message" and "Edit" is shown.
+- A table of messages with columns "Date", "Message", "Edit" and "Delete" is shown.
 - The message posted in TC 5.9 is shown.
 
 ---
@@ -276,6 +275,7 @@ Make sure we can delete our own messages.
 
 - Feedback "Your message was removed!" is shown.
 - A form for posting a message is shown.
+- The deleted message is removed from the table of messages in Message Board.
 
 ---
 
