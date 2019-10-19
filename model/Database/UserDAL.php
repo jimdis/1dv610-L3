@@ -61,6 +61,19 @@ class UserDAL
         }
     }
 
+    public static function doesUsernameExist(string $username): bool
+    {
+        $sql = "SELECT username FROM user WHERE username = ?";
+        $query = self::connect()->prepare($sql);
+        $query->execute([$username]);
+        $foundUser = $query->fetch(\PDO::FETCH_ASSOC);
+        if ($foundUser) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     private static function getUserId(string $username)
     {
         $sql = "SELECT id FROM user WHERE username = ?";

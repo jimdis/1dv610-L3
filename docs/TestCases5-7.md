@@ -164,6 +164,22 @@ Make sure message posting will happen if message is filled in.
 - The message appears at the top of the Message Board with "Admin" as Author, "message" as Message and the correct date as Date.
 - A form for posting a message is shown.
 
+---
+
+## Test case 5.10: Failed submit as logged in user with tampered username
+
+Make sure message posting in other users' names cannot happen by manipulating POST.
+
+### Input:
+
+- TC 6.1 - view POST Request
+- Copy POST request along with session cookie but change View\MessageView::UserName to "hacker".
+- Send tampered POST request.
+
+### Output:
+
+- Feedback "You can only save messages under your real username" is shown.
+
 ## Test case 6.1: View list of user's messages
 
 Make sure we see a list of all our messages as logged in users.

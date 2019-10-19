@@ -10,7 +10,6 @@ class MessageView extends View
     private static $name = __CLASS__ . '::UserName';
     private static $messageContent = __CLASS__ . '::messageContent';
     private static $feedbackMessageId = __CLASS__ . '::feedbackMessage';
-    // private static $editParam = 'edit';
     private $showEditForm = false;
     private $editMessageId;
     private $contentInput = '';
@@ -21,7 +20,7 @@ class MessageView extends View
         $author = $_POST[self::$name] ?? '';
         $content = $_POST[self::$messageContent] ?? '';
         $id = $_POST[self::$updateMessageId] ?? null;
-        $this->contentInput = $this->getFormMessage(); //TODO: better solution??
+        $this->contentInput = $this->getFormMessage();
         return new \Model\Message($author, $content, $id);
     }
 
@@ -52,15 +51,6 @@ class MessageView extends View
         $this->editMessageId = $id;
     }
 
-    // public function showEditMode(): bool
-    // {
-    //     if (isset($_POST[self::$updateMessage])) {
-    //         return false;
-    //     } else if (isset($_GET[self::$editParam])) {
-    //         return true;
-    //     } else return false;
-    // }
-
     public function getUpdatedMessageId(): int
     {
         return $_POST[self::$updateMessageId];
@@ -78,17 +68,19 @@ class MessageView extends View
 
     public function show(): string
     {
+        $linkText = $this->storage->getUserIsAuthenticated()
+            ? 'Account'
+            : 'Go to login';
         $form = $this->showEditForm
-            ? $this->generateMessageEditFormHTML()
-            : $this->generateMessageFormHTML();
+            ? $this->generateMessageEditFormHTML($linkText)
+            : $this->generateMessageFormHTML($linkText);
         $html = $form . '<br/><h2>Message Board</h2>' . \View\MessageTable::showAllMessages();
         return $html;
     }
 
-    private function generateMessageFormHTML(): string
+    private function generateMessageFormHTML(string $linkText): string
     {
         $isLoggedIn = $this->storage->getUserIsAuthenticated();
-        $linkText = $isLoggedIn ? 'Account' : 'Go to login';
         $username = $isLoggedIn ? '<strong>' . $this->storage->getUsername() . '</strong>' : '';
         $hidden = $isLoggedIn ? 'hidden' : '';
         return '
@@ -100,7 +92,7 @@ class MessageView extends View
                     
                     <label for="' . self::$name . '">Username :</label>
                     ' . $username . '
-					<input ' . $hidden . ' type="text" id="' . self::$name . '" name="' . self::$name . '" value="' . $this->getFormUsername() . '" />
+					<input ' . $hidden . ' type="text" id="' . self::$name . '" name="' . self::$name . '" value="' . $this->getUsername() . '" />
                     <br/>
 					<label for="' . self::$messageContent . '">Your message :</label><br/>
 					<textarea rows=6 cols=50 id="' . self::$messageContent . '" name="' . self::$messageContent . '">' . $this->contentInput . '</textarea>
@@ -113,15 +105,12 @@ class MessageView extends View
 		';
     }
 
-    private function generateMessageEditFormHTML(): string
+    private function generateMessageEditFormHTML(string $linkText): string
     {
-        $isLoggedIn = $this->storage->getUserIsAuthenticated();
-        $username = '<strong>' . $this->storage->getUsername() . '</strong>';
-        $linkText = $isLoggedIn ? 'Account' : 'Go to login';
         $msg = \Model\MessageDAL::getMessageById($this->editMessageId);
         $formHTML = $this->isAuthorizedEditor
             ? '<label for="' . self::$name . '">Username :</label>
-        ' . $username . '
+        <strong>' . $this->storage->getUsername() . '</strong>
         <input hidden type="text" id="' . self::$name . '" name="' . self::$name . '" value="' . $this->storage->getUsername() . '" />
         <input hidden type="text" id="' . self::$updateMessageId . '" name="' . self::$updateMessageId . '" value="' . $msg->id . '" />
         <br/>
@@ -141,8 +130,7 @@ class MessageView extends View
             </form>
 		';
     }
-
-    private function getFormUsername(): string
+    private function getUsername(): string
     {
         return isset($_POST[self::$name])
             ? \Model\SanitizeInput::sanitize($_POST[self::$name])

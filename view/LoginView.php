@@ -21,8 +21,8 @@ class LoginView extends View
     public function getCredentials(): \Model\Credentials
     {
         if ($this->userHasCookies()) {
-            $username = $this->getCookieUsername();
-            $password = $this->getCookiePassword();
+            $username = $_COOKIE[self::$cookieName];
+            $password = $_COOKIE[self::$cookiePassword];
         } else {
             $username = $_POST[self::$name] ?? '';
             $password = $_POST[self::$password] ?? '';
@@ -66,8 +66,7 @@ class LoginView extends View
 
     public function show(): string
     {
-        $isAuthenticated = $this->storage->getUserIsAuthenticated();
-        $html =  $isAuthenticated
+        $html =  $this->storage->getUserIsAuthenticated()
             ? $this->generateLoggedInHTML()
             : $this->generateLoginFormHTML();
         return $html;
@@ -89,7 +88,6 @@ class LoginView extends View
 
     private function generateLoginFormHTML(): string
     {
-        $username = $this->storage->getUsername();
         return '<a href="?messages">Go to message board</a><br />
                 <a href="?register">Register a new user</a><br /><br />    
                 <form method="post" action=".">
@@ -98,7 +96,7 @@ class LoginView extends View
                         <p id="' . self::$messageId . '">' . $this->message . '</p>
 
                         <label for="' . self::$name . '">Username :</label>
-                        <input type="text" id="' . self::$name . '" name="' . self::$name . '" value="' . $username . '" />
+                        <input type="text" id="' . self::$name . '" name="' . self::$name . '" value="' . $this->storage->getUsername() . '" />
 
                         <label for="' . self::$password . '">Password :</label>
                         <input type="password" id="' . self::$password . '" name="' . self::$password . '" />
@@ -109,15 +107,5 @@ class LoginView extends View
                         <input type="submit" name="' . self::$login . '" value="login" />
                     </fieldset>
                 </form>';
-    }
-
-    private function getCookieUsername(): string
-    {
-        return $_COOKIE[self::$cookieName] ?? '';
-    }
-
-    private function getCookiePassword(): string
-    {
-        return $_COOKIE[self::$cookiePassword] ?? '';
     }
 }

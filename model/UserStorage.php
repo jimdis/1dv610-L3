@@ -2,7 +2,7 @@
 
 namespace Model;
 
-require_once('exceptions/IncorrectCredentialsException.php');
+require_once('Exceptions/IncorrectCredentialsException.php');
 
 session_start();
 class UserStorage

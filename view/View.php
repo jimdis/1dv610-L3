@@ -12,10 +12,10 @@ abstract class View
         $this->storage = $storage;
     }
 
-    protected abstract function show(): string;
-
     public function setMessage(string $message)
     {
         $this->message = $message;
     }
+
+    protected abstract function show(): string;
 }

@@ -11,6 +11,7 @@ class MessageController extends Controller
         $this->handleNewMessage();
         $this->handleMessageUpdate();
         $this->handleMessageDelete();
+        $this->view->setContentInput('');
     }
 
     private function handleNewMessage()
@@ -20,23 +21,25 @@ class MessageController extends Controller
             $this->validateMessageAuthor();
             \Model\MessageDAL::storeMessage($this->message);
             $this->view->setMessage('Your message was submitted!');
-        } else if ($this->view->messageUpdateSubmitted()) {
-            $this->message = $this->view->getNewMessage();
-            $this->handleMessageUpdate();
-            \Model\MessageDAL::updateMessage($this->message);
-            $this->view->setMessage('Your message was updated!');
         }
-        $this->view->setContentInput('');
     }
 
 
     private function validateMessageAuthor(): void
     {
         if (!$this->storage->getUserIsAuthenticated()) {
-            $author = $this->message->author;
-            \Model\MessageDAL::validateAuthor($author);
+            $this->checkForExistingUser();
+        } else if ($this->message->author != $this->storage->getUsername()) {
+            throw new \Exception('You can only save messages under your real username');
         } else {
             $this->message->setIsVerified(true);
+        }
+    }
+
+    private function checkForExistingUser(): void
+    {
+        if (\Model\UserDAL::doesUsernameExist($this->message->author)) {
+            throw new \Exception('Username already exists. Pick another!');
         }
     }
 
@@ -46,8 +49,19 @@ class MessageController extends Controller
             $this->view->setShowEditForm(true);
             $this->view->setEditMessageId(\View\MessageTable::getMessageId());
         } else if ($this->view->messageUpdateSubmitted()) {
-            $id = $this->view->getUpdatedMessageId();
-            $this->validateMessageUpdate($id);
+            $this->message = $this->view->getNewMessage();
+            $this->validateMessageUpdate($this->message->id);
+            \Model\MessageDAL::updateMessage($this->message);
+            $this->view->setMessage('Your message was updated!');
+        }
+    }
+
+    private function validateMessageUpdate(int $id): void
+    {
+        $oldMessage = \Model\MessageDAL::getMessageById($id);
+        if ($oldMessage->author != $this->storage->getUsername()) {
+            $this->view->setIsAuthorizedEditor(false);
+            throw new \Exception('You cannot edit other people\'s messages!');
         }
     }
 
@@ -58,15 +72,6 @@ class MessageController extends Controller
             $this->validateMessageUpdate($id);
             \Model\MessageDAL::deleteMessage(\View\MessageTable::getMessageId());
             $this->view->setMessage('Your message was removed!');
-        }
-    }
-
-    private function validateMessageUpdate(int $id): void
-    {
-        $oldMessage = \Model\MessageDAL::getMessageById($id);
-        if ($oldMessage->author != $this->storage->getUsername()) {
-            $this->view->setIsAuthorizedEditor(false);
-            throw new \Exception('You cannot edit other people\'s messages!');
         }
     }
 }
