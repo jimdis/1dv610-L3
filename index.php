@@ -1,8 +1,6 @@
 <?php
-require_once('Config.php');
-require_once("Application.php");
-
-Config::setErrorReporting();
+require_once 'Config.php';
+require_once 'Application.php';
 
 $app = new Application();
 $app->run();
