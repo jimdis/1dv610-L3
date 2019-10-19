@@ -49,10 +49,10 @@ class HTMLPageView
      * @throws Exception if title is of zero length
      * 
      * @param String $title Document title.
-     * @param String $style CSS markup to apply to document.
      * @param String $body HTML document body
+     * @param String $style CSS markup to apply to document.
      */
-    public function __construct(string $title, string $style, string $body)
+    public function __construct(string $title, string $body, string $style = '')
     {
 
         //Make sure the title is set

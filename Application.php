@@ -50,7 +50,7 @@ class Application
                 </div>
                 ';
         $body = $statusBar->show() . $container . $footer->show();
-        $pageView = new \View\HTMLPageView($title, $style, $body);
+        $pageView = new \View\HTMLPageView($title, $body, $style);
         $pageView->echoHTML();
     }
 

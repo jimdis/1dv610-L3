@@ -85,7 +85,6 @@ class UserStorage
 
     private function validateRegistrationCredentials(\Model\Credentials $credentials): void
     {
-        var_dump($credentials);
         $username = $credentials->getUsername();
         $password = $credentials->getPassword();
         $errorMessage = '';

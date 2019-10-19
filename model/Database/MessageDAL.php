@@ -73,16 +73,6 @@ class MessageDAL
         }
     }
 
-    // public static function validateAuthor(string $username)
-    // {
-    //     try {
-    //         \Model\UserDAL::getUser($username);
-    //         throw new \Exception('Username already exists. Pick another!');
-    //     } catch (\Model\IncorrectCredentialsException $e) {
-    //         return;
-    //     }
-    // }
-
     private static function mapMessageArray(array $queryResults): array
     {
         $messages = [];
