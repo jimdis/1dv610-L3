@@ -106,7 +106,7 @@ Make sure message posting will happen if correct username and a message is fille
 ### Output:
 
 - Feedback: "Your message was submitted!" is shown.
-- The message appears at the top of the Message Board with the entered username as Author and "message" as Message, with the correct date.
+- The message appears at the top of the Message Board with the entered username followed by "(as guest)" as Author and "message" as Message, with the correct date.
 - A form for posting a message is shown.
 - The entered username is filled in as username.
 

@@ -19,7 +19,7 @@ class MessageDAL
 
     public static function getUserMessages(string $username): array
     {
-        $sql = "SELECT * FROM message WHERE author = ? ORDER BY updated DESC";
+        $sql = "SELECT * FROM message WHERE author = ? AND isVerified = 1 ORDER BY updated DESC";
         $query = self::connect()->prepare($sql);
         $query->execute([$username]);
         $foundMessages = $query->fetchAll(\PDO::FETCH_ASSOC);
@@ -45,7 +45,7 @@ class MessageDAL
 
     public static function updateMessage(\Model\Message $newMessage): void
     {
-        $sql = "UPDATE message SET content = ? WHERE id = ? AND author = ?";
+        $sql = "UPDATE message SET content = ? WHERE id = ? AND author = ? AND isVerified = 1";
         $query = self::connect()->prepare($sql);
         $query->execute([$newMessage->content, $newMessage->id, $newMessage->author]);
         if ($query->rowCount() < 1) {
@@ -65,7 +65,7 @@ class MessageDAL
 
     public static function deleteMessage(int $id): void
     {
-        $sql = "DELETE FROM message WHERE id = ?";
+        $sql = "DELETE FROM message WHERE id = ? AND isVerified = 1";
         $query = self::connect()->prepare($sql);
         $query->execute([$id]);
         if ($query->rowCount() < 1) {
@@ -96,6 +96,7 @@ class MessageDAL
     private static function mapMessage(array $queryResult): \Model\Message
     {
         $author = $queryResult['author'];
+        $author .= $queryResult['isVerified'] == 0 ? ' (as guest)' : '';
         $content = $queryResult['content'];
         $id = $queryResult['id'];
         $updated = $queryResult['updated'];
