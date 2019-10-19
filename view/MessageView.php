@@ -115,7 +115,7 @@ class MessageView extends View
         <input hidden type="text" id="' . self::$updateMessageId . '" name="' . self::$updateMessageId . '" value="' . $msg->id . '" />
         <br/>
         <label for="' . self::$messageContent . '">Your message :</label><br/>
-        <textarea rows=6 cols=50" id="' . self::$messageContent . '" name="' . self::$messageContent . '">' . $msg->content . '</textarea>
+        <textarea rows=6 cols=50 id="' . self::$messageContent . '" name="' . self::$messageContent . '">' . $msg->content . '</textarea>
         <br/>
         <input type="submit" name="' . self::$updateMessage . '" value="Update" />'
             : '';
