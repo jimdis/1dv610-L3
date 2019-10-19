@@ -76,15 +76,13 @@ class MessageTable
             <td>' . $date . '</td>
             <td>' . $content . '</td>
             <td>
-                <form method="post" action="?messages">
-                    <input hidden name="messages"/>    
+                <form method="post" action="?' . \Model\Routes::$messages . '">
                     <input hidden name="' . self::$edit . '" value="' . $id . '"/>
                     <button type="submit">Edit</button>
                 </form>
             </td>
             <td>
-                <form method="post" action="?messages">
-                    <input hidden name="messages"/>    
+                <form method="post" action="?' . \Model\Routes::$messages . '">
                     <input hidden name="' . self::$delete . '" value="' . $id . '"/>
                     <button type="submit">Delete</button>
                 </form>

@@ -1,3 +1,6 @@
-# Login_1DV610
+# Assignment 3: 1dv610
 
-Repository for 1DV610 assignment 3
+## Run application
+
+- Available at: http://lab3.weo.se
+- Cannot be run locally without config file with DB connection data.

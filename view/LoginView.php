@@ -74,7 +74,7 @@ class LoginView extends View
 
     private function generateLoggedInHTML(): string
     {
-        $form = '<a href="?messages">Go to message board</a><br />
+        $form = '<a href="?' . \Model\Routes::$messages . '">Go to message board</a><br />
                 <form  method="post" >
                     <p id="' . self::$messageId . '">' . $this->message . '</p>
                     <input type="submit" name="' . self::$logout . '" value="logout"/>
@@ -88,8 +88,8 @@ class LoginView extends View
 
     private function generateLoginFormHTML(): string
     {
-        return '<a href="?messages">Go to message board</a><br />
-                <a href="?register">Register a new user</a><br /><br />    
+        return '<a href="?' . \Model\Routes::$messages . '">Go to message board</a><br />
+                <a href="?' . \Model\Routes::$register . '">Register a new user</a><br /><br />    
                 <form method="post" action=".">
                     <fieldset>
                         <legend>Login - enter Username and password</legend>
