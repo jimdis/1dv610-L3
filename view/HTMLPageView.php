@@ -87,8 +87,8 @@ class HTMLPageView
     public function echoHTML()
     {
         echo " 
-		<!DOCTYPE html lang=\"en\">
-		<html>
+		<!DOCTYPE html>
+		<html lang=\"en\">
 			<head>
 				<meta charset='$this->charset'>
                 <title>$this->title</title>
