@@ -27,7 +27,7 @@ class RegisterView extends View
     {
         return '
             <a href=".">Back to login</a><br /><br />
-            <form method="post" action=".">
+            <form method="post" action="?' . \Model\Routes::$register . '">
 				<fieldset>
 					<legend>Register a new user - Write username and password</legend>
 					<p id="' . self::$messageId . '">' . $this->message . '</p>
