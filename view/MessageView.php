@@ -9,8 +9,10 @@ class MessageView extends View
     private static $updateMessageId = __CLASS__ . '::updateMessageId';
     private static $name = __CLASS__ . '::UserName';
     private static $messageContent = __CLASS__ . '::messageContent';
-    private static $messageId = __CLASS__ . '::Message';
-    private static $editParam = 'edit';
+    private static $feedbackMessageId = __CLASS__ . '::feedbackMessage';
+    // private static $editParam = 'edit';
+    private $showEditForm = false;
+    private $editMessageId;
     private $contentInput = '';
     private $isAuthorizedEditor = true;
 
@@ -40,18 +42,28 @@ class MessageView extends View
             : '';
     }
 
-    public function showEditMode(): bool
+    public function setShowEditForm(bool $bool)
     {
-        if (isset($_POST[self::$updateMessage])) {
-            return false;
-        } else if (isset($_GET[self::$editParam])) {
-            return true;
-        } else return false;
+        $this->showEditForm = $bool;
     }
 
-    public function getMessageId(): int
+    public function setEditMessageId(int $id)
     {
-        return $_GET[self::$editParam];
+        $this->editMessageId = $id;
+    }
+
+    // public function showEditMode(): bool
+    // {
+    //     if (isset($_POST[self::$updateMessage])) {
+    //         return false;
+    //     } else if (isset($_GET[self::$editParam])) {
+    //         return true;
+    //     } else return false;
+    // }
+
+    public function getUpdatedMessageId(): int
+    {
+        return $_POST[self::$updateMessageId];
     }
 
     public function setIsAuthorizedEditor(bool $bool)
@@ -66,7 +78,9 @@ class MessageView extends View
 
     public function show(): string
     {
-        $form = $this->showEditMode() ? $this->generateMessageEditFormHTML($this->message) : $this->generateMessageFormHTML($this->message);
+        $form = $this->showEditForm
+            ? $this->generateMessageEditFormHTML()
+            : $this->generateMessageFormHTML();
         $html = $form . '<br/><h2>Message Board</h2>' . \View\MessageTable::showAllMessages();
         return $html;
     }
@@ -82,7 +96,7 @@ class MessageView extends View
             <form method="post" action="?messages">
 				<fieldset>
 					<legend>Write a new message</legend>
-					<p id="' . self::$messageId . '">' . $this->message . '</p>
+					<p id="' . self::$feedbackMessageId . '">' . $this->message . '</p>
                     
                     <label for="' . self::$name . '">Username :</label>
                     ' . $username . '
@@ -104,8 +118,7 @@ class MessageView extends View
         $isLoggedIn = $this->storage->getUserIsAuthenticated();
         $username = '<strong>' . $this->storage->getUsername() . '</strong>';
         $linkText = $isLoggedIn ? 'Account' : 'Go to login';
-        $id = $this->getMessageId();
-        $msg = \Model\MessageDAL::getMessageById($id);
+        $msg = \Model\MessageDAL::getMessageById($this->editMessageId);
         $formHTML = $this->isAuthorizedEditor
             ? '<label for="' . self::$name . '">Username :</label>
         ' . $username . '
@@ -122,7 +135,7 @@ class MessageView extends View
             <form method="post" action=""?messages"">
 				<fieldset>
 					<legend>Edit message</legend>
-                    <p id="' . self::$messageId . '">' . $this->message . '</p>'
+                    <p id="' . self::$feedbackMessageId . '">' . $this->message . '</p>'
             . $formHTML . '
 				</fieldset>
             </form>

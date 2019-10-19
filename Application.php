@@ -42,24 +42,26 @@ class Application
     private function generateOutput()
     {
         $title = '1337 PHP Software';
+        $css = file_get_contents('styles/styles.css');
         $statusBar = new \View\StatusBar($this->storage);
         $footer = new \View\DateTimeView();
         $container = '
                 <div class="container">' . $this->controller->getViewHTML() . '
                 </div>
                 ';
-        $body = $statusBar->show() . $container . $footer->show();
+        $body = '<style>' . $css . '</style>' . $statusBar->show() . $container . $footer->show();
         $pageView = new \View\HTMLPageView($title, $body);
         $pageView->echoHTML();
     }
 
     private function handleException(\Exception $e)
     {
-        if (isset($this->view)) {
+        try {
             $this->view->setMessage($e->getMessage());
             $this->generateOutput();
-        } else {
-            echo 'Oops.. something went wrong.. Sorry! Error info: ' . $e->getMessage();
+        } catch (\Exception $e) {
+            echo 'Oops.. something went wrong.. Sorry! Error info: ' . $e->getMessage() . '
+            <br/><a href=".">Go back!</a>';
         }
     }
 }

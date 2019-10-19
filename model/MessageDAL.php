@@ -6,20 +6,12 @@ class MessageDAL
 {
     public static function getAllMessages(): array
     {
-        $sql = "SELECT * FROM message";
+        $sql = "SELECT * FROM message ORDER BY updated DESC";
         $query = self::connect()->prepare($sql);
         $query->execute();
         $foundMessages = $query->fetchAll(\PDO::FETCH_ASSOC);
         if ($foundMessages) {
-            $messages = [];
-            foreach ($foundMessages as $foundMessage) {
-                $author = $foundMessage['author'];
-                $content = $foundMessage['content'];
-                $id = $foundMessage['id'];
-                $message = new \Model\Message($author, $content, $id);
-                array_push($messages, $message);
-            }
-            return $messages;
+            return self::mapMessageArray($foundMessages);
         } else {
             return [];
         }
@@ -27,20 +19,12 @@ class MessageDAL
 
     public static function getUserMessages(string $username): array
     {
-        $sql = "SELECT * FROM message WHERE author = ?";
+        $sql = "SELECT * FROM message WHERE author = ? ORDER BY updated DESC";
         $query = self::connect()->prepare($sql);
         $query->execute([$username]);
         $foundMessages = $query->fetchAll(\PDO::FETCH_ASSOC);
         if ($foundMessages) {
-            $messages = [];
-            foreach ($foundMessages as $foundMessage) {
-                $author = $foundMessage['author'];
-                $content = $foundMessage['content'];
-                $id = $foundMessage['id'];
-                $message = new \Model\Message($author, $content, $id);
-                array_push($messages, $message);
-            }
-            return $messages;
+            return self::mapMessageArray($foundMessages);
         } else {
             return [];
         }
@@ -53,13 +37,9 @@ class MessageDAL
         $query->execute([$id]);
         $foundMessage = $query->fetch(\PDO::FETCH_ASSOC);
         if ($foundMessage) {
-            $author = $foundMessage['author'];
-            $content = $foundMessage['content'];
-            $id = $foundMessage['id'];
-            $message = new \Model\Message($author, $content, $id);
-            return $message;
+            return self::mapMessage($foundMessage);
         } else {
-            throw new \Model\IncorrectCredentialsException();
+            throw new \Exception('Message not found');
         }
     }
 
@@ -78,6 +58,9 @@ class MessageDAL
         $sql = "INSERT INTO message (author, content, isVerified) VALUES (?, ?, ?)";
         $query = self::connect()->prepare($sql);
         $query->execute([$message->author, $message->content, $message->isVerified == true ? 1 : 0]);
+        if ($query->rowCount() < 1) {
+            throw new \Exception('Error: No records updated.');
+        }
     }
 
     public static function deleteMessage(int $id): void
@@ -86,7 +69,7 @@ class MessageDAL
         $query = self::connect()->prepare($sql);
         $query->execute([$id]);
         if ($query->rowCount() < 1) {
-            throw new \Exception('No records updated.');
+            throw new \Exception('Error: No records updated.');
         }
     }
 
@@ -98,6 +81,26 @@ class MessageDAL
         } catch (\Model\IncorrectCredentialsException $e) {
             return;
         }
+    }
+
+    private static function mapMessageArray(array $queryResults): array
+    {
+        $messages = [];
+        foreach ($queryResults as $queryResult) {
+            $message = self::mapMessage($queryResult);
+            array_push($messages, $message);
+        }
+        return $messages;
+    }
+
+    private static function mapMessage(array $queryResult): \Model\Message
+    {
+        $author = $queryResult['author'];
+        $content = $queryResult['content'];
+        $id = $queryResult['id'];
+        $updated = $queryResult['updated'];
+        $message = new \Model\Message($author, $content, $id, $updated);
+        return $message;
     }
 
     private static function connect(): \PDO

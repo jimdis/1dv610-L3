@@ -12,7 +12,9 @@ class Routes
 
     public function __construct()
     {
-        $this->route = array_keys($_GET)[0] ?? '';
+        $query = [];
+        parse_str($_SERVER['QUERY_STRING'], $query);
+        $this->route = array_keys($query)[0] ?? '';
     }
 
     public  function getController()

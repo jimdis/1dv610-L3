@@ -5,15 +5,21 @@ namespace View;
 class MessageTable
 {
     private static $delete = __CLASS__ . '::deleteMessage';
+    private static $edit = __CLASS__ . '::editMessage';
 
     public static function userWantsToDeleteMessage(): bool
     {
         return isset($_POST[self::$delete]);
     }
 
+    public static function userWantsToEditMessage(): bool
+    {
+        return isset($_POST[self::$edit]);
+    }
+
     public static function getMessageId(): int
     {
-        return $_POST[self::$delete];
+        return $_POST[self::$delete] ?? $_POST[self::$edit];
     }
 
 
@@ -24,21 +30,24 @@ class MessageTable
         $tableBody = '
         <thead>
             <tr>
+            <th>Date</th>
             <th>Author</th>
             <th>Message</th>
             </tr>
         </thead>
         <tbody>';
         foreach ($messages as $message) {
+            $date = $message->updated;
             $author = $message->author;
             $content = $message->content;
             $tableBody .= '
             <tr>
+            <td>' . $date . '</td>
             <td>' . $author . '</td>
             <td>' . $content . '</td>
             </tr>';
         }
-        return '
+        return count($messages) == 0 ? 'There are currently no messages..' : '
         <table>'
             . $tableBody . '
         </tbody>
@@ -47,18 +56,29 @@ class MessageTable
 
     public static function showUserMessages(string $username): string
     {
-        $tableBody = '';
+        $tableBody = '
+        <thead>
+        <tr>
+        <th>Date</th>
+        <th>Message</th>
+        <th>Edit</th>
+        <th>Delete</th>
+        </tr>
+        </thead>
+        <tbody>';
         $messages = \Model\MessageDAL::getUserMessages($username);
         foreach ($messages as $message) {
+            $date = $message->updated;
             $id = $message->id;
             $content = $message->content;
             $tableBody .= '
             <tr>
+            <td>' . $date . '</td>
             <td>' . $content . '</td>
             <td>
-                <form action="">
+                <form method="post" action="?messages">
                     <input hidden name="messages"/>    
-                    <input hidden name="edit" value="' . $id . '"/>
+                    <input hidden name="' . self::$edit . '" value="' . $id . '"/>
                     <button type="submit">Edit</button>
                 </form>
             </td>
@@ -71,15 +91,8 @@ class MessageTable
             </td>
             </tr>';
         }
-        return '<table>
-        <thead>
-        <tr>
-        <th>Message</th>
-        <th>Edit<th>
-        <th>Delete</th>
-        </tr>
-        </thead>
-        <tbody>'
+        return count($messages) == 0 ? 'There are currently no messages..' : '
+        <table>'
             . $tableBody . '
         </tbody>
         </table>';

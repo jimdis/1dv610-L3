@@ -42,8 +42,11 @@ class MessageController extends Controller
 
     private function handleMessageUpdate(): void
     {
-        if ($this->view->showEditMode()) {
-            $id = $this->view->getMessageId();
+        if (\View\MessageTable::userWantsToEditMessage()) {
+            $this->view->setShowEditForm(true);
+            $this->view->setEditMessageId(\View\MessageTable::getMessageId());
+        } else if ($this->view->messageUpdateSubmitted()) {
+            $id = $this->view->getUpdatedMessageId();
             $this->validateMessageUpdate($id);
         }
     }
