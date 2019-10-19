@@ -13,12 +13,12 @@
 ## Use Cases
 
 - [Use Cases 1-4](https://github.com/dntoll/1dv610/blob/master/assignments/A2_resources/UseCases.md)
-- [Additional Use Cases 5-7](docs/UseCases5-7)
+- [Additional Use Cases 5-7](docs/UseCases5-7.md)
 
 ## Test Cases
 
 - [TC 1-4](https://github.com/dntoll/1dv610/blob/master/assignments/A2_resources/TestCases.md)
-- [Additional TC 5-7](docs/TestCases5-7)
+- [Additional TC 5-7](docs/TestCases5-7.md)
 
 ## Status of implementation
 
